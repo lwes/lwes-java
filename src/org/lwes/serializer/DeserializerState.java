@@ -1,11 +1,11 @@
-package org.lwes.util;
+package org.lwes.serializer;
 
 /** 
  * An internal class used by the Deserializer to keep track of its state
  * 
  * @author Anthony Molinaro
  */
-public class  DeserializerState
+public class DeserializerState
 {
 	private int index;
 

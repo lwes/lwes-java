@@ -6,7 +6,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 import org.lwes.Event;
-
+import org.lwes.util.Log;
 
 /**
  * MulticastEventEmitter emits events to multicast groups on the network.	
@@ -33,7 +33,7 @@ public class MulticastEventEmitter implements EventEmitter {
 	/* the multicast time-to-live */
 	private int ttl = 31;
 	
-	/* a lock variable to synchronize heartbeat events */
+	/* a lock variable to synchronize events */
 	private Object lock = new Object();
 	
 	/**
@@ -133,7 +133,7 @@ public class MulticastEventEmitter implements EventEmitter {
 		} catch(IOException ie) {
 			throw ie;
 		} catch(Exception e) {
-			// TODO: do something here
+			Log.error("Unable to initialize MulticastEventEmitter", e);
 		}
 	}
 	

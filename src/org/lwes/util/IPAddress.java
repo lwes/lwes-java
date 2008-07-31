@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
  */
 public class IPAddress implements java.io.Serializable
 {
-	/* serializable UID */	
+	/* serializable UID */
 	static final long serialVersionUID = -1;
 	
 	/* inet address in network byte order */

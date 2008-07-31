@@ -1,7 +1,8 @@
-package org.lwes.util;
+package org.lwes.serializer;
 
 import org.lwes.Event;
 import org.lwes.util.EncodedString;
+import org.lwes.util.Log;
 import org.lwes.util.NumberCodec;
 
 /**
@@ -9,11 +10,10 @@ import org.lwes.util.NumberCodec;
  * of the event system.
  *
  * @author Anthony Molinaro
+ * @author Michael P. Lum
  */
 public class Deserializer
 {
-	private static final boolean logDebug = false;
-
 	/**
 	 * Deserialize a byte out of the byte array <tt>bytes</tt>
 	 *
@@ -214,23 +214,20 @@ public class Deserializer
 		try {
 			len = deserializeUINT16(myState,bytes);
 
-			if ( logDebug )
-			{
-				System.out.println("datagram bytes : "+
-						NumberCodec.byteArrayToHexString(bytes,0,bytes.length));
-				System.out.println("string length  : "+len);
-				System.out.println("State          : "+myState);
-			}
+			Log.debug("Datagram Bytes: " + 
+					NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+			Log.debug("String Length: " + len);
+			Log.debug("State: " + myState);
 
 			aString = EncodedString.bytesToString(bytes,myState.currentIndex(),len,
 					Event.ENCODING_STRINGS[encoding]);
 			myState.incr(len);
 		} catch ( ArrayIndexOutOfBoundsException aioobe ) {
-			System.err.println("Exception "+aioobe);
-			System.err.println("datagram bytes : "+
-					NumberCodec.byteArrayToHexString(bytes,0,bytes.length));
-			System.err.println("string length  : "+len);
-			System.err.println("State          : "+myState);       
+			Log.info("Exception: " + aioobe.toString());
+			Log.info("Datagram Bytes: " +
+					NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+			Log.info("String Length: " + len);
+			Log.info("State: " + myState);
 		}
 		return aString;
 
@@ -258,23 +255,20 @@ public class Deserializer
 		try {
 			len = (int)deserializeBYTE(myState,bytes);
 
-			if ( logDebug )
-			{
-				System.out.println("datagram bytes : "+
-						NumberCodec.byteArrayToHexString(bytes,0,bytes.length));
-				System.out.println("string length  : "+len);
-				System.out.println("State          : "+myState);
-			}
+			Log.debug("Datagram Bytes: " +
+					NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+			Log.debug("String Length: " + len);
+			Log.debug("State: " + myState);
 
 			aString = EncodedString.bytesToString(bytes,myState.currentIndex(),len,
 					Event.ENCODING_STRINGS[encoding]);
 			myState.incr(len);
 		} catch ( ArrayIndexOutOfBoundsException aioobe ) {
-			System.err.println("Exception "+aioobe);
-			System.err.println("datagram bytes : "+
-					NumberCodec.byteArrayToHexString(bytes,0,bytes.length));
-			System.err.println("string length  : "+len);
-			System.err.println("State          : "+myState);       
+			Log.info("Exception: " + aioobe.toString());
+			Log.info("Datagram Bytes: " +
+				NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+			Log.info("String Length: " + len);
+			Log.info("State: " + myState);
 		}
 		return aString;
 	}

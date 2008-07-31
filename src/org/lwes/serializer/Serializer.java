@@ -1,4 +1,4 @@
-package org.lwes.util;
+package org.lwes.serializer;
 
 import java.net.InetAddress;
 
@@ -8,7 +8,7 @@ import org.lwes.util.IPAddress;
 import org.lwes.util.NumberCodec;
 
 /**
- * This contains all the low level type serialization used by the
+ * This contains low level type serialization used by the
  * rest of the system.
  * @author Anthony Molinaro
  */
