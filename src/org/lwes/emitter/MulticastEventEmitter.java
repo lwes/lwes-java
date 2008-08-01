@@ -14,6 +14,18 @@ import org.lwes.util.Log;
 /**
  * MulticastEventEmitter emits events to multicast groups on the network.
  * 
+ * <pre>
+ * MulticastEventEmitter emitter = new MulticastEventEmitter();
+ * emitter.setESFFilePath("/path/to/esf/file");
+ * emitter.setMulticastAddress(InetAddress.getByName("224.0.0.69"));
+ * emitter.setMulticastPort(9191);
+ * emitter.initialize();
+ *
+ * Event e = emitter.createEvent("MyEvent", false);
+ * e.setString("key","value");
+ * emitter.emit(e);
+ * </pre>
+ * 
  * @author      Michael P. Lum
  * @author      Anthony Molinaro
  * @version     %I%, %G%
