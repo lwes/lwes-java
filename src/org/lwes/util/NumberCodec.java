@@ -1,5 +1,7 @@
 package org.lwes.util;
 
+import java.math.BigInteger;
+
 /**
  * This is a class to efficiently encode built-in primitive types into
  * byte arrays and decode them back.  While this can be done with a 
@@ -16,6 +18,7 @@ package org.lwes.util;
  * the standard Java API and this class can be retired.
  * 
  * @author  Preston Pfarner
+ * @author  Michael P. Lum
  * @version     %I%, %G%
  * @since       0.0.1
  */
@@ -157,7 +160,7 @@ public final class NumberCodec {
 		checkRange(LONG_BYTES, buffer, offset, length);
 		encodeLongUnchecked(l, buffer,offset);
 	}
-
+	
 	/* ***********************************************************************
 	 * DECODING FROM BYTE ARRAYS
 	 * ***********************************************************************/
@@ -374,6 +377,16 @@ public final class NumberCodec {
 	 */
 	public static String toHexString(long l) {
 		return toHexString(l,LONG_BYTES);
+	}
+	
+	/**
+	 * Output a BigInteger in unsigned hexadecimal form, padding with zeroes.
+	 * @param bi the BigInteger
+	 * @return a String representing the BigInteger.
+	 */
+	public static String toHexString(BigInteger bi) {
+		if(bi == null) return new String();
+		return bi.toString(16); // 16-bit radix
 	}
 
 	/* ***********************************************************************

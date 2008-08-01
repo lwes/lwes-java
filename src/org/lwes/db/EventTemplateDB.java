@@ -2,6 +2,7 @@ package org.lwes.db;
 
 import java.io.InputStream;
 import java.io.File;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -251,6 +252,7 @@ public class EventTemplateDB {
 	 * @return true if the type exists in the DB, false otherwise
 	 */
 	public boolean checkForType(String aTypeName) {
+		if(aTypeName == null) return false;
 		return knownTypes.containsKey(aTypeName);
 	}
 
@@ -263,6 +265,7 @@ public class EventTemplateDB {
 	 *         the EventTemplateDB, false otherwise.
 	 */
 	public boolean checkForEvent(String anEventName) {
+		if(anEventName == null) return false;
 		return events.containsKey(anEventName);
 	}
 
@@ -278,6 +281,8 @@ public class EventTemplateDB {
 	 *         otherwise
 	 */
 	public boolean checkForAttribute(String anEventName, String anAttributeName) {
+		if(anEventName == null || anAttributeName == null) return false;
+		
 		if (checkForEvent(anEventName)) {
 			Map<String, BaseType> evtHash = 
 				(Map<String, BaseType>) events.get(anEventName);
@@ -304,6 +309,8 @@ public class EventTemplateDB {
 	 */
 	public boolean checkTypeForAttribute(String anEventName,
 			String anAttributeName, Object anAttributeValue) {
+		if(anEventName == null || anAttributeName == null || anAttributeValue == null) return false;
+		
 		if (checkForAttribute(anEventName, anAttributeName)) {
 			Map<String,BaseType> evtHash = (Map<String,BaseType>) events.get(anEventName);
 			Object storedTypeObject = ((BaseType) evtHash.get(anAttributeName));
@@ -313,6 +320,7 @@ public class EventTemplateDB {
 				return true;
 			}
 		}
+		
 		return false;
 	}
 
@@ -335,6 +343,8 @@ public class EventTemplateDB {
 	 */
 	public boolean checkTypeForAttribute(String anEventName,
 			String anAttributeName, String anAttributeType) {
+		if(anEventName == null || anAttributeName == null || anAttributeType == null) return false; 
+		
 		if (checkForAttribute(anEventName, anAttributeName)) {
 			Map<String,BaseType> evtHash = (Map<String,BaseType>) events.get(anEventName);
 			String storedTypeName = ((BaseType) evtHash.get(anAttributeName))
@@ -343,6 +353,7 @@ public class EventTemplateDB {
 				return true;
 			}
 		}
+		
 		return false;
 	}
 
@@ -359,8 +370,10 @@ public class EventTemplateDB {
 	 *            the value of the attribute
 	 * @return the <tt>BaseType</tt> representation of <tt>attributeValue</tt>
 	 */
-	BaseType getBaseTypeForObjectAttribute(String eventName,
+	public BaseType getBaseTypeForObjectAttribute(String eventName,
 			String attributeName, Object attributeValue) {
+		if(eventName == null || attributeName == null || attributeValue == null) return null;
+		
 		Map<String,BaseType> evtHash = (Map<String,BaseType>) events.get(eventName);
 		BaseType tmpBaseType = ((BaseType) evtHash.get(attributeName));
 		BaseType retBaseType = tmpBaseType.cloneBaseType();
@@ -374,6 +387,8 @@ public class EventTemplateDB {
 	 * @return a map of event fields to base types
 	 */
 	public Map<String,BaseType> getBaseTypesForEvent(String eventName) {
+		if(eventName == null) return null;
+		
 		Map<String,BaseType> map = (Map<String, BaseType>) events.get(eventName);
 
 		return map == null ? new ConcurrentHashMap<String,BaseType>() : map;
@@ -396,6 +411,8 @@ public class EventTemplateDB {
 	public Object parseAttribute(String anEventName, String anAttributeName,
 			String stringAttributeValue) {
 		Object retObject = null;
+		
+		if(anEventName == null || anAttributeName == null || stringAttributeValue == null) return null;
 		
 		Log.trace("parseAttribute: " + anEventName + "." + anAttributeName + "=" +
 				stringAttributeValue);
@@ -535,7 +552,7 @@ public class EventTemplateDB {
 		knownTypes.put(TypeID.INT64_STRING, new BaseType(TypeID.INT64_STRING,
 				TypeID.INT64_TOKEN, new Long(0)));
 		knownTypes.put(TypeID.UINT64_STRING, new BaseType(TypeID.UINT64_STRING,
-				TypeID.UINT64_TOKEN, new Long(0)));
+				TypeID.UINT64_TOKEN, BigInteger.ZERO));
 		knownTypes
 				.put(TypeID.BOOLEAN_STRING, new BaseType(TypeID.BOOLEAN_STRING,
 						TypeID.BOOLEAN_TOKEN, new Boolean(true)));

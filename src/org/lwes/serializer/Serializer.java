@@ -1,5 +1,6 @@
 package org.lwes.serializer;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 
 import org.lwes.Event;
@@ -81,7 +82,14 @@ public class Serializer
 		return (8);              
 	}
 
-	/*
+	public static int serializeUINT64(BigInteger anInt, byte[] bytes, int offset)
+	{
+		// TODO: write a BigInteger serialization method
+		NumberCodec.encodeLongUnchecked(anInt.longValue(),bytes,offset);
+		return (8);              
+	}	
+	
+	/**
 	 * @deprecated
 	 */
 	 public static int serializeSTRING(String aString, byte[] bytes, int offset)  
