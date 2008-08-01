@@ -49,6 +49,29 @@ public class Event {
 	 */
 	private int bytesStoreSize = 0;
 
+	/**
+	 * Create an event called <tt>eventName</tt>
+	 * @param eventName the name of the event
+	 * @param validate true if the EventTemplateDB should be checked for types before all mutations
+	 * @param eventTemplateDB the EventTemplateDB to use for validation
+	 * @throws NoSuchEventException if the Event does not exist in the EventTemplateDB
+	 * @throws NoSuchAttributeException if an attribute does not exist in the EventTemplateDB
+	 * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
+	 */
+	public Event(String eventName, EventTemplateDB eventTemplateDB) 
+		throws NoSuchEventException, NoSuchAttributeException, NoSuchAttributeTypeException {
+		this(eventName, true, eventTemplateDB);
+	}
+	
+	/**
+	 * Create an event called <tt>eventName</tt>
+	 * @param eventName the name of the event
+	 * @param validate true if the EventTemplateDB should be checked for types before all mutations
+	 * @param eventTemplateDB the EventTemplateDB to use for validation
+	 * @throws NoSuchEventException if the Event does not exist in the EventTemplateDB
+	 * @throws NoSuchAttributeException if an attribute does not exist in the EventTemplateDB
+	 * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
+	 */
 	public Event(String eventName, boolean validate, EventTemplateDB eventTemplateDB) 
 		throws NoSuchEventException, NoSuchAttributeException, NoSuchAttributeTypeException {
 		this(eventName, validate, eventTemplateDB, DEFAULT_ENCODING);
@@ -59,7 +82,9 @@ public class Event {
 	 * @param eventName the name of the event
 	 * @param validate true if the EventTemplateDB should be checked for types before all mutations
 	 * @param encoding the character encoding used by the event
-	 * @exception EventSystemException if the Event does not exist in the EventTemplateDB
+	 * @throws NoSuchEventException if the Event does not exist in the EventTemplateDB
+	 * @throws NoSuchAttributeException if an attribute does not exist in the EventTemplateDB
+	 * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
 	 */
 	public Event(String eventName, boolean validate, EventTemplateDB eventTemplateDB, short encoding)
 		throws NoSuchEventException, NoSuchAttributeException, NoSuchAttributeTypeException {
@@ -67,6 +92,36 @@ public class Event {
 		validating = validate;
 		setEventName(eventName);
 		setEncoding(encoding);
+	}
+
+	/**
+	 * Creates an event by deserializing a raw byte array.
+	 * @param bytes the raw bytes to convert
+	 * @param eventTemplateDB the EventTemplateDB to use to validate the event
+	 * @throws NoSuchEventException
+	 * @throws NoSuchAttributeException
+	 * @throws NoSuchAttributeTypeException
+	 */
+	public Event(byte[] bytes, EventTemplateDB eventTemplateDB)
+		throws NoSuchEventException, NoSuchAttributeException, NoSuchAttributeTypeException {
+		this(bytes, true, eventTemplateDB);
+	}
+	
+	
+	/**
+	 * Creates an event by deserializing a raw byte array.
+	 * @param bytes the raw bytes to convert
+	 * @param validate whether or not to validate the event
+	 * @param eventTemplateDB the EventTemplateDB to use to validate the event
+	 * @throws NoSuchEventException
+	 * @throws NoSuchAttributeException
+	 * @throws NoSuchAttributeTypeException
+	 */
+	public Event(byte[] bytes, boolean validate, EventTemplateDB eventTemplateDB)
+		throws NoSuchEventException, NoSuchAttributeException, NoSuchAttributeTypeException {
+		setEventTemplateDB(eventTemplateDB);
+		validating = validate;
+		deserialize(bytes);
 	}
 
 	/**
