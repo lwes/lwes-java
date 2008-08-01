@@ -1,23 +1,28 @@
 package org.lwes.emitter;
 
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 import org.lwes.Event;
+import org.lwes.EventFactory;
+import org.lwes.EventSystemException;
 import org.lwes.util.Log;
 
 /**
- * MulticastEventEmitter emits events to multicast groups on the network.	
+ * MulticastEventEmitter emits events to multicast groups on the network.
  * 
  * @author      Michael P. Lum
  * @author      Anthony Molinaro
  * @version     %I%, %G%
  * @since       0.0.1
  */
-
 public class MulticastEventEmitter implements EventEmitter {
+	/* an EventFactory */
+	private EventFactory factory = new EventFactory();
+	
 	/* the actual multicast socket being used */
 	private MulticastSocket socket = null;
 	
@@ -119,10 +124,55 @@ public class MulticastEventEmitter implements EventEmitter {
 	}
 	
 	/**
+	 * Sets the ESF file used for event validation.
+	 * @param esfFilePath the path of the ESF file
+	 */
+	public void setESFFilePath(String esfFilePath) {
+		if(factory != null) {
+			factory.setESFFilePath(esfFilePath);
+		}
+	}
+	
+	/**
+	 * Gets the ESF file used for event validation
+	 * @return the ESF file path
+	 */
+	public String getESFFilePath() {
+		if(factory != null) {
+			return factory.getESFFilePath();
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Sets an InputStream to be used for event validation.
+	 * @param esfInputStream an InputStream used for event validation
+	 */
+	public void setESFInputStream(InputStream esfInputStream) {
+		if(factory != null) {
+			factory.setESFInputStream(esfInputStream);
+		}
+	}
+	
+	/**
+	 * Gets the InputStream being used for event validation.
+	 * @return the InputStream of the ESF validator
+	 */
+	public InputStream getESFInputStream() {
+		if(factory != null) {
+			return factory.getESFInputStream();
+		} else {
+			return null;
+		}
+	}
+	
+	/**
 	 * Initializes the emitter.
 	 */
 	public void initialize() throws IOException {
 		try {
+			factory.initialize();
 			socket = new MulticastSocket();
 		
 			if(iface != null) {
@@ -136,11 +186,39 @@ public class MulticastEventEmitter implements EventEmitter {
 			Log.error("Unable to initialize MulticastEventEmitter", e);
 		}
 	}
-	
+
+	/**
+	 * Shuts down the emitter.
+	 */
 	public void shutdown() throws IOException {
 		socket.close();
 	}
 
+	/**
+	 * Creates a new event named <tt>eventName</tt>.
+	 * @param eventName the name of the event to be created
+	 * @return a new Event
+	 * @exception EventSystemException if there is a problem creating the event
+	 */
+	public Event createEvent(String eventName) throws EventSystemException {
+		return createEvent(eventName, true);
+	}
+	
+	/**
+	 * Creates a new event named <tt>eventName</tt>.
+	 * @param eventName the name of the event to be created
+	 * @param validate whether or not to validate the event against the EventTemplateDB
+	 * @return a new Event
+	 * @exception EventSystemException if there is a problem creating the event
+	 */
+	public Event createEvent(String eventName, boolean validate) throws EventSystemException {
+		if(factory != null) {
+			return factory.createEvent(eventName, validate);
+		} else {
+			throw new EventSystemException("EventFactory not initialized");
+		}
+	}	
+	
 	/**
 	 * Emits the event to the network.
 	 * 

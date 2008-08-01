@@ -70,6 +70,10 @@ public class EventFactory {
 		this.esfInputStream = input;
 	}
 	
+	/**
+	 * Initializes the EventFactory along with pointers to the ESF file
+	 * @throws EventSystemException if there is an exception with setting the ESF files
+	 */
 	public void initialize() throws EventSystemException {
 		if(esfFilePath != null) {
 			File esfFile = new File(esfFilePath);
@@ -85,30 +89,71 @@ public class EventFactory {
 		}
 	}
 	
+	/**
+	 * Creates a validated event named <tt>eventName</tt>.
+	 * @param eventName the name of the event
+	 * @return the Event object
+	 * @throws EventSystemException if there is a problem creating the event
+	 */
 	public Event createEvent(String eventName) throws EventSystemException {
 		return createEvent(eventName, Event.DEFAULT_ENCODING);
 	}
 
+	/**
+	 * Create a validated event named <tt>eventName</tt> with specified encoding.
+	 * @param eventName the name of the event
+	 * @param encoding the encoding to use
+	 * @return the Event object
+	 * @throws EventSystemException if there is a problem creating the event
+	 */
 	public Event createEvent(String eventName, short encoding) throws EventSystemException {
 		return createEvent(eventName, true, encoding);
 	}
 	
+	/**
+	 * Create an event named <tt>eventName</tt> and optionally validate the event.
+	 * @param eventName the name of the event
+	 * @param validate whether or not to validate the event against the EventTemplateDB
+	 * @return the Event object
+	 * @throws EventSystemException if there is a problem creating the event
+	 */
 	public Event createEvent(String eventName, boolean validate) throws EventSystemException {
 		return createEvent(eventName, validate, Event.DEFAULT_ENCODING);
 	}
 	
+	/**
+	 * Create an event named <tt>eventName</tt> with optional validation and specified encoding
+	 * @param eventName the name of the event
+	 * @param validate whether or not to validate the event against the EventTemplateDB
+	 * @param encoding the encoding to use
+	 * @return the Event object
+	 * @throws EventSystemException if there is a problem creating the event
+	 */
 	public Event createEvent(String eventName, boolean validate, short encoding) throws EventSystemException {
 		Event e = null;
 		e = new Event(eventName, validate, eventTemplateDB, encoding);
 		return e;		
 	}
 	
+	/**
+	 * Create an event from an array of bytes
+	 * @param bytes the byte array
+	 * @return the Event object
+	 * @throws EventSystemException if there is a problem creating the event
+	 */
 	public Event createEvent(byte[] bytes) throws EventSystemException {
 		Event e = null;
 		e = new Event(bytes, eventTemplateDB);
 		return e;
 	}
 	
+	/**
+	 * Create an event from an array of bytes, with optional validation
+	 * @param bytes the byte array
+	 * @param validate whether or not to validate this event against the EventTemplateDB
+	 * @return the Event object
+	 * @throws EventSystemException if there is a problem creating the event
+	 */
 	public Event createEvent(byte[] bytes, boolean validate) throws EventSystemException {
 		Event e = null;
 		e = new Event(bytes, validate, eventTemplateDB);
