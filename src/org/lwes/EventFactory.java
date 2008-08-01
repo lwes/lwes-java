@@ -2,7 +2,6 @@ package org.lwes;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Enumeration;
 
 import org.lwes.db.EventTemplateDB;
 

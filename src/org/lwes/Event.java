@@ -749,7 +749,7 @@ public class Event {
 		}
 		
 		if(attributes != null) {
-			Enumeration e = attributes.keys();
+			Enumeration<String> e = attributes.keys();
 			while(e.hasMoreElements()) {
 				String key = (String) e.nextElement();
 				if(key == ENCODING) {
@@ -893,7 +893,7 @@ public class Event {
 	public Event copy() throws NoSuchEventException, NoSuchAttributeException, NoSuchAttributeTypeException {
 		/* match the type-checking of the original event */
 		Event evt = new Event(name, isValidating(), getEventTemplateDB());
-		for( Enumeration e = attributes.keys(); e.hasMoreElements(); ) {
+		for( Enumeration<String> e = attributes.keys(); e.hasMoreElements(); ) {
 			String key = (String) e.nextElement();
 			BaseType value = (BaseType) (attributes.get(key));
 			evt.set(key, value);
@@ -917,7 +917,7 @@ public class Event {
 		if(attributes != null) {
 			int i = 0;
 			String[] keys = new String[attributes.size()];
-			for( Enumeration e = attributes.keys(); e.hasMoreElements(); ) {
+			for( Enumeration<String> e = attributes.keys(); e.hasMoreElements(); ) {
 				keys[i++] = (String) e.nextElement();
 			}
 			
