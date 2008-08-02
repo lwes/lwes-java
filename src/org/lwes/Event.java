@@ -877,6 +877,10 @@ public class Event {
 					long aLong = Deserializer.deserializeINT64(state, bytes);
 					setInt64(attribute, aLong);
 					break;
+				case TypeID.STRING_TOKEN:
+					String s = Deserializer.deserializeSTRING(state, bytes, encoding);
+					setString(attribute, s);
+					break;
 				case TypeID.IPADDR_TOKEN:
 					byte[] inetAddress = Deserializer.deserializeIPADDR(state, bytes);
 					setIPAddress(attribute, inetAddress);
