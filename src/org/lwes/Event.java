@@ -17,6 +17,14 @@ import org.lwes.util.NumberCodec;
 
 public class Event {
 	/**
+	 * Reserved metadata keywords
+	 */
+	public static final String ENCODING = "enc";
+	public static final String RECEIPT_TIME = "ReceiptTime";
+	public static final String SENDER_IP = "SenderIP";
+	public static final String SENDER_PORT = "SenderPort";
+	
+	/**
 	 * Encoding variables
 	 */
 	public static final short ISO_8859_1 = 0;
@@ -24,7 +32,6 @@ public class Event {
 	public static final short DEFAULT_ENCODING = UTF_8;
 	public static final CharacterEncoding[] ENCODING_STRINGS = {
 			CharacterEncoding.ISO_8859_1, CharacterEncoding.UTF_8 };
-	private static final String ENCODING = "enc";
 
 	/**
 	 * Event data

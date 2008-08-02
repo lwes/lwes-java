@@ -10,16 +10,24 @@ public class EventSystemException extends Exception {
 	 * Overrides <tt>Exception</tt> constructor
 	 * @param e the parent exception
 	 */
-	
-	public EventSystemException(Exception e) {
+	public EventSystemException(Throwable e) {
 		super(e);
 	}
 	
 	/**
-	 * Overrides <tt>Exception</tt> Constructor
+	 * Overrides <tt>Exception</tt> constructor
 	 * @param s the exception message
 	 */
 	public EventSystemException(String s) {
 		super(s);
+	}
+	
+	/**
+	 * Overrides the <tt>Exception</tt> constructor
+	 * @param s the exception message
+	 * @param e the parent exception
+	 */
+	public EventSystemException(String s, Throwable e) {
+		super(s, e);
 	}
 }

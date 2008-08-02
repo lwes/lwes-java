@@ -12,8 +12,10 @@ import org.lwes.EventSystemException;
 import org.lwes.util.Log;
 
 /**
- * MulticastEventEmitter emits events to multicast groups on the network.
+ * MulticastEventEmitter emits events to multicast groups on the network.  This is the most common
+ * class used by users of the Light Weight Event System.
  * 
+ * Example code:
  * <pre>
  * MulticastEventEmitter emitter = new MulticastEventEmitter();
  * emitter.setESFFilePath("/path/to/esf/file");
