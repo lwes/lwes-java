@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="lwes-java" basedir="." default="build">
+  <property name="src.dir"   value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="jar.file"  value="lwes.jar"/>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${src.dir}" destdir="${build.dir}"/>
+  </target>
+
+  <target name="jar" depends="compile">
+    <jar destfile="${jar.file}" basedir="${build.dir}"/>
+  </target>
+
+  <target name="build" depends="clean,jar"/>
+</project>
+
