@@ -30,7 +30,6 @@ import org.lwes.util.Log;
  * 
  * @author      Michael P. Lum
  * @author      Anthony Molinaro
- * @version     %I%, %G%
  * @since       0.0.1
  */
 public class MulticastEventEmitter implements EventEmitter {

@@ -17,7 +17,6 @@ import org.lwes.util.NumberCodec;
  * 
  * @author      Michael P. Lum
  * @author      Anthony Molinaro
- * @version     %I%, %G%
  * @since       0.0.1
  * 
  * Example code:

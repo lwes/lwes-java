@@ -12,7 +12,6 @@ import org.lwes.EventSystemException;
  * 
  * @author      Michael P. Lum
  * @author      Anthony Molinaro
- * @version     %I%, %G%
  */
 public interface EventEmitter {
 	/**
