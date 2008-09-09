@@ -59,7 +59,6 @@ public class Event {
 	/**
 	 * Create an event called <tt>eventName</tt>
 	 * @param eventName the name of the event
-	 * @param validate true if the EventTemplateDB should be checked for types before all mutations
 	 * @param eventTemplateDB the EventTemplateDB to use for validation
 	 * @throws NoSuchEventException if the Event does not exist in the EventTemplateDB
 	 * @throws NoSuchAttributeException if an attribute does not exist in the EventTemplateDB
@@ -192,7 +191,7 @@ public class Event {
 	
 	/**
 	 * Sets the name of the Event
-	 * @param eventName the name of the event
+	 * @param name the name of the event
 	 * @exception NoSuchEventException if the event is validating and does not exist in the EventTemplateDB
 	 */
 	public synchronized void setEventName(String name) throws NoSuchEventException {
@@ -434,7 +433,7 @@ public class Event {
 	 * Set the object's attribute <tt>attributeName</tt> with the Object given
 	 * 
 	 * @param attributeName the name of the attribute to set
-	 * @param anObject the object to set the attribute with
+	 * @param attributeValue the object to set the attribute with
 	 * @exception NoSuchAttributeException if the attribute does not exist in this event
 	 * @exception NoSuchAttributeTypeException if there is an attribute with an undefined type
 	 */

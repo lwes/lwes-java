@@ -82,7 +82,7 @@ public class MulticastEventEmitter implements EventEmitter {
 	/**
 	 * Sets the multicast port for this emitter.
 	 * 
-	 * @param address the multicast port
+	 * @param port the multicast port
 	 * 
 	 */
 	public void setMulticastPort(int port) {
@@ -101,7 +101,7 @@ public class MulticastEventEmitter implements EventEmitter {
 	/**
 	 * Sets the network interface for this emitter.
 	 * 
-	 * @param address the network interface
+	 * @param iface the network interface
 	 * 
 	 */
 	public void setInterface(InetAddress iface) {

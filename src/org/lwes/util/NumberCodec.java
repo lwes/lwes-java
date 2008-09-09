@@ -169,7 +169,6 @@ public final class NumberCodec {
 	 * This version does not perform any null or range checks!
 	 * @param buffer the byte array from which the encoded form should be read
 	 * @param offset the position in the array to start reading the encoded form
-	 * @param length the maximum number of bytes that may be read
 	 */
 	public static final byte decodeByteUnchecked(byte[] buffer,int offset) {
 		return buffer[offset];
@@ -192,7 +191,6 @@ public final class NumberCodec {
 	 * This version does not perform any null or range checks!
 	 * @param buffer the byte array from which the encoded form should be read
 	 * @param offset the position in the array to start reading the encoded form
-	 * @param length the maximum number of bytes that may be read
 	 */
 	public static short decodeShortUnchecked(byte[] buffer,int offset) {
 		return 
@@ -217,7 +215,6 @@ public final class NumberCodec {
 	 * This version does not perform any null or range checks!
 	 * @param buffer the byte array from which the encoded form should be read
 	 * @param offset the position in the array to start reading the encoded form
-	 * @param length the maximum number of bytes that may be read
 	 */
 	public static int decodeIntUnchecked(byte[] buffer,int offset) {
 		return ((decodeShortUnchecked(buffer,offset) << SHORT_BITS) +
@@ -241,7 +238,6 @@ public final class NumberCodec {
 	 * This version does not perform any null or range checks!
 	 * @param buffer the byte array from which the encoded form should be read
 	 * @param offset the position in the array to start reading the encoded form
-	 * @param length the maximum number of bytes that may be read
 	 */
 	public static long decodeLongUnchecked(byte[] buffer,int offset) {
 		return ((((long) decodeIntUnchecked(buffer,offset)) << INT_BITS) +

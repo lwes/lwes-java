@@ -55,7 +55,7 @@ public class EventTemplateDB {
 	/**
 	 * Sets the Event Specification file for this system
 	 * 
-	 * @param esfFile
+	 * @param anEsfFile
 	 *            the ESF file for this system.
 	 */
 	public void setESFFile(File anEsfFile) {
@@ -277,7 +277,7 @@ public class EventTemplateDB {
 	 *            the name of an Event
 	 * @param anAttributeName
 	 *            the name of an attribute of Event to check
-	 * @reture true if the attribute exists as a member of event, false
+	 * @return true if the attribute exists as a member of event, false
 	 *         otherwise
 	 */
 	public boolean checkForAttribute(String anEventName, String anAttributeName) {

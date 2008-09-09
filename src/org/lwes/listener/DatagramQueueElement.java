@@ -67,7 +67,7 @@ public class DatagramQueueElement implements QueueElement {
 
 	/**
 	 * Determine equality with an object
-	 * @param the object to compare with
+	 * @param object the object to compare with
 	 * @return true if the object is equal to this one, false if not
 	 */
 	public boolean equals(Object object) {

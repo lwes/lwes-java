@@ -77,7 +77,7 @@ public class UnicastEventEmitter implements EventEmitter {
 	/**
 	 * Sets the destination port for this emitter.
 	 * 
-	 * @param address the multicast port
+	 * @param port the multicast port
 	 * 
 	 */
 	public void setPort(int port) {
