@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="lwes-java" basedir="." default="build">
-  <property name="version"   value="0.0.1"/>
+  <property name="version"   value="0.0.2"/>
   <property name="src.dir"   value="src"/>
   <property name="build.dir" value="build"/>
   <property name="docs.dir"  value="docs/api"/>
