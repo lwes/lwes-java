@@ -1,8 +1,14 @@
 package org.lwes.test;
 
-import java.net.*;
-import org.lwes.listener.*;
+import org.junit.Ignore;
+import org.lwes.listener.DatagramEventListener;
+import org.lwes.listener.EventHandler;
+import org.lwes.listener.EventPrintingHandler;
 
+import java.net.InetAddress;
+
+// Make sure junit ignores this file. It really should be located somewhere else.
+@Ignore
 public class TestListener {
 
 	/**
@@ -10,7 +16,7 @@ public class TestListener {
 	 */
 	public static void main(String[] args) {
 		 EventHandler myHandler = new EventPrintingHandler();
-		 
+
 		 try {
 			 InetAddress address = InetAddress.getByName("224.0.0.69");
 			 DatagramEventListener listener = new DatagramEventListener();

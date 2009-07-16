@@ -1,9 +1,13 @@
 package org.lwes.test;
 
-import java.net.*;
-import org.lwes.*;
-import org.lwes.emitter.*;
+import org.junit.Ignore;
+import org.lwes.Event;
+import org.lwes.emitter.MulticastEventEmitter;
 
+import java.net.InetAddress;
+
+// Make sure junit ignores this file. It really should be located somewhere else.
+@Ignore
 public class TestEmitter {
 	public static void main(String[] args) {
 		try {
