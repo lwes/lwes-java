@@ -6,7 +6,7 @@ import java.util.HashMap;
 /**
  * This is a little class to abstract the character encoding strings that Java
  * uses into classes which can be checked at compile time.
- * 
+ *
  * @author Kevin Scaldeferri
  */
 public abstract class CharacterEncoding {
@@ -106,24 +106,31 @@ public abstract class CharacterEncoding {
 	/**
 	 * This is a highly limited implementation at the moment, so don't expect
 	 * too much from it.
-	 */
+     * @param enc the String representation of the encoding.
+     * @return CharacterEncoding
+     * @throws java.io.UnsupportedEncodingException if the encoding doesnt exist.
+     */
 	public static CharacterEncoding getInstance(String enc)
 			throws UnsupportedEncodingException {
 		if (ENCODING_HASH.containsKey(enc.toUpperCase())) {
-			return (CharacterEncoding) ENCODING_HASH.get(enc.toUpperCase());
+			return ENCODING_HASH.get(enc.toUpperCase());
 		} else {
 			throw new UnsupportedEncodingException(enc);
 		}
 	}
 
-	public boolean equals(Object o) {
+    @Override
+    public int hashCode() {
+        return getEncodingString().hashCode();
+    }
+
+    public boolean equals(Object o) {
 		return (o instanceof CharacterEncoding)
-				&& getEncodingString().equals(
-						((CharacterEncoding) o).getEncodingString());
+				&& getEncodingString().equals(((CharacterEncoding) o).getEncodingString());
 	}
-	
+
 	static {
-		int i = 0;
+		int i;
 		for (i = 0; i < ASCII_ALIASES.length; i++) {
 			ENCODING_HASH.put(ASCII_ALIASES[i], ASCII);
 		}
@@ -142,5 +149,5 @@ public abstract class CharacterEncoding {
 		for (i = 0; i < EUC_KR_ALIASES.length; i++) {
 			ENCODING_HASH.put(EUC_KR_ALIASES[i], EUC_KR);
 		}
-	}	
+	}
 }
