@@ -4,19 +4,19 @@ import java.math.BigInteger;
 
 /**
  * This is a class to efficiently encode built-in primitive types into
- * byte arrays and decode them back.  While this can be done with a 
- * combination of ByteArrayOutputStreams, DataOutputStreams, 
+ * byte arrays and decode them back.  While this can be done with a
+ * combination of ByteArrayOutputStreams, DataOutputStreams,
  * ByteArrayInputStreams, DataInputStreams, merely creating those
  * objects is quite costly and it is difficult to make them persistent.
  * As such, this contains code lifted from the guts of the Data*Stream
  * classes.
  *
- * Also, this class defines functions to convert primitive types and 
+ * Also, this class defines functions to convert primitive types and
  * byte arrays to and from hexadecimal strings.
- * 
+ *
  * Hopefully, support for these operations will be added to
  * the standard Java API and this class can be retired.
- * 
+ *
  * @author  Preston Pfarner
  * @author  Michael P. Lum
  * @version     %I%, %G%
@@ -73,7 +73,7 @@ public final class NumberCodec {
 	 * @param offset the position in the array to start writing the encoding
 	 * @param length the maximum number of bytes that may be written
 	 */
-	public static void encodeByte(byte b, byte[] buffer,int offset,int length) 
+	public static void encodeByte(byte b, byte[] buffer,int offset,int length)
 	throws IllegalArgumentException {
 		checkRange(BYTE_BYTES, buffer, offset, length);
 		encodeByteUnchecked(b,buffer,offset);
@@ -160,7 +160,7 @@ public final class NumberCodec {
 		checkRange(LONG_BYTES, buffer, offset, length);
 		encodeLongUnchecked(l, buffer,offset);
 	}
-	
+
 	/* ***********************************************************************
 	 * DECODING FROM BYTE ARRAYS
 	 * ***********************************************************************/
@@ -193,7 +193,7 @@ public final class NumberCodec {
 	 * @param offset the position in the array to start reading the encoded form
 	 */
 	public static short decodeShortUnchecked(byte[] buffer,int offset) {
-		return 
+		return
 		(short) ((decodeByteUnchecked(buffer,offset) << BYTE_BITS) +
 				(decodeByteUnchecked(buffer,offset+BYTE_BYTES) & BYTE_MASK));
 	}
@@ -265,7 +265,7 @@ public final class NumberCodec {
 	 * @param length    the number of bytes that may be written
 	 * @exception IllegalArgumentException if the check fails
 	 */
-	public static void checkRange(int minLength, 
+	public static void checkRange(int minLength,
 			byte[] buffer, int offset, int length)
 	throws IllegalArgumentException {
 		if (buffer == null)
@@ -374,14 +374,14 @@ public final class NumberCodec {
 	public static String toHexString(long l) {
 		return toHexString(l,LONG_BYTES);
 	}
-	
+
 	/**
 	 * Output a BigInteger in unsigned hexadecimal form, padding with zeroes.
 	 * @param bi the BigInteger
 	 * @return a String representing the BigInteger.
 	 */
 	public static String toHexString(BigInteger bi) {
-		if(bi == null) return new String();
+		if(bi == null) return "";
 		return bi.toString(16); // 16-bit radix
 	}
 
@@ -478,7 +478,7 @@ public final class NumberCodec {
 	 * @param  length the number of bytes to output
 	 * @return the hex dump of the byte array
 	 */
-	public static String byteArrayToHexString(byte[] bytes, 
+	public static String byteArrayToHexString(byte[] bytes,
 			int offset, int length) {
 		StringBuffer buf = new StringBuffer(2*length);
 		for (int i=offset; i<offset+length; i++) {
@@ -491,9 +491,9 @@ public final class NumberCodec {
 	public static byte[] hexStringToByteArray(String aString)
 	{
 		int length = aString.length();
-		if ( (length % 2) != 0 ) 
-		{ 
-			System.err.println("ERROR: Odd Number, can't convert to byte array"); 
+		if ( (length % 2) != 0 )
+		{
+			System.err.println("ERROR: Odd Number, can't convert to byte array");
 			return null;
 		}
 		byte [] bytes = new byte[(length/2)];
@@ -502,8 +502,8 @@ public final class NumberCodec {
 			bytes[k] = (byte)0;
 		}
 		byte [] str_bytes = aString.getBytes();
-		if ( str_bytes.length != length ) 
-		{ 
+		if ( str_bytes.length != length )
+		{
 			System.err.println("ERROR: Mismatching lengths");
 			return null;
 		}
@@ -740,7 +740,7 @@ public final class NumberCodec {
 
 	/**
 	 * Return a String encoding the bytes in a byte array in hex form. <br>
-	 * This is equivalent to 
+	 * This is equivalent to
 	 * <code>byteArrayToHexString(bytes,0,bytes.length);</code>
 	 * @param  bytes the byte array
 	 * @return the hex dump of the byte array
@@ -766,7 +766,7 @@ public final class NumberCodec {
 			return Long.parseLong(str,hex);
 		} else {
 			/* Subtract <code>hex/2</code> from the first digit and flip the sign. */
-			final String posStr = (Character.forDigit(digit-hex/2, hex) + 
+			final String posStr = (Character.forDigit(digit-hex/2, hex) +
 					str.substring(1,str.length()));
 			final long offsetLong = Long.parseLong(posStr,hex);
 			return offsetLong+min;
