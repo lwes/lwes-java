@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="lwes-java" basedir="." default="build">
-  <property name="version"   value="0.0.2"/>
+  <property name="version"   value="0.0.3"/>
   <property name="src.dir"   value="src"/>
   <property name="build.dir" value="build"/>
   <property name="docs.dir"  value="docs/api"/>
@@ -38,7 +38,7 @@
   <target name="dist" depends="build,docs">
     <tar destfile="${dist.name}.tar">
       <tarfileset dir="${docs.dir}" prefix="${dist.name}/${docs.dir}">
-        <include name="**"/> 
+        <include name="**"/>
       </tarfileset>
       <tarfileset dir="." prefix="${dist.name}">
         <include name="${jar.file}"/>
