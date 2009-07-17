@@ -1,6 +1,6 @@
 package org.lwes;
 
-/** 
+/**
  * This class contains some global variables used in various parts of
  * the event system.
  * @author Anthony Molinaro
@@ -44,11 +44,11 @@ public class TypeID
 	public final static byte INT64_TOKEN  = (byte)0x07;
 	/**
 	 * The token used by <tt>uint64</tt> in the Event Serialization Protocol
-	 */ 
+	 */
 	public final static byte UINT64_TOKEN = (byte)0x08;
 	/**
 	 * The token used by <tt>boolean</tt> in the Event Serialization Protocol
-	 */  
+	 */
 	public final static byte BOOLEAN_TOKEN= (byte)0x09;
 
 	/**
@@ -86,45 +86,45 @@ public class TypeID
 	/**
 	 * The  string used by <tt>boolean</tt> in the Event Serialization Protocol
 	 */
-	public final static String BOOLEAN_STRING= "boolean";  
+	public final static String BOOLEAN_STRING= "boolean";
 
 	/**
 	 * This is a regular expression for parsing an integer number from a string
 	 */
-	public final static String SIGNED_INTEGER_REGEX = "/-?\\d+/i";
+	public final static String SIGNED_INTEGER_REGEX = "-?\\d+";
 	/**
-	 * This is a regular expression for parsing an unsigned integer number 
+	 * This is a regular expression for parsing an unsigned integer number
 	 * from a string
 	 */
-	public final static String UNSIGNED_INTEGER_REGEX = "/\\d+(?=\\s|$)/i";
-	/** 
+	public final static String UNSIGNED_INTEGER_REGEX = "\\d+(?=\\s|$)";
+	/**
 	 * This is a regular expression for matching a hexidecimal short from a string
 	 */
-	public final static String HEX_SHORT_REGEX = "/0x[0-9a-fA-F]{1,4}(?=\\s|$)/i";
+	public final static String HEX_SHORT_REGEX = "0x[0-9a-fA-F]{1,4}(?=\\s|$)";
 	/**
 	 * This is a regular expression for matching a hexidecimal int from a string
 	 */
-	public final static String HEX_INT_REGEX = "/0x[0-9a-fA-F]{5,8}(?=\\s|$)/i";
+	public final static String HEX_INT_REGEX = "0x[0-9a-fA-F]{5,8}(?=\\s|$)";
 	/**
 	 * This is a regular expression for matching a hexidecimal long from a string
 	 */
-	public final static String HEX_LONG_REGEX = "/0x[0-9a-fA-F]{9,16}(?=\\s|$)/i";
+	public final static String HEX_LONG_REGEX = "0x[0-9a-fA-F]{9,16}(?=\\s|$)";
 	/**
 	 * This is a regular expression for matching an ip address from a string
 	 */
-	public final static String IP_ADDR_REGEX 
-	= "/(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})(?=\\s|$)/i";
-	/**
+	public final static String IP_ADDR_REGEX
+	= "\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b";
+    /**
 	 * This is a regular expression for matching a boolean from a string
 	 */
-	public final static String BOOLEAN_REGEX = "/true|false/";
+	public final static String BOOLEAN_REGEX = "true|false";
 
 	/**
 	 * Simple conversion utility
 	 */
 	public static String byteIDToString(byte id)
 	{
-		switch(id) 
+		switch(id)
 		{
 		case UINT16_TOKEN :
 			return UINT16_STRING;
@@ -162,7 +162,7 @@ public class TypeID
 			return UINT32_TOKEN;
 		else if ( id.equals(INT32_STRING) )
 			return INT32_TOKEN;
-		else if ( id.equals(STRING_STRING) ) 
+		else if ( id.equals(STRING_STRING) )
 			return STRING_TOKEN;
 		else if ( id.equals(IPADDR_STRING) )
 			return IPADDR_TOKEN;
