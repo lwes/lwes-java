@@ -1,20 +1,21 @@
 package org.lwes.serializer;
 
-import java.util.regex.Pattern;
-
 import org.lwes.EventSystemException;
 import org.lwes.TypeID;
 import org.lwes.util.IPAddress;
 import org.lwes.util.Log;
 import org.lwes.util.NumberCodec;
 
+import java.util.regex.Pattern;
+
 /**
  * This contains low level type serialization used by the rest of the system.
- * 
+ *
  * @author Anthony Molinaro
  * @author Michael P. Lum
  */
 public class StringParser {
+
 	public static Object fromStringBYTE(String string)
 			throws EventSystemException {
 		Object toReturn = null;
@@ -25,7 +26,7 @@ public class StringParser {
 	public static Object fromStringBOOLEAN(String string)
 			throws EventSystemException {
 		Log.trace("Parsing boolean");
-		Object toReturn = (Object) Boolean.valueOf(string);
+		Object toReturn = Boolean.valueOf(string);
 		Log.trace("Got '" + toReturn + "'");
 		return toReturn;
 	}
@@ -42,16 +43,14 @@ public class StringParser {
 			/* pad with zeros since NumberCodec.decodeInt expects a length of 8 */
 			string = "0000" + string;
 			byte[] bytes = NumberCodec.hexStringToByteArray(string);
-			int aTmpInt = NumberCodec.decodeInt(bytes, 0, bytes.length);
-
-			toReturn = new Integer(aTmpInt);
+			toReturn = NumberCodec.decodeInt(bytes, 0, bytes.length);
 		} else {
 			try {
 				toReturn = Integer.valueOf(string);
 			} catch (NumberFormatException nfe) {
 				throw new EventSystemException(nfe);
 			}
-			int intValue = ((Integer) toReturn).intValue();
+			int intValue = (Integer) toReturn;
 			if (intValue < 0 || intValue > 65535) {
 				throw new EventSystemException("Unsigned Short must be in the "
 						+ "range [0-65535] ");
@@ -65,16 +64,14 @@ public class StringParser {
 	public static Object fromStringINT16(String string)
 			throws EventSystemException {
 		Object toReturn = null;
-		
+
 		Log.trace("Parsing int16");
 		if (Pattern.matches(TypeID.HEX_SHORT_REGEX, string)) {
 			if (string.startsWith("0x"))
 				string = string.substring(2);
 
 			byte[] bytes = NumberCodec.hexStringToByteArray(string);
-			short aTmpInt = NumberCodec.decodeShort(bytes, 0, bytes.length);
-
-			toReturn = new Short(aTmpInt);
+			toReturn = NumberCodec.decodeShort(bytes, 0, bytes.length);
 		} else {
 			try {
 				toReturn = Short.valueOf(string);
@@ -82,7 +79,7 @@ public class StringParser {
 				throw new EventSystemException("Probably not a short, "
 						+ "got exception " + nfe);
 			}
-			short shortValue = ((Short) toReturn).shortValue();
+			short shortValue = (Short) toReturn;
 			if (shortValue < -32768 || shortValue > 32767) {
 				throw new EventSystemException("Signed Short must be in the "
 						+ "range [-32768 - 32767] ");
@@ -105,16 +102,14 @@ public class StringParser {
 			/* pad with zeros since NumberCodec.decodeLong expects a length of 8 */
 			string = "00000000" + string;
 			byte[] bytes = NumberCodec.hexStringToByteArray(string);
-			long aTmpLong = NumberCodec.decodeLong(bytes, 0, bytes.length);
-
-			toReturn = new Long(aTmpLong);
+			toReturn = NumberCodec.decodeLong(bytes, 0, bytes.length);
 		} else {
 			try {
 				toReturn = Long.valueOf(string);
 			} catch (NumberFormatException nfe) {
 				throw new EventSystemException(nfe);
 			}
-			long longValue = ((Long) toReturn).longValue();
+			long longValue = (Long) toReturn;
 			if (longValue < 0
 					|| longValue > ((long) Integer.MAX_VALUE - ((long) Integer.MIN_VALUE))) {
 				throw new EventSystemException("Unsigned Int must be in the "
@@ -124,7 +119,7 @@ public class StringParser {
 			}
 		}
 		Log.trace("received '" + toReturn + "'");
-		
+
 		return toReturn;
 	}
 
@@ -138,20 +133,12 @@ public class StringParser {
 				string = string.substring(2);
 
 			byte[] bytes = NumberCodec.hexStringToByteArray(string);
-			int aTmpInt = NumberCodec.decodeInt(bytes, 0, bytes.length);
-
-			toReturn = new Integer(aTmpInt);
+			toReturn = NumberCodec.decodeInt(bytes, 0, bytes.length);
 		} else {
 			try {
 				toReturn = Integer.valueOf(string);
 			} catch (NumberFormatException nfe) {
 				throw new EventSystemException(nfe);
-			}
-			int intValue = ((Integer) toReturn).intValue();
-			if (intValue < Integer.MIN_VALUE || intValue > Integer.MAX_VALUE) {
-				throw new EventSystemException("Signed Short must be in the "
-						+ "range [" + Integer.MIN_VALUE + " - "
-						+ +Integer.MAX_VALUE + "]");
 			}
 		}
 		Log.trace("received '" + toReturn + "'");
@@ -169,9 +156,7 @@ public class StringParser {
 				string = string.substring(2);
 
 			byte[] bytes = NumberCodec.hexStringToByteArray(string);
-			long aTmpLong = NumberCodec.decodeLong(bytes, 0, bytes.length);
-
-			toReturn = new Long(aTmpLong);
+			toReturn = NumberCodec.decodeLong(bytes, 0, bytes.length);
 		} else {
 			try {
 				toReturn = Long.valueOf(string);
@@ -180,23 +165,21 @@ public class StringParser {
 			}
 		}
 		Log.trace("received '" + toReturn + "'");
-		
+
 		return toReturn;
 	}
 
 	public static Object fromStringINT64(String string)
 			throws EventSystemException {
 		Object toReturn = null;
-		
+
 		Log.trace("Parsing int64");
 		if (Pattern.matches(TypeID.HEX_LONG_REGEX, string)) {
 			if (string.startsWith("0x"))
 				string = string.substring(2);
 
 			byte[] bytes = NumberCodec.hexStringToByteArray(string);
-			long aTmpLong = NumberCodec.decodeLong(bytes, 0, bytes.length);
-
-			toReturn = new Long(aTmpLong);
+			toReturn = NumberCodec.decodeLong(bytes, 0, bytes.length);
 		} else {
 			try {
 				toReturn = Long.valueOf(string);
@@ -211,9 +194,9 @@ public class StringParser {
 
 	public static Object fromStringSTRING(String string)
 			throws EventSystemException {
-		
+
 		Log.trace("Parsing string '" + string + "'");
-		return (Object) (string);
+		return string;
 	}
 
 	public static Object fromStringIPADDR(String string)
