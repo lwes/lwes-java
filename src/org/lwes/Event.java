@@ -827,17 +827,19 @@ public class Event {
 		state.reset();
 		setEventName(Deserializer.deserializeEVENTWORD(state, bytes));
 		long num = Deserializer.deserializeUINT16(state, bytes);
-		Log.trace("Event name = " + getEventName());
-		Log.trace("Number of attribute: " + num);
-
+        if (Log.isLogTrace()) {
+            Log.trace("Event name = " + getEventName());
+            Log.trace("Number of attribute: " + num);
+        }
 		for(int i=0; i<num; ++i) {
 			String attribute = Deserializer.deserializeATTRIBUTEWORD(state, bytes);
 
 			byte type = Deserializer.deserializeBYTE(state, bytes);
-			Log.trace("Attribute: " + attribute);
-			Log.trace("Type: " + TypeID.byteIDToString(type));
-			Log.trace("State: " + state);
-
+            if (Log.isLogTrace()) {
+                Log.trace("Attribute: " + attribute);
+                Log.trace("Type: " + TypeID.byteIDToString(type));
+                Log.trace("State: " + state);
+            }
 			if(attribute != null) {
 				if(i == 0 && attribute.equals(ENCODING)) {
 					if(type == TypeID.INT16_TOKEN) {
