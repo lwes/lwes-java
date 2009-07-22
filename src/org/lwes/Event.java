@@ -488,7 +488,7 @@ public class Event {
 	 * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
 	 */
 	public void setBoolean(String attributeName, boolean aBool) throws NoSuchAttributeException, NoSuchAttributeTypeException {
-		setBoolean(attributeName, new Boolean(aBool));
+		setBoolean(attributeName, Boolean.valueOf(aBool));
 	}
 
 	/**
@@ -513,7 +513,7 @@ public class Event {
 	 * @exception NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
 	 */
 	public void setUInt16(String attributeName, int aNumber) throws NoSuchAttributeException, NoSuchAttributeTypeException {
-		setUInt16(attributeName, new Integer(aNumber));
+		setUInt16(attributeName, Integer.valueOf(aNumber));
 	}
 
 	/**
@@ -537,7 +537,7 @@ public class Event {
 	 * @exception NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
 	 */
 	public void setInt16(String attributeName, short aNumber) throws NoSuchAttributeException, NoSuchAttributeTypeException {
-		setInt16(attributeName, new Short(aNumber));
+		setInt16(attributeName, Short.valueOf(aNumber));
 	}
 
 	/**
@@ -562,7 +562,7 @@ public class Event {
 	 * @exception NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
 	 */
 	public void setUInt32(String attributeName, long aNumber) throws NoSuchAttributeException, NoSuchAttributeTypeException {
-		setUInt32(attributeName, new Long(aNumber));
+		setUInt32(attributeName, Long.valueOf(aNumber));
 	}
 
 	/**
@@ -586,7 +586,7 @@ public class Event {
 	 * @exception NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
 	 */
 	public void setInt32(String attributeName, int aNumber) throws NoSuchAttributeException, NoSuchAttributeTypeException {
-		setInt32(attributeName, new Integer(aNumber));
+		setInt32(attributeName, Integer.valueOf(aNumber));
 	}
 
 	/**
@@ -646,7 +646,7 @@ public class Event {
 	 * @exception NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
 	 */
 	public void setInt64(String attributeName, long aNumber) throws NoSuchAttributeException, NoSuchAttributeTypeException {
-		setInt64(attributeName, new Long(aNumber));
+		setInt64(attributeName, Long.valueOf(aNumber));
 	}
 
 	/**
@@ -737,28 +737,29 @@ public class Event {
 		/*
 		 * Set the encoding attributes in the event
 		 */
-		BaseType encodingBase = (BaseType) attributes.get(ENCODING);
-		if(encodingBase != null) {
-			Object encodingObj = encodingBase.getTypeObject();
-			byte encodingType = encodingBase.getTypeToken();
-			if(encodingObj != null) {
-				if(encodingType == TypeID.INT16_TOKEN) {
-					encoding = ((Short) encodingObj).shortValue();
-					Log.trace("Character encoding: " + encoding);
-					offset += Serializer.serializeATTRIBUTEWORD(ENCODING, bytes, offset);
-					offset += Serializer.serializeBYTE(encodingType, bytes, offset);
-					offset += Serializer.serializeUINT16(encoding, bytes, offset);
-				}
-			}
-		} else {
-			Log.warning("Character encoding null in event " + name);
-		}
-
 		if(attributes != null) {
+            BaseType encodingBase = attributes.get(ENCODING);
+            if (encodingBase != null) {
+                Object encodingObj = encodingBase.getTypeObject();
+                byte encodingType = encodingBase.getTypeToken();
+                if (encodingObj != null) {
+                    if (encodingType == TypeID.INT16_TOKEN) {
+                        encoding = (Short) encodingObj;
+                        Log.trace("Character encoding: " + encoding);
+                        offset += Serializer.serializeATTRIBUTEWORD(ENCODING, bytes, offset);
+                        offset += Serializer.serializeBYTE(encodingType, bytes, offset);
+                        offset += Serializer.serializeUINT16(encoding, bytes, offset);
+                    }
+                }
+            }
+            else {
+                Log.warning("Character encoding null in event " + name);
+            }
+
 			Enumeration<String> e = attributes.keys();
 			while(e.hasMoreElements()) {
-				String key = (String) e.nextElement();
-				if(key == ENCODING) {
+				String key = e.nextElement();
+				if(key.equals(ENCODING)) {
 					continue;
 				}
 
@@ -777,25 +778,25 @@ public class Event {
 
 				switch(typeToken) {
 				case TypeID.BOOLEAN_TOKEN:
-					offset += Serializer.serializeBOOLEAN(((Boolean) data).booleanValue(), bytes, offset);
+					offset += Serializer.serializeBOOLEAN((Boolean) data, bytes, offset);
 					break;
 				case TypeID.UINT16_TOKEN:
-					offset += Serializer.serializeUINT16(((Integer) data).intValue(), bytes, offset);
+					offset += Serializer.serializeUINT16((Integer) data, bytes, offset);
 					break;
 				case TypeID.INT16_TOKEN:
-					offset += Serializer.serializeINT16(((Short) data).shortValue(), bytes, offset);
+					offset += Serializer.serializeINT16((Short) data, bytes, offset);
 					break;
 				case TypeID.UINT32_TOKEN:
-					offset += Serializer.serializeUINT32(((Long) data).longValue(), bytes, offset);
+					offset += Serializer.serializeUINT32((Long) data, bytes, offset);
 					break;
 				case TypeID.INT32_TOKEN:
-					offset += Serializer.serializeINT32(((Integer) data).intValue(), bytes, offset);
+					offset += Serializer.serializeINT32((Integer) data, bytes, offset);
 					break;
 				case TypeID.UINT64_TOKEN:
 					offset += Serializer.serializeUINT64((BigInteger) data, bytes, offset);
 					break;
 				case TypeID.INT64_TOKEN:
-					offset += Serializer.serializeINT64(((Long)data).longValue(), bytes, offset);
+					offset += Serializer.serializeINT64((Long) data, bytes, offset);
 					break;
 				case TypeID.STRING_TOKEN:
 					offset += Serializer.serializeSTRING(((String) data), bytes, offset, encoding);
@@ -934,7 +935,7 @@ public class Event {
 			Arrays.sort(keys);
 
 			for(i = 0; i < attributes.size(); ++i) {
-				BaseType value = ((BaseType) attributes.get(keys[i]));
+				BaseType value = attributes.get(keys[i]);
 				if( isValidating() && getEventTemplateDB() != null) {
 					if( getEventTemplateDB().checkTypeForAttribute(name, keys[i], TypeID.UINT64_STRING) ) {
 						try {
@@ -960,7 +961,12 @@ public class Event {
 		return sb.toString();
 	}
 
-	public boolean equals(Object o) {
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    public boolean equals(Object o) {
 		if(o == null) return false;
 		if(getClass().getName().equals(o.getClass().getName())) {
 			return toString().equals(o.toString());
