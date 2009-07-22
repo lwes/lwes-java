@@ -35,7 +35,7 @@ public class Deserializer
 	 *                in the byte array <tt>bytes</tt>
 	 * @return a boolean.
 	 */
-	public static boolean deserializeBOOLEAN(DeserializerState myState, 
+	public static boolean deserializeBOOLEAN(DeserializerState myState,
 			byte[] bytes)
 	{
 		byte aBooleanAsByte = Deserializer.deserializeBYTE(myState,bytes);
@@ -57,7 +57,7 @@ public class Deserializer
 	public static short deserializeINT16(DeserializerState myState, byte[] bytes)
 	{
 		/* deserialize in net order (i.e. Big Endian) */
-		short aShort = 
+		short aShort =
 			(short)( (((short)bytes[myState.currentIndex()] << 8) & 0xff00)
 					|(((short)bytes[myState.currentIndex()+1]) &0x00ff) );
 		myState.incr(2);
@@ -92,7 +92,7 @@ public class Deserializer
 	 */
 	public static int deserializeINT32(DeserializerState myState, byte[] bytes)
 	{
-		int anInt = 
+		int anInt =
 			((int)( ( ((int)bytes[myState.currentIndex()  ] << 24) & 0xff000000 )
 					| ( ((int)bytes[myState.currentIndex()+1] << 16) & 0x00ff0000 )
 					| ( ((int)bytes[myState.currentIndex()+2] << 8 ) & 0x0000ff00 )
@@ -114,7 +114,7 @@ public class Deserializer
 	 */
 	public static long deserializeUINT32(DeserializerState myState, byte[] bytes)
 	{
-		long anUnsignedInt = 
+		long anUnsignedInt =
 			((long)
 					( ( ((long)bytes[myState.currentIndex()  ] << 24) & 0x00000000ff000000L )
 							| ( ((long)bytes[myState.currentIndex()+1] << 16) & 0x0000000000ff0000L )
@@ -157,7 +157,7 @@ public class Deserializer
 		return aLong;
 	}
 
-	public static String deserializeUINT64toHexString(DeserializerState myState, 
+	public static String deserializeUINT64toHexString(DeserializerState myState,
 			byte[] bytes)
 	{
 		String aString =
@@ -187,7 +187,7 @@ public class Deserializer
 	public static String deserializeIPADDRtoHexString(DeserializerState myState,
 			byte[] bytes)
 	{
-		String aString = 
+		String aString =
 			NumberCodec.byteArrayToHexString(bytes,myState.currentIndex(),4);
 		myState.incr(4);
 		return aString;
@@ -206,7 +206,7 @@ public class Deserializer
 		return deserializeSTRING(myState, bytes, Event.DEFAULT_ENCODING);
 	}
 
-	public static String deserializeSTRING(DeserializerState myState, 
+	public static String deserializeSTRING(DeserializerState myState,
 			byte[] bytes, short encoding)
 	{
 		String aString = null;
@@ -214,21 +214,25 @@ public class Deserializer
 		try {
 			len = deserializeUINT16(myState,bytes);
 
-			Log.debug("Datagram Bytes: " + 
-					NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-			Log.debug("String Length: " + len);
-			Log.debug("State: " + myState);
+            if (Log.isLogDebug()) {
+                Log.debug("Datagram Bytes: " +
+                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+                Log.debug("String Length: " + len);
+                Log.debug("State: " + myState);
+            }
 
 			aString = EncodedString.bytesToString(bytes,myState.currentIndex(),len,
 					Event.ENCODING_STRINGS[encoding]);
 			myState.incr(len);
 		} catch ( ArrayIndexOutOfBoundsException aioobe ) {
-			Log.info("Exception: " + aioobe.toString());
-			Log.info("Datagram Bytes: " +
-					NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-			Log.info("String Length: " + len);
-			Log.info("State: " + myState);
-		}
+            if (Log.isLogInfo()) {
+                Log.info("Exception: " + aioobe.toString());
+                Log.info("Datagram Bytes: " +
+                         NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+                Log.info("String Length: " + len);
+                Log.info("State: " + myState);
+            }
+        }
 		return aString;
 
 	}
@@ -255,20 +259,24 @@ public class Deserializer
 		try {
 			len = (int)deserializeBYTE(myState,bytes);
 
-			Log.debug("Datagram Bytes: " +
-					NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-			Log.debug("String Length: " + len);
-			Log.debug("State: " + myState);
+            if (Log.isLogDebug()) {
+                Log.debug("Datagram Bytes: " +
+                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+                Log.debug("String Length: " + len);
+                Log.debug("State: " + myState);
+            }
 
 			aString = EncodedString.bytesToString(bytes,myState.currentIndex(),len,
 					Event.ENCODING_STRINGS[encoding]);
 			myState.incr(len);
 		} catch ( ArrayIndexOutOfBoundsException aioobe ) {
-			Log.info("Exception: " + aioobe.toString());
-			Log.info("Datagram Bytes: " +
-				NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-			Log.info("String Length: " + len);
-			Log.info("State: " + myState);
+            if (Log.isLogInfo()) {
+                Log.info("Exception: " + aioobe.toString());
+                Log.info("Datagram Bytes: " +
+                         NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+                Log.info("String Length: " + len);
+                Log.info("State: " + myState);
+            }
 		}
 		return aString;
 	}
@@ -281,7 +289,7 @@ public class Deserializer
 	 *                in the byte array <tt>bytes</tt>
 	 * @return a String.
 	 */
-	public static String deserializeATTRIBUTEWORD(DeserializerState myState, 
+	public static String deserializeATTRIBUTEWORD(DeserializerState myState,
 			byte[] bytes)
 	{
 		return deserializeEVENTWORD(myState,bytes, Event.DEFAULT_ENCODING);
