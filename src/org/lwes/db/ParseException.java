@@ -112,33 +112,36 @@ public class ParseException extends Exception {
       }
       expected.append(eol).append("    ");
     }
-    String retval = "Encountered \"";
+    StringBuffer retval = new StringBuffer("Encountered \"");
     Token tok = currentToken.next;
     for (int i = 0; i < maxSize; i++) {
-      if (i != 0) retval += " ";
+      if (i != 0) retval.append(" ");
       if (tok.kind == 0) {
-        retval += tokenImage[0];
+        retval.append(tokenImage[0]);
         break;
       }
-      retval += add_escapes(tok.image);
-      tok = tok.next; 
+      retval.append(add_escapes(tok.image));
+      tok = tok.next;
     }
-    retval += "\" at line " + currentToken.next.beginLine + ", column " + currentToken.next.beginColumn;
-    retval += "." + eol;
+      retval.append("\" at line ")
+              .append(currentToken.next.beginLine)
+              .append(", column ")
+              .append(currentToken.next.beginColumn)
+              .append(".").append(eol);
     if (expectedTokenSequences.length == 1) {
-      retval += "Was expecting:" + eol + "    ";
+      retval.append("Was expecting:").append(eol).append("    ");
     } else {
-      retval += "Was expecting one of:" + eol + "    ";
+      retval.append("Was expecting one of:").append(eol).append("    ");
     }
-    retval += expected.toString();
-    return retval;
+    retval.append(expected.toString());
+    return retval.toString();
   }
 
   /**
    * The end of line string for this machine.
    */
   protected String eol = System.getProperty("line.separator", "\n");
- 
+
   /**
    * Used to convert raw characters to their escaped version
    * when these raw version cannot be used as part of an ASCII
@@ -179,7 +182,7 @@ public class ParseException extends Exception {
            default:
               if ((ch = str.charAt(i)) < 0x20 || ch > 0x7e) {
                  String s = "0000" + Integer.toString(ch, 16);
-                 retval.append("\\u" + s.substring(s.length() - 4, s.length()));
+                  retval.append("\\u").append(s.substring(s.length() - 4, s.length()));
               } else {
                  retval.append(ch);
               }
