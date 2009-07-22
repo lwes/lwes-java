@@ -5,7 +5,7 @@ import java.net.DatagramPacket;
 /**
  * Element objects to use in the threaded queueing system.  This encapsulates
  * datagrams and timestamps.
- * 
+ *
  * @author Michael P. Lum
  *
  */
@@ -21,7 +21,7 @@ public class DatagramQueueElement implements QueueElement {
 
 	/**
 	 * Gets the datagram packet payload.
-	 * 
+	 *
 	 * @return the DatagramPacket
 	 */
 	public DatagramPacket getPacket() {
@@ -30,7 +30,7 @@ public class DatagramQueueElement implements QueueElement {
 
 	/**
 	 * Sets the datagram packet payload
-	 * 
+	 *
 	 * @param packet
 	 *            the DatagramPacket
 	 */
@@ -40,7 +40,7 @@ public class DatagramQueueElement implements QueueElement {
 
 	/**
 	 * Gets the timestamp associated with this packet
-	 * 
+	 *
 	 * @return the timestamp
 	 */
 	public long getTimestamp() {
@@ -49,7 +49,7 @@ public class DatagramQueueElement implements QueueElement {
 
 	/**
 	 * Sets the timestamp associated with this packet
-	 * 
+	 *
 	 * @param timestamp
 	 *            the timestamp
 	 */
@@ -72,14 +72,21 @@ public class DatagramQueueElement implements QueueElement {
 	 */
 	public boolean equals(Object object) {
 		if(object == null) return false;
-		
+
 		if (object instanceof DatagramQueueElement)
 			return equals((DatagramQueueElement) object);
 
 		return false;
 	}
 
-	/**
+    @Override
+    public int hashCode() {
+        int result = packet != null ? packet.hashCode() : 0;
+        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+        return result;
+    }
+
+    /**
 	 * Determine equality with another DatagramQueueElement
 	 * @param element the object to compare with
 	 * @return true if the object is equal to this one, false if not

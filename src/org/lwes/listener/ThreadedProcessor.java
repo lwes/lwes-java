@@ -1,17 +1,17 @@
 package org.lwes.listener;
 
+import org.lwes.EventSystemException;
+import org.lwes.util.Log;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.lwes.EventSystemException;
-import org.lwes.util.Log;
 
 /**
  * A threaded, queueing event processor. This class requires setting a class to
  * enqueue events (for example, a network listener) and a class to dequeue
  * events (for example, writing to disk).
- * 
+ *
  * @author Anthony Molinaro
  * @author Michael P. Lum
  */
@@ -42,10 +42,10 @@ public class ThreadedProcessor implements Runnable {
 
 	/* the priority for the enqueuing thread */
 	int enqueuerPriority = Thread.NORM_PRIORITY;
-	
+
 	/* the priority for the dequeuing thread */
 	int dequeuerPriority = Thread.NORM_PRIORITY;
-	
+
 	/* the priority for the watcher thread */
 	int watcherPriority = Thread.MIN_PRIORITY;
 
@@ -54,7 +54,7 @@ public class ThreadedProcessor implements Runnable {
 	 */
 	public ThreadedProcessor() {
 	}
-	
+
 	/**
 	 * Gets the enqueuer being used by this event processor
 	 * @return the ThreadedEnqueuer being used by this processor
@@ -62,7 +62,7 @@ public class ThreadedProcessor implements Runnable {
 	public ThreadedEnqueuer getEnqueuer() {
 		return this.enqueuer;
 	}
-	
+
 	/**
 	 * Sets the enqueuer to use for this event processor.
 	 * @param enqueuer the ThreadedEnqueuer to use
@@ -70,7 +70,7 @@ public class ThreadedProcessor implements Runnable {
 	public void setEnqueuer(ThreadedEnqueuer enqueuer) {
 		this.enqueuer = enqueuer;
 	}
-	
+
 	/**
 	 * Gets the dequeuer being used by this event processor
 	 * @return the ThreadedDequeuer being used by this processor
@@ -78,7 +78,7 @@ public class ThreadedProcessor implements Runnable {
 	public ThreadedDequeuer getDequeuer() {
 		return this.dequeuer;
 	}
-	
+
 	/**
 	 * Sets the dequeuer to use for this event processor.
 	 * @param dequeuer the ThreadedDequeuer to use
@@ -94,7 +94,7 @@ public class ThreadedProcessor implements Runnable {
 	public synchronized List<QueueElement> getQueue() {
 		return this.queue;
 	}
-	
+
 	/**
 	 * Sets the List being used as the queue.
 	 * Warning: this list needs to be thread-synchronized!
@@ -103,7 +103,7 @@ public class ThreadedProcessor implements Runnable {
 	public synchronized void setQueue(List<QueueElement> queue) {
 		this.queue = queue;
 	}
-	
+
 	/**
 	 * Returns the thread priority of the enqueuer.
 	 * @return the thread priority
@@ -111,7 +111,7 @@ public class ThreadedProcessor implements Runnable {
 	public int getEnqueuerPriority() {
 		return this.enqueuerPriority;
 	}
-	
+
 	/**
 	 * Sets the thread priority of the enqueuer.
 	 * @param priority the thread priority to use
@@ -119,7 +119,7 @@ public class ThreadedProcessor implements Runnable {
 	public void setEnqueuerPriority(int priority) {
 		this.enqueuerPriority = priority;
 	}
-	
+
 	/**
 	 * Returns the thread priority of the dequeuer.
 	 * @return the thread priority
@@ -127,7 +127,7 @@ public class ThreadedProcessor implements Runnable {
 	public int getDequeuerPriority() {
 		return this.dequeuerPriority;
 	}
-	
+
 	/**
 	 * Sets the thread priority of the dequeuer
 	 * @param priority the thread priority to use
@@ -135,11 +135,11 @@ public class ThreadedProcessor implements Runnable {
 	public void setDequeuerPriority(int priority) {
 		this.dequeuerPriority = priority;
 	}
-	
+
 	/**
 	 * Initializes the processor to handle events. Starts the enqueuer and
 	 * dequeuer threads.
-	 * 
+	 *
 	 * @throws EventSystemException
 	 *             if there is a problem setting up the processor
 	 */
@@ -201,7 +201,7 @@ public class ThreadedProcessor implements Runnable {
 		running = true;
 		while (running) {
 			try {
-				Thread.sleep(seconds * 1000);
+				Thread.sleep(seconds * 1000L);
 			} catch (InterruptedException ie) {
 				Log.warning("ThreadedProcessor interrupted", ie);
 			}
