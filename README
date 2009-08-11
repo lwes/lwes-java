@@ -1,1 +1,6 @@
 This is the Java API for the Light Weight Event System.
+
+To increase the read buffer size on the multicast socket, set the system property
+MulticastReceiveBufferSize. For example,
+
+java -DMulticastReceiveBufferSize=8388608 ...
