@@ -5,7 +5,7 @@
     <groupId>org.lwes</groupId>
     <artifactId>lwes-java</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.3</version>
     <name>lwes-java</name>
     <url>http://maven.apache.org</url>
     <dependencies>
