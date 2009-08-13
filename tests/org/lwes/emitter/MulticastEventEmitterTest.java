@@ -38,7 +38,6 @@ public class MulticastEventEmitterTest {
 
         List<Event> events = emitter.getEvents();
         assertNotNull(events);
-        System.out.println(events);
 
         for (int i = 0; i < events.size(); i++) {
             Event e = events.get(i);
