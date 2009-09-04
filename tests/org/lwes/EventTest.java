@@ -6,6 +6,7 @@ package org.lwes;
 import org.apache.commons.codec.binary.Base64;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 import org.junit.Test;
 import org.lwes.db.EventTemplateDB;
 
@@ -17,6 +18,7 @@ public class EventTest {
 
     private EventTemplateDB eventTemplate;
 
+    @Before
     public void setUp() {
         eventTemplate = new EventTemplateDB();
     }
@@ -28,9 +30,10 @@ public class EventTest {
         evt.setInt32("attr_i", 1);
         byte[] bytes = evt.serialize();
         String str = new String(bytes);
-        System.out.println("as string: "+str);
+        //System.out.println("as string: "+str);
         byte[] encoded = Base64.encodeBase64(bytes);
-        System.out.println(new String(encoded));
+        //System.out.println(new String(encoded));
+        // TODO this test not finished yet.
     }
 
     @Test
