@@ -12,8 +12,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -551,8 +551,14 @@ public class EventTemplateDB {
 						TypeID.BOOLEAN_TOKEN, true));
 	}
 
+    public Map<String, BaseType> getMetaFields() {
+        Map<String, BaseType> m = new TreeMap<String, BaseType>();
+        m.putAll(reservedWords);
+        return m;
+    }
+
     public Map<String,Map<String,BaseType>> getEvents() {
-        Map<String,Map<String,BaseType>> cp = new HashMap<String,Map<String,BaseType>>();
+        Map<String,Map<String,BaseType>> cp = new TreeMap<String,Map<String,BaseType>>();
         cp.putAll(events);
         return cp;
     }
