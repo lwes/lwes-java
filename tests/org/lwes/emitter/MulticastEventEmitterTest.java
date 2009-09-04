@@ -7,9 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.lwes.Event;
-import org.lwes.NoSuchAttributeException;
-import org.lwes.NoSuchAttributeTypeException;
-import org.lwes.NoSuchEventException;
+import org.lwes.EventSystemException;
 import org.lwes.db.EventTemplateDB;
 
 import java.net.InetAddress;
@@ -62,9 +60,7 @@ public class MulticastEventEmitterTest {
     }
 
     public Event createTestEvent()
-            throws NoSuchAttributeException,
-                   NoSuchAttributeTypeException,
-                   NoSuchEventException,
+            throws EventSystemException,
                    UnknownHostException {
 
         EventTemplateDB evtDb = new EventTemplateDB();
