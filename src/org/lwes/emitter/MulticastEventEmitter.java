@@ -183,7 +183,6 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
      * Initializes the emitter.
      */
     public void initialize() throws IOException {
-        super.initialize();
         socket = new MulticastSocket();
 
         if (iface != null) {
@@ -191,6 +190,7 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
         }
 
         socket.setTimeToLive(ttl);
+        super.initialize();
     }
 
     /**
@@ -241,7 +241,7 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
         synchronized (lock) {
             emit(msg);
             try {
-                collectStatistics();                
+                collectStatistics();
             }
             catch (EventSystemException e) {
                 Log.error(e.getMessage(), e);
