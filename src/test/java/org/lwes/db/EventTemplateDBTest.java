@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class EventTemplateDBTest {
 
-    private static final String ESF = "tests/org/lwes/db/EventTemplateDBTest.esf";
+    private static final String ESF = "src/test/java/org/lwes/db/EventTemplateDBTest.esf";
     private static final String TEST_EVENT = "TestEvent";
 
     @Test
