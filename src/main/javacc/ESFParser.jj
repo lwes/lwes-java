@@ -109,18 +109,18 @@ void attribute() :
   String anAttribute;
 }
 {
-  aType=type() anAttribute=attributeName() ";" { 
-      if ( !( aType.equals("uint16") 
-            | aType.equals("int16")
-            | aType.equals("uint32")
-            | aType.equals("int32")
-            | aType.equals("string")
-            | aType.equals("ip_addr")
-            | aType.equals("int64")
-            | aType.equals("uint64")
-            | aType.equals("boolean")
+  aType=type() anAttribute=attributeName() ";" {
+      if ( !( aType.equals("uint16")  ||
+              aType.equals("int16")   ||
+              aType.equals("uint32")  ||
+              aType.equals("int32")   ||
+              aType.equals("string")  ||
+              aType.equals("ip_addr") ||
+              aType.equals("int64")   ||
+              aType.equals("uint64")  ||
+              aType.equals("boolean")
             )
-         ) 
+         )
        {
          throw new ParseException("No such type '"+aType+"'");
        }
@@ -129,13 +129,13 @@ void attribute() :
       if ( !getEventTemplateDB().addEventAttribute(evt,anAttribute,aType))
       {
         throw new ParseException("Problem adding attribute "+evt+"("
-                                 +aType+","+anAttribute+")"); 
+                                 +aType+","+anAttribute+")");
       }
    }
 }
 
 String type() :
-{ 
+{
   Token t;
 }
 {
