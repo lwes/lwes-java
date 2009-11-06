@@ -6,10 +6,12 @@ package org.lwes;
 import org.apache.commons.codec.binary.Base64;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.lwes.db.EventTemplateDB;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,6 +23,74 @@ public class EventTest {
     @Before
     public void setUp() {
         eventTemplate = new EventTemplateDB();
+        eventTemplate.setESFFile(new File("src/test/java/org/lwes/EventTest.esf"));
+        eventTemplate.initialize();
+    }
+
+    @Test
+    public void testUnsignedTypesValidate() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        try {
+            evt.setUInt16("SiteID", 0);
+            evt.validate();
+        }
+        catch (EventSystemException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testValidateEventName() throws EventSystemException {
+        boolean exceptionThrown = false;
+        Event evt = new Event("Test2", false, eventTemplate);
+        try {
+            evt.validate();
+        }
+        catch (NoSuchEventException e) {
+            exceptionThrown = true;
+        }
+        assertTrue("No exception for invalid event", exceptionThrown);
+    }
+
+    @Test
+    public void testValidateField() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        try {
+            evt.setString("field1", "avalue");
+            evt.validate();
+        }
+        catch (EventSystemException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testValidateBadTypeField() throws EventSystemException {
+        boolean exceptionThrown = false;
+        Event evt = new Event("Test", false, eventTemplate);
+        try {
+            evt.setInt16("field1", (short) 15);
+            evt.validate();
+        }
+        catch (NoSuchAttributeTypeException e) {
+            exceptionThrown = true;
+            System.out.println(e);
+        }
+        assertTrue("No Exception for wrong type set", exceptionThrown);
+    }
+
+    @Test
+    public void testValidateBadField() throws EventSystemException {
+        boolean exceptionThrown = false;
+        Event evt = new Event("Test", false, eventTemplate);
+        try {
+            evt.setInt16("field3", (short) 15);
+            evt.validate();
+        }
+        catch (NoSuchAttributeException e) {
+            exceptionThrown = true;
+        }
+        assertTrue("No exception for invalid field", exceptionThrown);
     }
 
     @Test

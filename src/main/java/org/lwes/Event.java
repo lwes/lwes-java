@@ -266,7 +266,7 @@ public class Event {
         }
 
         if (attributes.containsKey(attributeName)) {
-            return ((BaseType) (attributes.get(attributeName))).getTypeObject();
+            return attributes.get(attributeName).getTypeObject();
         }
 
         if (isValidating() && getEventTemplateDB() != null) {
@@ -495,6 +495,7 @@ public class Event {
      */
     private void set(String attribute, BaseType anObject)
             throws EventSystemException {
+
         if (isValidating() && getEventTemplateDB() != null) {
             if (getEventTemplateDB().checkForAttribute(name, attribute)) {
                 if (!getEventTemplateDB().checkTypeForAttribute(name, attribute, anObject)) {
@@ -828,7 +829,7 @@ public class Event {
                     continue;
                 }
 
-                BaseType value = (BaseType) attributes.get(key);
+                BaseType value = attributes.get(key);
                 Object data = value.getTypeObject();
                 byte typeToken = value.getTypeToken();
 
@@ -1020,22 +1021,24 @@ public class Event {
                                     .append(" = ")
                                     .append(NumberCodec.toHexString(getUInt64(keys[i])))
                                     .append(";\n");
-						} catch(EventSystemException exc) {
-							Log.warning("Event.toString : ", exc);
-						}
+                        }
+                        catch (EventSystemException exc) {
+                            Log.warning("Event.toString : ", exc);
+                        }
                     }
                     else {
                         sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
                     }
-				} else {
+                }
+                else {
                     sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
-				}
-			} // for(i = 0; i < attributes.size() ...
-		} // if(attributes != null)
+                }
+            } // for(i = 0; i < attributes.size() ...
+        } // if(attributes != null)
 
-		sb.append("}");
-		return sb.toString();
-	}
+        sb.append("}");
+        return sb.toString();
+    }
 
     @Override
     public int hashCode() {
@@ -1046,10 +1049,51 @@ public class Event {
         if (o == null) {
             return false;
         }
-		if(getClass().getName().equals(o.getClass().getName())) {
-			return toString().equals(o.toString());
-		} else {
-			return false;
-		}
-	}
+        if (getClass().getName().equals(o.getClass().getName())) {
+            return toString().equals(o.toString());
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * This method can be used to validate an event after it has been created.
+     *
+     * @throws EventSystemException
+     */
+    public void validate() throws EventSystemException {
+        EventTemplateDB templ = getEventTemplateDB();
+        if (templ == null) {
+            throw new EventSystemException("No template defined.");
+        }
+        if (!templ.checkForEvent(name)) {
+            throw new NoSuchEventException("Event " + name + " does not exist in event definition");
+        }
+        for (String key : attributes.keySet()) {
+            if (!templ.checkForAttribute(name, key)) {
+                throw new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name);
+            }
+            Object value = get(key);
+            BaseType expected = templ.getBaseTypeForObjectAttribute(name, key, value);
+            BaseType bt = BaseType.baseTypeFromObject(value);
+            /**
+             * There are no unsigned values in java so they are kind of a special case
+             * in that i can't guess which one the person meant. This small hack treats
+             * similar types the same way.
+             */
+            if ((expected.getTypeToken() == TypeID.UINT16_TOKEN &&
+                bt.getTypeToken() == TypeID.INT32_TOKEN) ||
+                (expected.getTypeToken() == TypeID.UINT32_TOKEN &&
+                bt.getTypeToken() == TypeID.INT64_TOKEN) ||
+                (expected.getTypeToken() == TypeID.UINT64_TOKEN &&
+                bt.getTypeToken() == TypeID.INT64_TOKEN)    ) {
+                bt = expected;
+            }
+            if (!templ.checkTypeForAttribute(name, key, bt)) {
+                throw new NoSuchAttributeTypeException("Wrong type '" + bt.getTypeName() +
+                                                       "' for " + name + "." + key);
+            }
+        }
+    }
 }
