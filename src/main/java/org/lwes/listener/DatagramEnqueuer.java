@@ -132,7 +132,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
         int bufSize = MAX_DATAGRAM_SIZE*50;
         String bufSizeStr = System.getProperty("MulticastReceiveBufferSize");
         if (bufSizeStr != null && !"".equals(bufSizeStr)) {
-            bufSize = Integer.parseInt(bufSizeStr);    
+            bufSize = Integer.parseInt(bufSizeStr);
         }
         socket.setReceiveBufferSize(bufSize);
     }
@@ -167,10 +167,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
 				element.setTimestamp(receiptTime);
 
 				/* add the element to the queue and notify everyone there's work to do */
-				queue.add(0, element);
-				synchronized(queue) {
-					queue.notifyAll();
-				}
+				queue.add(element);				
 			} catch(Exception e) {
 				Log.warning("Unable to read datagram", e);
 			}

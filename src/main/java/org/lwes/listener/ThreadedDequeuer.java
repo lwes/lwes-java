@@ -1,17 +1,18 @@
 package org.lwes.listener;
 
+import org.lwes.Event;
+
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.HashMap;
-
-import org.lwes.Event;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * An abstract consumer of events.
- * 
+ *
  * @author Michael P. Lum
  *
  */
@@ -19,16 +20,16 @@ public abstract class ThreadedDequeuer implements Runnable {
 	/* the minimum and maximum threads to allow */
 	private static final int MIN_THREADS = 1;
 	private static final int MAX_THREADS = 64;
-	
-	protected List<QueueElement> queue = null;
+
+	protected LinkedBlockingQueue<QueueElement> queue = null;
 	private HashMap<String, EventHandler> handlers = null;
-	
+
 	/* the maximum number of threads allowed */
 	private int maxThreads = 20;
-	
+
 	/* the event dispatchers */
 	private List<ThreadedEventDispatcher> idleProcessors = null;
-	
+
 	/**
 	 * Default constructor.
 	 */
@@ -37,24 +38,24 @@ public abstract class ThreadedDequeuer implements Runnable {
 
 	/**
 	 * Returns the queue to use for this dequeuer
-	 * 
+	 *
 	 * @return the List queue
 	 */
-	public synchronized List<QueueElement> getQueue() {
+	public synchronized LinkedBlockingQueue<QueueElement> getQueue() {
 		return this.queue;
 	}
 
 	/**
 	 * Sets the queue to use for this dequeuer. Warning: this List must be
 	 * thread-synchronized!
-	 * 
+	 *
 	 * @param queue
 	 *            the thread-synchronized List element
 	 */
-	public synchronized void setQueue(List<QueueElement> queue) {
+	public synchronized void setQueue(LinkedBlockingQueue<QueueElement> queue) {
 		this.queue = queue;
 	}
-	
+
 	/**
 	 * Gets the maximum number of threads allowed in the system
 	 * @return the number of threads
@@ -62,7 +63,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 	public int getMaxThreads() {
 		return this.maxThreads;
 	}
-	
+
 	/**
 	 * Sets the maximum number of threads allowed in the system, up to 64.  The default is 20.
 	 * @param threads the number of threads to allow.
@@ -86,7 +87,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 	/**
 	 * Add an event handler to this dequeuer. Events coming into the system will
 	 * call all handlers via their callback.
-	 * 
+	 *
 	 * @param handler
 	 *            the actual handler
 	 */
@@ -99,7 +100,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 	/**
 	 * Adds a handler to this dequeuer with a specified name. Events coming into
 	 * the system will call all handlers via their callback.
-	 * 
+	 *
 	 * @param name
 	 *            the name of this handler
 	 * @param handler
@@ -117,7 +118,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 
 	/**
 	 * Removes a handler so it no longer is processing events
-	 * 
+	 *
 	 * @param handler
 	 *            the handler to remove
 	 */
@@ -129,7 +130,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 
 	/**
 	 * Removes a handler by name so it no longer is processing events
-	 * 
+	 *
 	 * @param name
 	 *            the name of the handler to remove
 	 */
@@ -156,7 +157,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 	 */
 	public void shutdown() {
 	}
-	
+
 	/**
 	 * Default run loop.  Should be overridden by classes extending ThreadedDequeuer
 	 */
@@ -170,7 +171,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 	 */
 	protected void dispatchEvent(Event event) {
 		if(handlers == null) return;
-		
+
 		Iterator<String> iterator = handlers.keySet().iterator();
 		while(iterator.hasNext()) {
 			EventHandler handler = (EventHandler) handlers.get(iterator.next());
@@ -178,7 +179,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 			d.setTask(handler, event);
 		}
 	}
-	
+
 	/**
 	 * Gets an idle processor from the list
 	 * @return a ThreadedEventDispatcher
@@ -190,7 +191,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 					idleProcessors.wait();
 				} catch(InterruptedException ie) {}
 			}
-			
+
 			return (ThreadedEventDispatcher) idleProcessors.remove(0);
 		}
 	}
@@ -201,7 +202,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 	 */
 	public synchronized void makeAvailable(ThreadedEventDispatcher dispatcher) {
 		if(dispatcher == null) return;
-		
+
 		if(dispatcher.isIdle()) {
 			idleProcessors.add(dispatcher);
 			synchronized(idleProcessors) {

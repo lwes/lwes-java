@@ -1,34 +1,34 @@
 package org.lwes.listener;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class ThreadedEnqueuer implements Runnable {
-	protected List<QueueElement> queue = null;
-	
+	protected LinkedBlockingQueue<QueueElement> queue = null;
+
 	/**
 	 * Default constructor.
 	 */
 	public ThreadedEnqueuer() {
 	}
-	
+
 	/**
 	 * Returns the queue to use for this enqueuer
 	 * @return the List queue
 	 */
-	public synchronized List<QueueElement> getQueue() {
+	public synchronized LinkedBlockingQueue<QueueElement> getQueue() {
 		return this.queue;
 	}
-	
+
 	/**
 	 * Sets the queue to use for this enqueuer.
 	 * Warning: this List must be thread-synchronized!
 	 * @param queue the thread-synchronized List element
 	 */
-	public synchronized void setQueue(List<QueueElement> queue) {
+	public synchronized void setQueue(LinkedBlockingQueue<QueueElement> queue) {
 		this.queue = queue;
-	}	
-	
+	}
+
 	/**
 	 * Default initialize() method.  Should be overridden by classes extending ThreadedEnqueuer.
 	 */
@@ -40,7 +40,7 @@ public abstract class ThreadedEnqueuer implements Runnable {
 	 */
 	public void shutdown() {
 	}
-	
+
 	/**
 	 * Default run() method.  Should be overridden by classes extending ThreadedDequeuer.
 	 */

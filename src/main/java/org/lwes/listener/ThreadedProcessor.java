@@ -3,9 +3,7 @@ package org.lwes.listener;
 import org.lwes.EventSystemException;
 import org.lwes.util.Log;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * A threaded, queueing event processor. This class requires setting a class to
@@ -38,7 +36,7 @@ public class ThreadedProcessor implements Runnable {
 	private Thread watcherThread = null;
 
 	/* the queue for events */
-	private List<QueueElement> queue = null;
+	private LinkedBlockingQueue<QueueElement> queue = null;
 
 	/* the priority for the enqueuing thread */
 	int enqueuerPriority = Thread.NORM_PRIORITY;
@@ -91,7 +89,7 @@ public class ThreadedProcessor implements Runnable {
 	 * Returns the List being used as the queue
 	 * @return the List object
 	 */
-	public synchronized List<QueueElement> getQueue() {
+	public synchronized LinkedBlockingQueue<QueueElement> getQueue() {
 		return this.queue;
 	}
 
@@ -100,7 +98,7 @@ public class ThreadedProcessor implements Runnable {
 	 * Warning: this list needs to be thread-synchronized!
 	 * @param queue the List to use for this processor
 	 */
-	public synchronized void setQueue(List<QueueElement> queue) {
+	public synchronized void setQueue(LinkedBlockingQueue<QueueElement> queue) {
 		this.queue = queue;
 	}
 
@@ -156,8 +154,7 @@ public class ThreadedProcessor implements Runnable {
 
 		/* create a queue if it doesn't exist */
 		if (queue == null) {
-			queue = Collections
-					.synchronizedList(new LinkedList<QueueElement>());
+			queue = new LinkedBlockingQueue<QueueElement>();
 		}
 
 		/* make the queue available to the enqueuer and dequeuer */
