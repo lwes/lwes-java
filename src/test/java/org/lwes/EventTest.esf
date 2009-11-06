@@ -1,0 +1,15 @@
+MetaEventInfo
+{
+  ip_addr SenderIP;    # IP address of Sender; inserted by lwes journaller
+  uint16  SenderPort;  # IP port of Sender; inserted by lwes journaller
+  int64   ReceiptTime; # time this event was received by the journaller, in
+                       # milliseconds since epoch
+  int16   enc;         # encoding of strings in the event; 0: iso-8859-1, 1: utf-8
+  uint16  SiteID;      # id of site sending the event
+}
+
+Test
+{
+  string field1;
+  int16 field2;
+}
