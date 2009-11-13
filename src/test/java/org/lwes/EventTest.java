@@ -5,6 +5,8 @@ package org.lwes;
 
 import org.apache.commons.codec.binary.Base64;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Before;
@@ -25,6 +27,17 @@ public class EventTest {
         eventTemplate = new EventTemplateDB();
         eventTemplate.setESFFile(new File("src/test/java/org/lwes/EventTest.esf"));
         eventTemplate.initialize();
+    }
+
+    @Test
+    public void testNullValue() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        Short s = evt.getInt16("a");
+        assertNull(s);
+        evt.setInt16("a", (short) 1);
+        s = evt.getInt16("a");
+        assertNotNull(s);
+        assertEquals("short value incorrect", (short) 1, s.shortValue());
     }
 
     @Test
@@ -120,13 +133,22 @@ public class EventTest {
         evt.setUInt64("uint64", 1337133713371337l); // uint64 is a BigInteger
         evt.setIPAddress("ipaddr", InetAddress.getByName("localhost"));
 
-        assertEquals("int16 wrong", 1, evt.getInt16("int16"));
-        assertEquals("int32 wrong", 1337, evt.getInt32("int32"));
-        assertEquals("int64 wrong", 1337133713371337l, evt.getInt64("int64"));
+        Short s = evt.getInt16("int16");
+        assertNotNull(s);
+        assertEquals("int16 wrong", 1, s.shortValue());
+        Integer i = evt.getInt32("int32");
+        assertNotNull(i);
+        assertEquals("int32 wrong", 1337, i.intValue());
+        Long l = evt.getInt64("int64");
+        assertNotNull(l);
+        assertEquals("int64 wrong", 1337133713371337l, l.longValue());
         assertEquals("bool wrong", true, evt.getBoolean("bool"));
         assertEquals("str wrong", "string", evt.getString("str"));
-        assertEquals("uint16 wrong", 1337, evt.getUInt16("uint16"));
-        assertEquals("uint32 wrong", 1337133713371337l, evt.getUInt32("uint32"));
+        i = evt.getUInt16("uint16");
+        assertNotNull(i);
+        assertEquals("uint16 wrong", 1337, i.intValue());
+        l = evt.getUInt32("uint32");
+        assertEquals("uint32 wrong", 1337133713371337l, l.longValue());
         assertEquals("uint64 wrong",
                      BigInteger.valueOf(1337133713371337l),
                      evt.getUInt64("uint64"));

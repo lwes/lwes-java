@@ -46,13 +46,21 @@ public class MulticastEventEmitterTest {
             else if (i == events.size() - 1) {
                 assertEquals("Second to last event was not shutdown",
                              "System::Shutdown", e.getEventName());
-                assertEquals("Shutdown count was incorrect", 0, e.getInt64("count"));
-                assertEquals("Shutdown total was incorrect", 6, e.getInt64("total"));
+                Long l = e.getInt64("count");
+                assertNotNull(l);
+                assertEquals("Shutdown count was incorrect", (long) 0, l.longValue());
+                l = e.getInt64("total");
+                assertNotNull(l);
+                assertEquals("Shutdown total was incorrect", (long) 6, l.longValue());
             }
             else if ("System::Heartbeat".equals(e.getEventName())) {
-                if (e.getInt64("seq") == 1) {
-                    assertEquals("Heartbeat count was incorrect", 3, e.getInt64("count"));
-                    assertEquals("Heartbeat total was incorrect", 3, e.getInt64("total"));
+                if (e.getInt64("seq") == 1l) {
+                    Long l = e.getInt64("count");
+                    assertNotNull(l);
+                    assertEquals("Heartbeat count was incorrect", 3l, l.longValue());
+                    l = e.getInt64("total");
+                    assertNotNull(l);
+                    assertEquals("Heartbeat total was incorrect", 3l, l.longValue());
                 }
             }
         }

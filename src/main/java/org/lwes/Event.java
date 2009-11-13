@@ -286,17 +286,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the boolean value
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public boolean getBoolean(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return ((Boolean) o).booleanValue();
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public Boolean getBoolean(String attributeName) throws NoSuchAttributeException {
+        return (Boolean) get(attributeName);
     }
 
     /**
@@ -304,17 +297,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the unsigned short as an int
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public int getUInt16(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return ((Integer) o).intValue();
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public Integer getUInt16(String attributeName) throws NoSuchAttributeException {
+        return (Integer) get(attributeName);
     }
 
     /**
@@ -322,17 +308,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the short value
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public short getInt16(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return ((Short) o).shortValue();
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public Short getInt16(String attributeName) throws NoSuchAttributeException {
+        return (Short) get(attributeName);
     }
 
     /**
@@ -340,17 +319,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the unsigned int as a long
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public long getUInt32(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return ((Long) o).longValue();
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public Long getUInt32(String attributeName) throws NoSuchAttributeException {
+        return (Long) get(attributeName);
     }
 
     /**
@@ -358,17 +330,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the int value
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public int getInt32(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return ((Integer) o).intValue();
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public Integer getInt32(String attributeName) throws NoSuchAttributeException {
+        return (Integer) get(attributeName);
     }
 
     /**
@@ -376,17 +341,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the unsigned long as a BigInteger
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public BigInteger getUInt64(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return (BigInteger) o;
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public BigInteger getUInt64(String attributeName) throws NoSuchAttributeException {
+        return (BigInteger) get(attributeName);
     }
 
 
@@ -395,17 +353,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the long value
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public long getInt64(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return ((Long) o).longValue();
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public Long getInt64(String attributeName) throws NoSuchAttributeException {
+        return (Long) get(attributeName);
     }
 
     /**
@@ -413,17 +364,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the String value
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public String getString(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return (String) o;
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public String getString(String attributeName) throws NoSuchAttributeException {
+        return (String) get(attributeName);
     }
 
     /**
@@ -431,17 +375,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the InetAddress value
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public InetAddress getInetAddress(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return ((IPAddress) o).toInetAddress();
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public InetAddress getInetAddress(String attributeName) throws NoSuchAttributeException {
+        return (InetAddress) get(attributeName);
     }
 
     /**
@@ -449,17 +386,10 @@ public class Event {
      *
      * @param attributeName the name of the attribute to fetch
      * @return the IP address in bytes
-     * @throws AttributeNotSetException if the attribute has not been set in this event
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public byte[] getIPAddress(String attributeName) throws AttributeNotSetException, NoSuchAttributeException {
-        Object o = get(attributeName);
-        if (o != null) {
-            return ((IPAddress) o).getInetAddressAsBytes();
-        }
-        else {
-            throw new AttributeNotSetException("Attribute " + attributeName + " not set");
-        }
+    public byte[] getIPAddress(String attributeName) throws NoSuchAttributeException {
+        return (byte[]) get(attributeName);
     }
 
 
@@ -1083,11 +1013,11 @@ public class Event {
              * similar types the same way.
              */
             if ((expected.getTypeToken() == TypeID.UINT16_TOKEN &&
-                bt.getTypeToken() == TypeID.INT32_TOKEN) ||
+                 bt.getTypeToken() == TypeID.INT32_TOKEN) ||
                 (expected.getTypeToken() == TypeID.UINT32_TOKEN &&
-                bt.getTypeToken() == TypeID.INT64_TOKEN) ||
+                 bt.getTypeToken() == TypeID.INT64_TOKEN) ||
                 (expected.getTypeToken() == TypeID.UINT64_TOKEN &&
-                bt.getTypeToken() == TypeID.INT64_TOKEN)    ) {
+                 bt.getTypeToken() == TypeID.INT64_TOKEN)) {
                 bt = expected;
             }
             if (!templ.checkTypeForAttribute(name, key, bt)) {
