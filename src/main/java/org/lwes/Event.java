@@ -282,6 +282,23 @@ public class Event {
     }
 
     /**
+     * Method to check if an attribute is set in the event. This method does not throw
+     * NoSuchAttributeException because it shouldn't really care. If it's not there, it's
+     * not there.
+     *
+     * @param attributeName The attribute name to check for existance.
+     * @return true if there is a value, false if not.
+     */
+    public boolean isSet(String attributeName) {
+        try {
+            return (get(attributeName) != null);
+        }
+        catch (NoSuchAttributeException e) {
+            return false;
+        }
+    }
+
+    /**
      * Accessor that returns a boolean value for attribute <tt>attributeName</tt>
      *
      * @param attributeName the name of the attribute to fetch
