@@ -30,9 +30,10 @@ public class DatagramDequeuer extends ThreadedDequeuer {
 
         while (running) {
             try {
-                DatagramQueueElement element = null;
-                queue.remove(element);
-                handleElement(element);
+                QueueElement element = null;
+                element = queue.take();
+                Log.trace("Removed from queue: "+element);
+                handleElement((DatagramQueueElement)element);
             }
             catch (UnsupportedOperationException uoe) {
                 // not a problem, someone grabbed the event before we did
