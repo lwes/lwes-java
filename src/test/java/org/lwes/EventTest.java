@@ -5,6 +5,7 @@ package org.lwes;
 
 import org.apache.commons.codec.binary.Base64;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +28,17 @@ public class EventTest {
         eventTemplate = new EventTemplateDB();
         eventTemplate.setESFFile(new File("src/test/java/org/lwes/EventTest.esf"));
         eventTemplate.initialize();
+    }
+
+    @Test
+    public void testIsSet() throws EventSystemException {
+
+        Event evt = new Event("Test", false, eventTemplate);
+        assertFalse(evt.isSet("notset"));
+
+        evt.setInt32("set", 32);
+        assertTrue(evt.isSet("set"));
+
     }
 
     @Test
