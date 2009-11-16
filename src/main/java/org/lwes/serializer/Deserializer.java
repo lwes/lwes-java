@@ -193,6 +193,17 @@ public class Deserializer
 		return aString;
 	}
 
+    public static String[] deserializeStringArray(DeserializerState state,
+                                                  byte[] bytes,
+                                                  short encoding) {
+        int length = deserializeUINT16(state, bytes);
+        String[] rtn = new String[length];
+        for (int i=0; i<length; i++) {
+            rtn[i] = deserializeSTRING(state, bytes, encoding);
+        }
+        return rtn;
+    }
+
 	/**
 	 * Deserialize a String out of the byte array <tt>bytes</tt>
 	 *

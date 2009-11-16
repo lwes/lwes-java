@@ -1,6 +1,7 @@
 package org.lwes.db;
 
 import org.lwes.BaseType;
+import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 import org.lwes.TypeID;
 import org.lwes.util.IPAddress;
@@ -41,6 +42,7 @@ public class EventTemplateDB {
     private Map<String, Map<String, BaseType>> events = null;
     private Map<String, BaseType> knownTypes = null;
     private Map<String, BaseType> reservedWords = null;
+    private Map<String, Integer> sizes = null;
 
     /**
      * This is the EventTemplateDB constructor.
@@ -49,6 +51,7 @@ public class EventTemplateDB {
         events = new ConcurrentHashMap<String, Map<String, BaseType>>();
         knownTypes = new ConcurrentHashMap<String, BaseType>();
         reservedWords = new ConcurrentHashMap<String, BaseType>();
+        sizes = new ConcurrentHashMap<String, Integer>();
         initializeKnownTypes();
     }
 
@@ -178,6 +181,15 @@ public class EventTemplateDB {
         return true;
     }
 
+    public synchronized boolean addEventAttribute(String anEventName,
+                                                  String anAttributeName,
+                                                  String anAttributeType) {
+        return addEventAttribute(anEventName,
+                                 anAttributeName,
+                                 anAttributeType,
+                                 -1);
+    }
+
     /**
      * Add an attribute to an Event in the EventTemplateDB
      *
@@ -187,8 +199,10 @@ public class EventTemplateDB {
      *                        given in the ESF Specification.
      * @return true if the attribute can be added, false if it can not.
      */
-    public synchronized boolean addEventAttribute(String anEventName, String anAttributeName,
-                                                  String anAttributeType) {
+    public synchronized boolean addEventAttribute(String anEventName,
+                                                  String anAttributeName,
+                                                  String anAttributeType,
+                                                  Integer size) {
         if (anEventName == null || anAttributeName == null || anAttributeType == null) {
             return false;
         }
@@ -211,6 +225,10 @@ public class EventTemplateDB {
                             "as it is a reserved word, skipping");
                 return false;
 
+            }
+
+            if (size > 0) {
+                sizes.put(anEventName + "." + anAttributeName, size);
             }
 
             if (events.containsKey(anEventName)) {
@@ -256,6 +274,28 @@ public class EventTemplateDB {
             return false;
         }
         return knownTypes.containsKey(aTypeName);
+    }
+
+    public void checkForSize(String eventName,
+                             String attributeName,
+                             BaseType attributeValue) throws EventAttributeSizeException {
+
+        if (!attributeValue.getTypeName().startsWith("[L")) {
+            if (Log.isLogDebug()) {
+                Log.debug("value for attribute "+attributeName+" is not an array.");
+            }
+            return;
+        }
+
+        Object[] arr = (Object []) attributeValue.getTypeObject();
+        int sizeToCheck = arr.length;
+        String key = eventName + "." + attributeName;
+        if (sizes.containsKey(key)) {
+            int size = sizes.get(key);
+            if (sizeToCheck > size) {
+                throw new EventAttributeSizeException(attributeName, sizeToCheck, size);
+            }
+        }
     }
 
     /**
@@ -347,6 +387,7 @@ public class EventTemplateDB {
         if (checkForAttribute(anEventName, anAttributeName)) {
             Map<String, BaseType> evtHash = events.get(anEventName);
             String storedTypeName = evtHash.get(anAttributeName).getTypeName();
+            System.out.println("attr: "+anAttributeName+" stored: "+storedTypeName+" passed in: "+anAttributeType);
             if (anAttributeType.equals(storedTypeName)) {
                 return true;
             }
@@ -556,6 +597,9 @@ public class EventTemplateDB {
                                                           TypeID.UINT64_TOKEN, BigInteger.ZERO));
         knownTypes.put(TypeID.BOOLEAN_STRING, new BaseType(TypeID.BOOLEAN_STRING,
                                                            TypeID.BOOLEAN_TOKEN, true));
+        knownTypes.put(TypeID.STRING_ARRAY_STRING,
+                       new BaseType(TypeID.STRING_ARRAY_STRING,
+                                    TypeID.STRING_ARRAY_TOKEN, null));
     }
 
     public Map<String, BaseType> getMetaFields() {

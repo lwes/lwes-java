@@ -99,6 +99,33 @@ public class Serializer {
 
     }
 
+    /**
+     * String arrays are serialized as follows:
+     * <array_name_len><array_name_bytes><type>
+     * <array_length><serialized_type_1>...<serialized_type_n>
+     *
+     * @param value
+     * @param bytes
+     * @param offset
+     * @param encoding
+     * @return
+     */
+    public static int serializeStringArray(String[] value,
+                                           byte[] bytes,
+                                           int offset,
+                                           short encoding) {
+
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (String s : value) {
+            numbytes = serializeSTRING(s, bytes, offset, encoding);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
     /*
        * @deprecated
        */

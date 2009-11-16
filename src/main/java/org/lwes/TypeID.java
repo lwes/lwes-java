@@ -50,6 +50,10 @@ public class TypeID
 	 * The token used by <tt>boolean</tt> in the Event Serialization Protocol
 	 */
 	public final static byte BOOLEAN_TOKEN= (byte)0x09;
+    /**
+     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     */
+    public final static byte STRING_ARRAY_TOKEN = (byte) 0x0A;
 
 	/**
 	 * The  string used by <tt>uint16</tt> in the Event Serialization Protocol
@@ -87,6 +91,8 @@ public class TypeID
 	 * The  string used by <tt>boolean</tt> in the Event Serialization Protocol
 	 */
 	public final static String BOOLEAN_STRING= "boolean";
+
+    public final static String STRING_ARRAY_STRING = "[Lstring";
 
 	/**
 	 * This is a regular expression for parsing an integer number from a string
@@ -144,6 +150,8 @@ public class TypeID
 			return UINT64_STRING;
 		case BOOLEAN_TOKEN:
 			return BOOLEAN_STRING;
+        case STRING_ARRAY_TOKEN:
+            return STRING_ARRAY_STRING;
 		default:
 			return null;
 		}
@@ -172,6 +180,8 @@ public class TypeID
 			return UINT64_TOKEN;
 		else if ( id.equals(BOOLEAN_STRING) )
 			return BOOLEAN_TOKEN;
+        else if ( id.equals(STRING_ARRAY_STRING) )
+			return STRING_ARRAY_TOKEN;
 		else
 			return UNDEFINED_TOKEN;
 	}

@@ -9,6 +9,8 @@ PARSER_BEGIN(ESFParser)
 
 package org.lwes.db;
 
+import org.lwes.util.Log;
+
 public class ESFParser
 {
   private String currentEvent;
@@ -53,7 +55,9 @@ SKIP :
 
 TOKEN :
 {
-  < ID: ["a"-"z","A"-"Z","_",":","0"-"9"] (["a"-"z","A"-"Z","_",":","0"-"9"])* >
+    < ID: ["a"-"z","A"-"Z","_",":","0"-"9"] (["a"-"z","A"-"Z","_",":","0"-"9"])* >
+  | < LBRACKET: "[" >
+  | < RBRACKET: "]" >
 }
 
 /**
@@ -103,13 +107,25 @@ void attributeList() :
   attribute() ( attribute() )*
 }
 
+int arraySize() :
+{
+  Token t;
+}
+{
+    t = <ID>
+    {
+    return Integer.parseInt(t.image);
+    }
+}
+
 void attribute() :
 {
   String aType;
   String anAttribute;
+  int anArraySize = 0;
 }
 {
-  aType=type() anAttribute=attributeName() ";" {
+  aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] ";" {
       if ( !( aType.equals("uint16")  ||
               aType.equals("int16")   ||
               aType.equals("uint32")  ||
@@ -118,15 +134,25 @@ void attribute() :
               aType.equals("ip_addr") ||
               aType.equals("int64")   ||
               aType.equals("uint64")  ||
+              aType.equals("byte")    ||
               aType.equals("boolean")
             )
          )
        {
          throw new ParseException("No such type '"+aType+"'");
        }
+
       String evt = getCurrentEvent();
       if ( evt == null ) throw new ParseException("Bad Event");
-      if ( !getEventTemplateDB().addEventAttribute(evt,anAttribute,aType))
+
+      if (anArraySize > 0) {
+         if (Log.isLogTrace()) {
+           Log.trace("ARRAY! type: "+aType+" attr: "+anAttribute+" size: "+anArraySize);
+         }
+         aType = "[L"+aType;
+       }
+
+      if ( !getEventTemplateDB().addEventAttribute(evt, anAttribute, aType, anArraySize))
       {
         throw new ParseException("Problem adding attribute "+evt+"("
                                  +aType+","+anAttribute+")");

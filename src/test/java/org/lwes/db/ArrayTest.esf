@@ -11,7 +11,7 @@ MetaEventInfo
 TestEvent
 {
   string field1[10];
-  int64 field2[5];
+#  int64 field2[5];
   string field3;
   int32 field4;
 }

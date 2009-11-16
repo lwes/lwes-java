@@ -281,6 +281,18 @@ public class Event {
         return null;
     }
 
+
+    public String[] getStringArray(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof String[]) {
+            return (String[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
     /**
      * Method to check if an attribute is set in the event. This method does not throw
      * NoSuchAttributeException because it shouldn't really care. If it's not there, it's
@@ -307,7 +319,7 @@ public class Event {
      */
     public Boolean getBoolean(String attributeName) throws NoSuchAttributeException {
         return (Boolean) get(attributeName);
-    }
+        }
 
     /**
      * Accessor that returns an <tt>unsigned short</tt>, in the guise of an <tt>int</tt>, for attribute <tt>attributeName</tt>
@@ -318,7 +330,7 @@ public class Event {
      */
     public Integer getUInt16(String attributeName) throws NoSuchAttributeException {
         return (Integer) get(attributeName);
-    }
+        }
 
     /**
      * Accessor that returns an <tt>short</tt>, for attribute <tt>attributeName</tt>
@@ -329,7 +341,7 @@ public class Event {
      */
     public Short getInt16(String attributeName) throws NoSuchAttributeException {
         return (Short) get(attributeName);
-    }
+        }
 
     /**
      * Accessor that returns an <tt>unsigned int</tt>, in the guise of an <tt>long</tt>, for attribute <tt>attributeName</tt>
@@ -340,7 +352,7 @@ public class Event {
      */
     public Long getUInt32(String attributeName) throws NoSuchAttributeException {
         return (Long) get(attributeName);
-    }
+        }
 
     /**
      * Accessor that returns an <tt>int</tt>, for attribute <tt>attributeName</tt>
@@ -351,7 +363,7 @@ public class Event {
      */
     public Integer getInt32(String attributeName) throws NoSuchAttributeException {
         return (Integer) get(attributeName);
-    }
+        }
 
     /**
      * Accessor that returns an <tt>unsigned long</tt>, in the guise of an <tt>BigInteger</tt>, for attribute <tt>attributeName</tt>
@@ -362,7 +374,7 @@ public class Event {
      */
     public BigInteger getUInt64(String attributeName) throws NoSuchAttributeException {
         return (BigInteger) get(attributeName);
-    }
+        }
 
 
     /**
@@ -374,7 +386,7 @@ public class Event {
      */
     public Long getInt64(String attributeName) throws NoSuchAttributeException {
         return (Long) get(attributeName);
-    }
+        }
 
     /**
      * Accessor that returns an <tt>String</tt>, for attribute <tt>attributeName</tt>
@@ -385,7 +397,7 @@ public class Event {
      */
     public String getString(String attributeName) throws NoSuchAttributeException {
         return (String) get(attributeName);
-    }
+        }
 
     /**
      * Accessor that returns an <tt>InetAddress</tt>, for attribute <tt>attributeName</tt>
@@ -413,7 +425,7 @@ public class Event {
      */
     public byte[] getIPAddress(String attributeName) throws NoSuchAttributeException {
         return (byte[]) get(attributeName);
-    }
+        }
 
 
     /**
@@ -459,6 +471,7 @@ public class Event {
             else {
                 throw new NoSuchAttributeException("Attribute " + attribute + " does not exist for event " + name);
             }
+            getEventTemplateDB().checkForSize(name, attribute, anObject);
         }
 
         if (anObject.getTypeObject() != null) {
@@ -474,6 +487,13 @@ public class Event {
             bytesStoreSize += (attribute.length() + 1) + anObject.bytesStoreSize(encoding);
             attributes.put(attribute, anObject);
         }
+    }
+
+    public void setStringArray(String attributeName, String[] value)
+            throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.STRING_ARRAY_STRING,
+                                        TypeID.STRING_ARRAY_TOKEN,
+                                        value));
     }
 
     /**
@@ -823,6 +843,10 @@ public class Event {
                     case TypeID.IPADDR_TOKEN:
                         offset += Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
                         break;
+                    case TypeID.STRING_ARRAY_TOKEN:
+                        offset += Serializer.serializeStringArray
+                                (((String[]) data), bytes, offset, encoding);
+                        break;
                     default:
                         Log.warning("Unknown BaseType token: " + typeToken);
                         break;
@@ -912,6 +936,10 @@ public class Event {
                     case TypeID.IPADDR_TOKEN:
                         byte[] inetAddress = Deserializer.deserializeIPADDR(state, bytes);
                         setIPAddress(attribute, inetAddress);
+                        break;
+                    case TypeID.STRING_ARRAY_TOKEN:
+                        String[] sArray = Deserializer.deserializeStringArray(state, bytes, encoding);
+                        setStringArray(attribute, sArray);
                         break;
                     default:
                         Log.warning("Unknown type " + type + " in deserialization");
@@ -1036,11 +1064,11 @@ public class Event {
              * similar types the same way.
              */
             if ((expected.getTypeToken() == TypeID.UINT16_TOKEN &&
-                 bt.getTypeToken() == TypeID.INT32_TOKEN) ||
+                bt.getTypeToken() == TypeID.INT32_TOKEN) ||
                 (expected.getTypeToken() == TypeID.UINT32_TOKEN &&
-                 bt.getTypeToken() == TypeID.INT64_TOKEN) ||
+                bt.getTypeToken() == TypeID.INT64_TOKEN) ||
                 (expected.getTypeToken() == TypeID.UINT64_TOKEN &&
-                 bt.getTypeToken() == TypeID.INT64_TOKEN)) {
+                bt.getTypeToken() == TypeID.INT64_TOKEN)    ) {
                 bt = expected;
             }
             if (!templ.checkTypeForAttribute(name, key, bt)) {

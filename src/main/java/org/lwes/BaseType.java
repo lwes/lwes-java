@@ -105,6 +105,14 @@ public class BaseType {
             case TypeID.BOOLEAN_TOKEN:
                 size = 1;
                 break;
+            case TypeID.STRING_ARRAY_TOKEN:
+                int count = 2; // start with the length of the array
+                String[] anArray = (String[]) typeObject;
+                for (String s : anArray) {
+                    count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
+                }
+                size = count;
+                break;
             default:
                 throw new NoSuchAttributeTypeException("Unknown size of BaseType " + typeName);
         }
