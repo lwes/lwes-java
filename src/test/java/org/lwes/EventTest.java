@@ -32,13 +32,11 @@ public class EventTest {
 
     @Test
     public void testIsSet() throws EventSystemException {
-
         Event evt = new Event("Test", false, eventTemplate);
         assertFalse(evt.isSet("notset"));
 
         evt.setInt32("set", 32);
         assertTrue(evt.isSet("set"));
-
     }
 
     @Test
@@ -99,7 +97,6 @@ public class EventTest {
         }
         catch (NoSuchAttributeTypeException e) {
             exceptionThrown = true;
-            System.out.println(e);
         }
         assertTrue("No Exception for wrong type set", exceptionThrown);
     }
@@ -125,9 +122,7 @@ public class EventTest {
         evt.setInt32("attr_i", 1);
         byte[] bytes = evt.serialize();
         String str = new String(bytes);
-        //System.out.println("as string: "+str);
         byte[] encoded = Base64.encodeBase64(bytes);
-        //System.out.println(new String(encoded));
         // TODO this test not finished yet.
     }
 
