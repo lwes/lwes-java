@@ -31,6 +31,14 @@ public class EventTest {
     }
 
     @Test
+    public void testGetInetAddress() throws EventSystemException, UnknownHostException {
+        Event evt = new Event("Test", false, eventTemplate);
+        evt.setIPAddress("ip", InetAddress.getByName("www.yahoo.com"));
+        InetAddress a = evt.getInetAddress("ip");
+        assertNotNull(a);
+    }
+
+    @Test
     public void testIsSet() throws EventSystemException {
         Event evt = new Event("Test", false, eventTemplate);
         assertFalse(evt.isSet("notset"));

@@ -395,7 +395,13 @@ public class Event {
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
     public InetAddress getInetAddress(String attributeName) throws NoSuchAttributeException {
-        return (InetAddress) get(attributeName);
+        IPAddress a = (IPAddress) get(attributeName);
+        if (a != null) {
+            return a.toInetAddress();
+        }
+        else {
+            return null;
+        }
     }
 
     /**
