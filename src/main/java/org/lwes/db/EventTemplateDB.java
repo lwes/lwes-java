@@ -299,11 +299,24 @@ public class EventTemplateDB {
             return;
         }
 
-        Object[] arr = (Object[]) attributeValue.getTypeObject();
-        int sizeToCheck = arr.length;
+        int sizeToCheck = 0;
         int size = attrBaseType.getSizeRestriction();
+        Object o = attributeValue.getTypeObject();
+        if (o instanceof short[]) {
+            sizeToCheck = ((short[])o).length;
+        }
+        else if (o instanceof int[]) {
+            sizeToCheck = ((int[])o).length;
+        }
+        else if (o instanceof long[]) {
+            sizeToCheck = ((long[])o).length;
+        }
+        else {
+            Object[] arr = (Object[]) attributeValue.getTypeObject();
+            sizeToCheck = arr.length;
+        }
         if (Log.isLogTrace()) {
-            Log.trace("sizeToCheck: "+sizeToCheck+" size: "+size);
+            Log.trace("sizeToCheck: " + sizeToCheck + " size: " + size);
         }
         if (size > 0 && sizeToCheck > size) {
             throw new EventAttributeSizeException(attributeName, sizeToCheck, size);
@@ -618,6 +631,24 @@ public class EventTemplateDB {
         knownTypes.put(TypeID.STRING_ARRAY_STRING,
                        new BaseType(TypeID.STRING_ARRAY_STRING,
                                     TypeID.STRING_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.INT16_ARRAY_STRING,
+                       new BaseType(TypeID.INT16_ARRAY_STRING,
+                                    TypeID.INT16_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.INT32_ARRAY_STRING,
+                       new BaseType(TypeID.INT32_ARRAY_STRING,
+                                    TypeID.INT32_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.INT64_ARRAY_STRING,
+                       new BaseType(TypeID.INT64_ARRAY_STRING,
+                                    TypeID.INT64_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.UINT16_ARRAY_STRING,
+                       new BaseType(TypeID.UINT16_ARRAY_STRING,
+                                    TypeID.UINT16_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.UINT32_ARRAY_STRING,
+                       new BaseType(TypeID.UINT32_ARRAY_STRING,
+                                    TypeID.UINT32_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.UINT64_ARRAY_STRING,
+                       new BaseType(TypeID.UINT64_ARRAY_STRING,
+                                    TypeID.UINT64_ARRAY_TOKEN, null));
     }
 
     public Map<String, BaseType> getMetaFields() {

@@ -282,7 +282,66 @@ public class Event {
         return null;
     }
 
-
+    public short[] getInt16Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof short[]) {
+            return (short[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+    public int[] getInt32Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof int[]) {
+            return (int[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+    public long[] getInt64Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof long[]) {
+            return (long[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+    public int[] getUInt16Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof int[]) {
+            return (int[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+    public long[] getUInt32Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof long[]) {
+            return (long[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+    public long[] getUInt64Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof long[]) {
+            return (long[]) o;
+        }
+        else {
+            return null;
+        }
+    }
     public String[] getStringArray(String attributeName)
             throws NoSuchAttributeException {
         Object o = get(attributeName);
@@ -490,6 +549,36 @@ public class Event {
         }
     }
 
+    public void setInt16Array(String attributeName, short[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.INT16_ARRAY_STRING,
+                                        TypeID.INT16_ARRAY_TOKEN,
+                                        value));
+    }
+    public void setInt32Array(String attributeName, int[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.INT32_ARRAY_STRING,
+                                        TypeID.INT32_ARRAY_TOKEN,
+                                        value));
+    }
+    public void setInt64Array(String attributeName, long[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.INT64_ARRAY_STRING,
+                                        TypeID.INT64_ARRAY_TOKEN,
+                                        value));
+    }
+    public void setUInt16Array(String attributeName, int[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.UINT16_ARRAY_STRING,
+                                        TypeID.UINT16_ARRAY_TOKEN,
+                                        value));
+    }
+    public void setUInt32Array(String attributeName, long[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.UINT32_ARRAY_STRING,
+                                        TypeID.UINT32_ARRAY_TOKEN,
+                                        value));
+    }
+    public void setUInt64Array(String attributeName, long[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.UINT64_ARRAY_STRING,
+                                        TypeID.UINT64_ARRAY_TOKEN,
+                                        value));
+    }
     public void setStringArray(String attributeName, String[] value)
             throws EventSystemException {
         set(attributeName, new BaseType(TypeID.STRING_ARRAY_STRING,
@@ -848,6 +937,24 @@ public class Event {
                         offset += Serializer.serializeStringArray
                                 (((String[]) data), bytes, offset, encoding);
                         break;
+                    case TypeID.INT16_ARRAY_TOKEN:
+                        offset += Serializer.serializeInt16Array((short[]) data, bytes, offset);
+                        break;
+                    case TypeID.INT32_ARRAY_TOKEN:
+                        offset += Serializer.serializeInt32Array((int[]) data, bytes, offset);
+                        break;
+                    case TypeID.INT64_ARRAY_TOKEN:
+                        offset += Serializer.serializeInt64Array((long[]) data, bytes, offset);
+                        break;
+                    case TypeID.UINT16_ARRAY_TOKEN:
+                        offset += Serializer.serializeUInt16Array((int[]) data, bytes, offset);
+                        break;
+                    case TypeID.UINT32_ARRAY_TOKEN:
+                        offset += Serializer.serializeUInt32Array((long[]) data, bytes, offset);
+                        break;
+                    case TypeID.UINT64_ARRAY_TOKEN:
+                        offset += Serializer.serializeUInt64Array((long[]) data, bytes, offset);
+                        break;
                     default:
                         Log.warning("Unknown BaseType token: " + typeToken);
                         break;
@@ -941,6 +1048,30 @@ public class Event {
                     case TypeID.STRING_ARRAY_TOKEN:
                         String[] sArray = Deserializer.deserializeStringArray(state, bytes, encoding);
                         setStringArray(attribute, sArray);
+                        break;
+                    case TypeID.INT16_ARRAY_TOKEN:
+                        short[] as = Deserializer.deserializeInt16Array(state, bytes);
+                        setInt16Array(attribute, as);
+                        break;
+                    case TypeID.INT32_ARRAY_TOKEN:
+                        int[] ai = Deserializer.deserializeInt32Array(state, bytes);
+                        setInt32Array(attribute, ai);
+                        break;
+                    case TypeID.INT64_ARRAY_TOKEN:
+                        long[] al = Deserializer.deserializeInt64Array(state, bytes);
+                        setInt64Array(attribute, al);
+                        break;
+                    case TypeID.UINT16_ARRAY_TOKEN:
+                        int[] uas = Deserializer.deserializeUInt16Array(state, bytes);
+                        setUInt16Array(attribute, uas);
+                        break;
+                    case TypeID.UINT32_ARRAY_TOKEN:
+                        long[] uai = Deserializer.deserializeUInt32Array(state, bytes);
+                        setUInt32Array(attribute, uai);
+                        break;
+                    case TypeID.UINT64_ARRAY_TOKEN:
+                        long[] ual = Deserializer.deserializeUInt64Array(state, bytes);
+                        setUInt64Array(attribute, ual);
                         break;
                     default:
                         Log.warning("Unknown type " + type + " in deserialization");
