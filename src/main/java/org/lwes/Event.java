@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Event {
@@ -1058,6 +1059,7 @@ public class Event {
             Object value = get(key);
             BaseType expected = templ.getBaseTypeForObjectAttribute(name, key, value);
             BaseType bt = BaseType.baseTypeFromObject(value);
+
             /**
              * There are no unsigned values in java so they are kind of a special case
              * in that i can't guess which one the person meant. This small hack treats
@@ -1074,6 +1076,15 @@ public class Event {
             if (!templ.checkTypeForAttribute(name, key, bt)) {
                 throw new NoSuchAttributeTypeException("Wrong type '" + bt.getTypeName() +
                                                        "' for " + name + "." + key);
+            }
+        }
+        Map<String, BaseType> map = templ.getEvents().get(name);
+        for (String key : map.keySet()) {
+            BaseType bt = map.get(key);
+            if (bt.isRequired()) {
+                if (!attributes.containsKey(key)) {
+                    throw new AttributeRequiredException(key);
+                }
             }
         }
     }

@@ -55,7 +55,9 @@ SKIP :
 
 TOKEN :
 {
-    < ID: ["a"-"z","A"-"Z","_",":","0"-"9"] (["a"-"z","A"-"Z","_",":","0"-"9"])* >
+    < REQ: "required" >
+  | < OPT: "optional" >
+  | < ID: ["a"-"z","A"-"Z","_",":","0"-"9"] (["a"-"z","A"-"Z","_",":","0"-"9"])* >
   | < LBRACKET: "[" >
   | < RBRACKET: "]" >
 }
@@ -123,9 +125,12 @@ void attribute() :
   String aType;
   String anAttribute;
   int anArraySize = 0;
+  boolean required = false;
 }
 {
-  aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] ";" {
+  ((("required" {required = true;} | "optional") (aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] ";"))
+|
+  (aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] ";")  ) {
       if ( !( aType.equals("uint16")  ||
               aType.equals("int16")   ||
               aType.equals("uint32")  ||
@@ -145,14 +150,19 @@ void attribute() :
       String evt = getCurrentEvent();
       if ( evt == null ) throw new ParseException("Bad Event");
 
+      if (Log.isLogTrace()) {
+        Log.trace("Type: "+aType+" attr: "+anAttribute+" size: "+anArraySize);
+        Log.trace("Required: "+required);
+      }
       if (anArraySize > 0) {
-         if (Log.isLogTrace()) {
-           Log.trace("ARRAY! type: "+aType+" attr: "+anAttribute+" size: "+anArraySize);
-         }
-         aType = "[L"+aType;
-       }
+        aType = "[L"+aType;
+      }
 
-      if ( !getEventTemplateDB().addEventAttribute(evt, anAttribute, aType, anArraySize))
+      if ( !getEventTemplateDB().addEventAttribute(evt,
+                                                   anAttribute,
+                                                   aType,
+                                                   anArraySize,
+                                                   required))
       {
         throw new ParseException("Problem adding attribute "+evt+"("
                                  +aType+","+anAttribute+")");

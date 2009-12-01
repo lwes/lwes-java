@@ -35,18 +35,37 @@ public class BaseType {
      */
     Object typeObject = null;
 
+    /**
+     * Is this guy required
+     */
+    private boolean required;
+
+    /**
+     * What is the size restriction on this guy
+     */
+    private int sizeRestriction;
+
     public BaseType() {
     }
 
     public BaseType(String typeName, byte typeToken) {
-        this.typeName = typeName;
-        this.typeToken = typeToken;
+        this(typeName, typeToken, null, false, -1);
     }
 
     public BaseType(String typeName, byte typeToken, Object typeObject) {
+        this(typeName, typeToken, typeObject, false, -1);
+    }
+
+    public BaseType(String typeName,
+                    byte typeToken,
+                    Object typeObject,
+                    boolean required,
+                    int sizeRestriction) {
+        this.required = required;
+        this.sizeRestriction = sizeRestriction;
         this.typeName = typeName;
-        this.typeToken = typeToken;
         this.typeObject = typeObject;
+        this.typeToken = typeToken;
     }
 
     public void setTypeName(String typeName) {
@@ -71,6 +90,22 @@ public class BaseType {
 
     public Object getTypeObject() {
         return typeObject;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public Integer getSizeRestriction() {
+        return sizeRestriction;
+    }
+
+    public void setSizeRestriction(Integer sizeRestriction) {
+        this.sizeRestriction = sizeRestriction;
     }
 
     public int getByteSize(short encoding) throws NoSuchAttributeTypeException {
