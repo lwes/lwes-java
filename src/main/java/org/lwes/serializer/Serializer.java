@@ -210,7 +210,34 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
+    public static int serializeBooleanArray(boolean[] value,
+                                            byte[] bytes,
+                                            int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (boolean s : value) {
+            numbytes = serializeBOOLEAN(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
 
+    public static int serializeByteArray(byte[] value,
+                                         byte[] bytes,
+                                         int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (byte s : value) {
+            numbytes = serializeBYTE(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+    
     /*
        * @deprecated
        */

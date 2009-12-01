@@ -223,8 +223,9 @@ public class Deserializer {
         }
         return rtn;
     }
-     public static int[] deserializeUInt16Array(DeserializerState state,
-                                                byte[] bytes) {
+
+    public static int[] deserializeUInt16Array(DeserializerState state,
+                                               byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
         int[] rtn = new int[length];
         for (int i = 0; i < length; i++) {
@@ -234,7 +235,7 @@ public class Deserializer {
     }
 
     public static long[] deserializeUInt32Array(DeserializerState state,
-                                              byte[] bytes) {
+                                                byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
         long[] rtn = new long[length];
         for (int i = 0; i < length; i++) {
@@ -244,7 +245,7 @@ public class Deserializer {
     }
 
     public static long[] deserializeUInt64Array(DeserializerState state,
-                                               byte[] bytes) {
+                                                byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
         long[] rtn = new long[length];
         for (int i = 0; i < length; i++) {
@@ -252,7 +253,27 @@ public class Deserializer {
         }
         return rtn;
     }
-    
+
+    public static boolean[] deserializeBooleanArray(DeserializerState state,
+                                                    byte[] bytes) {
+        int length = deserializeUINT16(state, bytes);
+        boolean[] rtn = new boolean[length];
+        for (int i = 0; i < length; i++) {
+            rtn[i] = deserializeBOOLEAN(state, bytes);
+        }
+        return rtn;
+    }
+
+    public static byte[] deserializeByteArray(DeserializerState state,
+                                              byte[] bytes) {
+        int length = deserializeUINT16(state, bytes);
+        byte[] rtn = new byte[length];
+        for (int i = 0; i < length; i++) {
+            rtn[i] = deserializeBYTE(state, bytes);
+        }
+        return rtn;
+    }
+
     /**
      * Deserialize a String out of the byte array <tt>bytes</tt>
      *
@@ -350,5 +371,5 @@ public class Deserializer {
     public static String deserializeATTRIBUTEWORD(DeserializerState myState,
                                                   byte[] bytes) {
         return deserializeEVENTWORD(myState, bytes, Event.DEFAULT_ENCODING);
-	}
+    }
 }

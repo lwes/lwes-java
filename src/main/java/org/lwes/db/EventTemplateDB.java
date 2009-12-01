@@ -311,6 +311,12 @@ public class EventTemplateDB {
         else if (o instanceof long[]) {
             sizeToCheck = ((long[])o).length;
         }
+        else if (o instanceof boolean[]) {
+            sizeToCheck = ((boolean[])o).length;
+        }
+        else if (o instanceof byte[]) {
+            sizeToCheck = ((byte[])o).length;
+        }
         else {
             Object[] arr = (Object[]) attributeValue.getTypeObject();
             sizeToCheck = arr.length;
@@ -649,6 +655,12 @@ public class EventTemplateDB {
         knownTypes.put(TypeID.UINT64_ARRAY_STRING,
                        new BaseType(TypeID.UINT64_ARRAY_STRING,
                                     TypeID.UINT64_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.BOOLEAN_ARRAY_STRING,
+                       new BaseType(TypeID.BOOLEAN_ARRAY_STRING,
+                                    TypeID.BOOLEAN_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.BYTE_ARRAY_STRING,
+                       new BaseType(TypeID.BYTE_ARRAY_STRING,
+                                    TypeID.BYTE_ARRAY_TOKEN, null));
     }
 
     public Map<String, BaseType> getMetaFields() {

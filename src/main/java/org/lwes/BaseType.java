@@ -166,6 +166,12 @@ public class BaseType {
             case TypeID.UINT64_ARRAY_TOKEN:
                 size = ((long[]) typeObject).length*8+2;
                 break;
+            case TypeID.BOOLEAN_ARRAY_TOKEN:
+                size = ((boolean[]) typeObject).length+2;
+                break;
+            case TypeID.BYTE_ARRAY_TOKEN:
+                size = ((byte[]) typeObject).length+2;
+                break;
             default:
                 throw new NoSuchAttributeTypeException("Unknown size of BaseType " + typeName);
         }

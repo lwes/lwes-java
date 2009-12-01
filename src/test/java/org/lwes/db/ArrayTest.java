@@ -305,4 +305,44 @@ public class ArrayTest {
         }
         assertTrue("No exception was thrown for array length", exceptionThrown);
     }
+
+    @Test
+    public void testBooleanArray() throws EventSystemException {
+        Event evt = new Event("TestEvent", true, template);
+        evt.setBooleanArray("field8", new boolean[]{true, false});
+        boolean[] ar = evt.getBooleanArray("field8");
+        assertNotNull("boolean array was null", ar);
+        assertEquals("length was incorrect", 2, ar.length);
+
+        // Make sure we can serialize/deserialize it
+        byte[] serializedEvent = evt.serialize();
+        Event evt2 = new Event(serializedEvent, true, template);
+        assertNotNull(evt2);
+        boolean[] a2 = evt2.getBooleanArray("field8");
+        assertNotNull(a2);
+        assertEquals("deserialized array length was incorrect", 2, a2.length);
+        assertEquals("a2[0]", a2[0], true);
+        assertEquals("a2[1]", a2[1], false);
+    }
+
+    @Test
+    public void testByteArray() throws EventSystemException {
+        Event evt = new Event("TestEvent", true, template);
+        evt.setByteArray("field9", new byte[]{(byte) 0x1, (byte) 0x2});
+        byte[] ar = evt.getByteArray("field9");
+        assertNotNull("boolean array was null", ar);
+        assertEquals("length was incorrect", 2, ar.length);
+
+        // Make sure we can serialize/deserialize it
+        byte[] serializedEvent = evt.serialize();
+        Event evt2 = new Event(serializedEvent, true, template);
+        assertNotNull(evt2);
+        byte[] a2 = evt2.getByteArray("field9");
+        assertNotNull(a2);
+        assertEquals("deserialized array length was incorrect", 2, a2.length);
+        assertEquals("a2[0]", a2[0], (byte) 0x1);
+        assertEquals("a2[1]", a2[1], (byte) 0x2);
+    }
+
+
 }
