@@ -45,7 +45,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.6</version>                
+                <version>2.6</version>
                 <executions>
                     <execution>
                         <id>javacc</id>
@@ -82,4 +82,18 @@
             <url>http://repo1.maven.org/maven2/</url>
         </repository>
     </repositories>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>emma-maven-plugin</artifactId>
+                <inherited>true</inherited>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>surefire-report-maven-plugin</artifactId>
+                <inherited>true</inherited>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
