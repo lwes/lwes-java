@@ -1,0 +1,6 @@
+build
+docs
+*.jar
+*.zip
+*.tgz
+*.tar.gz
