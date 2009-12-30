@@ -78,7 +78,9 @@ public class DatagramDequeuer extends ThreadedDequeuer {
             event.setInt64(Event.RECEIPT_TIME, timestamp);
             event.setIPAddress(Event.SENDER_IP, address);
             event.setUInt16(Event.SENDER_PORT, port);
-            Log.trace("Dispatching event " + event.toString());
+            if (Log.isLogTrace()) {
+                Log.trace("Dispatching event " + event.toString());
+            }
             dispatchEvent(event);
         }
         catch (Exception e) {
