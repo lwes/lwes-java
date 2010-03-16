@@ -3,14 +3,17 @@ package org.lwes.util;
  * @author fmaritato
  */
 
+import org.junit.Test;
+import org.lwes.Event;
+import org.lwes.EventSystemException;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class IPAddressTest {
 
@@ -56,5 +59,34 @@ public class IPAddressTest {
         two = new IPAddress(InetAddress.getByName("www.yahoo.com"));
         assertFalse("InetAddress.getByName not equal", one.equals(two));
         assertNotSame("hash codes equal", one.hashCode(), two.hashCode());
+    }
+
+    @Test
+    public void testGetSet() throws EventSystemException, UnknownHostException {
+        Event e = new Event("TestEvent", null);
+        IPAddress ip = new IPAddress("127.0.0.1");
+        e.setIPAddress("ipaddr", ip);
+        assertEquals("Type fail",
+                     ip.getClass().getName(),
+                     e.getIPAddressObj("ipaddr").getClass().getName());
+        assertEquals("Type fail",
+                     new byte[]{}.getClass().getName(),
+                     e.getIPAddress("ipaddr").getClass().getName());
+
+        e.setIPAddress("inetaddr", InetAddress.getLocalHost());
+        assertEquals("Type fail",
+                     ip.getClass().getName(),
+                     e.getIPAddressObj("inetaddr").getClass().getName());
+        assertEquals("Type fail",
+                     new byte[]{}.getClass().getName(),
+                     e.getIPAddress("inetaddr").getClass().getName());
+
+        e.setIPAddress("bytesaddr", new byte[]{(byte) 127, (byte) 0, (byte) 0, (byte) 1});
+        assertEquals("Type fail",
+                     ip.getClass().getName(),
+                     e.getIPAddressObj("bytesaddr").getClass().getName());
+        assertEquals("Type fail",
+                     new byte[]{}.getClass().getName(),
+                     e.getIPAddress("bytesaddr").getClass().getName());
     }
 }
