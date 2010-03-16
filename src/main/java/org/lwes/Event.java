@@ -412,10 +412,18 @@ public class Event {
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
     public byte[] getIPAddress(String attributeName) throws NoSuchAttributeException {
-        return (byte[]) get(attributeName);
+        return ((IPAddress) get(attributeName)).getInetAddressAsBytes();
     }
 
-
+    /**
+     * Accessor that returns the ip addres as an IPAddress object.
+     * @param attributeName name of the attribute to fetch
+     * @return IPAddress
+     * @throws NoSuchAttributeException
+     */
+    public IPAddress getIPAddressObj(String attributeName) throws NoSuchAttributeException {
+        return (IPAddress) get(attributeName);
+    }
     /**
      * Set the object's attribute <tt>attributeName</tt> with the Object given
      *
@@ -1016,6 +1024,8 @@ public class Event {
      * @throws EventSystemException
      */
     public void validate() throws EventSystemException {
+        ValidationExceptions ve = new ValidationExceptions(name);
+
         EventTemplateDB templ = getEventTemplateDB();
         if (templ == null) {
             throw new EventSystemException("No template defined.");
@@ -1025,7 +1035,8 @@ public class Event {
         }
         for (String key : attributes.keySet()) {
             if (!templ.checkForAttribute(name, key)) {
-                throw new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name);
+                ve.addException(new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name));
+                continue;
             }
             Object value = get(key);
             BaseType expected = templ.getBaseTypeForObjectAttribute(name, key, value);
@@ -1044,9 +1055,12 @@ public class Event {
                 bt = expected;
             }
             if (!templ.checkTypeForAttribute(name, key, bt)) {
-                throw new NoSuchAttributeTypeException("Wrong type '" + bt.getTypeName() +
-                                                       "' for " + name + "." + key);
+                ve.addException(new NoSuchAttributeTypeException("Wrong type '" + bt.getTypeName() +
+                                                       "' for " + name + "." + key));
             }
+        }
+        if (ve.hasExceptions()) {
+            throw ve;
         }
     }
 }
