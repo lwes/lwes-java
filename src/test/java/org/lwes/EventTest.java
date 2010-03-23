@@ -18,6 +18,7 @@ import java.io.File;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 public class EventTest {
 
@@ -97,30 +98,34 @@ public class EventTest {
 
     @Test
     public void testValidateBadTypeField() throws EventSystemException {
-        boolean exceptionThrown = false;
         Event evt = new Event("Test", false, eventTemplate);
         try {
             evt.setInt16("field1", (short) 15);
             evt.validate();
         }
-        catch (NoSuchAttributeTypeException e) {
-            exceptionThrown = true;
+        catch (ValidationExceptions e) {
+            List<EventSystemException> exc = e.getAllExceptions();
+            assertEquals("Wrong num of exceptions", 1, exc.size());
+            assertEquals("Wrong exception",
+                         "org.lwes.NoSuchAttributeTypeException",
+                         exc.get(0).getClass().getName());
         }
-        assertTrue("No Exception for wrong type set", exceptionThrown);
     }
 
     @Test
     public void testValidateBadField() throws EventSystemException {
-        boolean exceptionThrown = false;
         Event evt = new Event("Test", false, eventTemplate);
         try {
             evt.setInt16("field3", (short) 15);
             evt.validate();
         }
-        catch (NoSuchAttributeException e) {
-            exceptionThrown = true;
+        catch (ValidationExceptions e) {
+            List<EventSystemException> exc = e.getAllExceptions();
+            assertEquals("Wrong num of exceptions", 1, exc.size());
+            assertEquals("Wrong exception",
+                         "org.lwes.NoSuchAttributeException",
+                         exc.get(0).getClass().getName());
         }
-        assertTrue("No exception for invalid field", exceptionThrown);
     }
 
     @Test
