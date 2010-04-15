@@ -1,6 +1,7 @@
 package org.lwes.db;
 
 import org.lwes.BaseType;
+import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 import org.lwes.TypeID;
 import org.lwes.util.IPAddress;
@@ -178,6 +179,24 @@ public class EventTemplateDB {
         return true;
     }
 
+    public synchronized boolean addEventAttribute(String anEventName,
+                                                  String anAttributeName,
+                                                  String anAttributeType) {
+        return addEventAttribute(anEventName,
+                                 anAttributeName,
+                                 anAttributeType,
+                                 -1,
+                                 false);
+    }
+
+    public synchronized boolean addEventAttribute(String anEventName,
+                                                  String anAttributeName,
+                                                  String anAttributeType,
+                                                  Integer size,
+                                                  boolean required) {
+        return addEventAttribute(anEventName, anAttributeName, anAttributeType, size, required, null);
+    }
+    
     /**
      * Add an attribute to an Event in the EventTemplateDB
      *
@@ -185,10 +204,17 @@ public class EventTemplateDB {
      * @param anAttributeName the name of the attribute to add
      * @param anAttributeType the type of the attribute, should be the name of the type
      *                        given in the ESF Specification.
+     * @param size            The size restriction for this attribute
+     * @param required        Is this attribute required
      * @return true if the attribute can be added, false if it can not.
      */
-    public synchronized boolean addEventAttribute(String anEventName, String anAttributeName,
-                                                  String anAttributeType) {
+    public synchronized boolean addEventAttribute(String anEventName,
+                                                  String anAttributeName,
+                                                  String anAttributeType,
+                                                  Integer size,
+                                                  boolean required,
+                                                  Object defaultValue) {
+
         if (anEventName == null || anAttributeName == null || anAttributeType == null) {
             return false;
         }
@@ -210,13 +236,15 @@ public class EventTemplateDB {
                 Log.warning("Unable to add attribute named " + anAttributeName +
                             "as it is a reserved word, skipping");
                 return false;
-
             }
 
             if (events.containsKey(anEventName)) {
                 Map<String, BaseType> evtHash = events.get(anEventName);
                 if (checkForType(anAttributeType)) {
-                    evtHash.put(anAttributeName, knownTypes.get(anAttributeType));
+                    BaseType bt = knownTypes.get(anAttributeType).cloneBaseType();
+                    bt.setRequired(required);
+                    bt.setSizeRestriction(size);
+                    evtHash.put(anAttributeName, bt);
                     return true;
                 }
                 else {
@@ -256,6 +284,58 @@ public class EventTemplateDB {
             return false;
         }
         return knownTypes.containsKey(aTypeName);
+    }
+
+    public void checkForSize(String eventName,
+                             String attributeName,
+                             BaseType attributeValue) throws EventAttributeSizeException {
+
+        if (!attributeValue.getTypeName().startsWith("[L")) {
+            if (Log.isLogDebug()) {
+                Log.debug("value for attribute " + attributeName + " is not an array.");
+            }
+            return;
+        }
+
+        Map<String, BaseType> evtMap = events.get(eventName);
+        if (evtMap == null) {
+            Log.error("event definition did not exist");
+            return;
+        }
+        BaseType attrBaseType = evtMap.get(attributeName);
+        if (attrBaseType == null) {
+            Log.error("attribute definition did not exist");
+            return;
+        }
+
+        int sizeToCheck = 0;
+        int size = attrBaseType.getSizeRestriction();
+        Object o = attributeValue.getTypeObject();
+        if (o instanceof short[]) {
+            sizeToCheck = ((short[])o).length;
+        }
+        else if (o instanceof int[]) {
+            sizeToCheck = ((int[])o).length;
+        }
+        else if (o instanceof long[]) {
+            sizeToCheck = ((long[])o).length;
+        }
+        else if (o instanceof boolean[]) {
+            sizeToCheck = ((boolean[])o).length;
+        }
+        else if (o instanceof byte[]) {
+            sizeToCheck = ((byte[])o).length;
+        }
+        else {
+            Object[] arr = (Object[]) attributeValue.getTypeObject();
+            sizeToCheck = arr.length;
+        }
+        if (Log.isLogTrace()) {
+            Log.trace("sizeToCheck: " + sizeToCheck + " size: " + size);
+        }
+        if (size > 0 && sizeToCheck > size) {
+            throw new EventAttributeSizeException(attributeName, sizeToCheck, size);
+        }
     }
 
     /**
@@ -347,6 +427,13 @@ public class EventTemplateDB {
         if (checkForAttribute(anEventName, anAttributeName)) {
             Map<String, BaseType> evtHash = events.get(anEventName);
             String storedTypeName = evtHash.get(anAttributeName).getTypeName();
+            System.out
+                    .println("attr: " +
+                             anAttributeName +
+                             " stored: " +
+                             storedTypeName +
+                             " passed in: " +
+                             anAttributeType);
             if (anAttributeType.equals(storedTypeName)) {
                 return true;
             }
@@ -556,6 +643,33 @@ public class EventTemplateDB {
                                                           TypeID.UINT64_TOKEN, BigInteger.ZERO));
         knownTypes.put(TypeID.BOOLEAN_STRING, new BaseType(TypeID.BOOLEAN_STRING,
                                                            TypeID.BOOLEAN_TOKEN, true));
+        knownTypes.put(TypeID.STRING_ARRAY_STRING,
+                       new BaseType(TypeID.STRING_ARRAY_STRING,
+                                    TypeID.STRING_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.INT16_ARRAY_STRING,
+                       new BaseType(TypeID.INT16_ARRAY_STRING,
+                                    TypeID.INT16_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.INT32_ARRAY_STRING,
+                       new BaseType(TypeID.INT32_ARRAY_STRING,
+                                    TypeID.INT32_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.INT64_ARRAY_STRING,
+                       new BaseType(TypeID.INT64_ARRAY_STRING,
+                                    TypeID.INT64_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.UINT16_ARRAY_STRING,
+                       new BaseType(TypeID.UINT16_ARRAY_STRING,
+                                    TypeID.UINT16_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.UINT32_ARRAY_STRING,
+                       new BaseType(TypeID.UINT32_ARRAY_STRING,
+                                    TypeID.UINT32_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.UINT64_ARRAY_STRING,
+                       new BaseType(TypeID.UINT64_ARRAY_STRING,
+                                    TypeID.UINT64_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.BOOLEAN_ARRAY_STRING,
+                       new BaseType(TypeID.BOOLEAN_ARRAY_STRING,
+                                    TypeID.BOOLEAN_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.BYTE_ARRAY_STRING,
+                       new BaseType(TypeID.BYTE_ARRAY_STRING,
+                                    TypeID.BYTE_ARRAY_TOKEN, null));
     }
 
     public Map<String, BaseType> getMetaFields() {

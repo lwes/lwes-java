@@ -10,15 +10,7 @@ MetaEventInfo
 
 TestEvent
 {
-  string field1[10];
-  int16 field2[5];
-  int32 field3[5];
-  int64 field4[2];
-
-  uint16 field5[5];
-  uint32 field6[5];
-  uint64 field7[5];
-
-  boolean field8[5];
-  byte field9[5];
+  required string field1;
+  optional string field2;
+  int32 field3;
 }

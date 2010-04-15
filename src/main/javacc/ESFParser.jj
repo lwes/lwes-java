@@ -9,6 +9,8 @@ PARSER_BEGIN(ESFParser)
 
 package org.lwes.db;
 
+import org.lwes.util.Log;
+
 public class ESFParser
 {
   private String currentEvent;
@@ -53,7 +55,11 @@ SKIP :
 
 TOKEN :
 {
-  < ID: ["a"-"z","A"-"Z","_",":","0"-"9"] (["a"-"z","A"-"Z","_",":","0"-"9"])* >
+    < REQ: "required" >
+  | < OPT: "optional" >
+  | < ID: ["a"-"z","A"-"Z","_",":","0"-"9"] (["a"-"z","A"-"Z","_",":","0"-"9"])* >
+  | < LBRACKET: "[" >
+  | < RBRACKET: "]" >
 }
 
 /**
@@ -103,13 +109,45 @@ void attributeList() :
   attribute() ( attribute() )*
 }
 
+int arraySize() :
+{
+  Token t;
+}
+{
+    t = <ID>
+    {
+    return Integer.parseInt(t.image);
+    }
+}
+
+Object defaultValue() :
+{
+    Token t;
+}
+{
+    t = <ID>
+    {
+    try {
+      return Integer.parseInt(t.image);
+    }
+    catch(NumberFormatException e) {
+      return Double.parseDouble(t.image);
+    }
+    }
+}
+
 void attribute() :
 {
   String aType;
   String anAttribute;
+  int anArraySize = 0;
+  boolean required = false;
+  Object aDefaultValue = null;
 }
 {
-  aType=type() anAttribute=attributeName() ";" {
+  ((("required" {required = true;} | "optional") (aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] [ "=" aDefaultValue = defaultValue() ] ";"))
+|
+  (aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] ";")  ) {
       if ( !( aType.equals("uint16")  ||
               aType.equals("int16")   ||
               aType.equals("uint32")  ||
@@ -118,15 +156,33 @@ void attribute() :
               aType.equals("ip_addr") ||
               aType.equals("int64")   ||
               aType.equals("uint64")  ||
+              aType.equals("byte")    ||
               aType.equals("boolean")
             )
          )
        {
          throw new ParseException("No such type '"+aType+"'");
        }
+
       String evt = getCurrentEvent();
       if ( evt == null ) throw new ParseException("Bad Event");
-      if ( !getEventTemplateDB().addEventAttribute(evt,anAttribute,aType))
+
+      if (Log.isLogTrace()) {
+        Log.trace("Type: "+aType+" attr: "+anAttribute+" size: "+anArraySize);
+        Log.trace("Required: "+required);
+        Log.trace("default value: "+aDefaultValue);
+      }
+
+      if (anArraySize > 0) {
+        aType = "[L"+aType;
+      }
+
+      if ( !getEventTemplateDB().addEventAttribute(evt,
+                                                   anAttribute,
+                                                   aType,
+                                                   anArraySize,
+                                                   required,
+                                                   aDefaultValue))
       {
         throw new ParseException("Problem adding attribute "+evt+"("
                                  +aType+","+anAttribute+")");

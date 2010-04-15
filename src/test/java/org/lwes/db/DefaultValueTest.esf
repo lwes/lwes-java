@@ -1,0 +1,18 @@
+MetaEventInfo
+{
+  ip_addr SenderIP;    # IP address of Sender
+  uint16  SenderPort;  # IP port of Sender
+  int64   ReceiptTime; # time this event was received, in millis since epoch
+  int16   enc;         # encoding of strings in the event; 0: iso-8859-1, 1: utf-8
+  uint16  SiteID;      # id of site sending the event
+
+  #string  version = "1.0.0"; # event version
+}
+
+# Debugging messages
+DefaultValueEvent
+{
+   required int32    anInt = 5;
+   #required float    pi    = 3.141594; # numeric default value
+   #optional boolean  aBool = true;    # boolean default value
+}

@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Event {
@@ -281,6 +282,103 @@ public class Event {
         return null;
     }
 
+    public short[] getInt16Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof short[]) {
+            return (short[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public int[] getInt32Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof int[]) {
+            return (int[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public long[] getInt64Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof long[]) {
+            return (long[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public int[] getUInt16Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof int[]) {
+            return (int[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public long[] getUInt32Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof long[]) {
+            return (long[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public long[] getUInt64Array(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof long[]) {
+            return (long[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public String[] getStringArray(String attributeName)
+            throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof String[]) {
+            return (String[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public boolean[] getBooleanArray(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof boolean[]) {
+            return (boolean[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public byte[] getByteArray(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof byte[]) {
+            return (byte[]) o;
+        }
+        else {
+            return null;
+        }
+    }
+
     /**
      * Method to check if an attribute is set in the event. This method does not throw
      * NoSuchAttributeException because it shouldn't really care. If it's not there, it's
@@ -417,6 +515,7 @@ public class Event {
 
     /**
      * Accessor that returns the ip addres as an IPAddress object.
+     *
      * @param attributeName name of the attribute to fetch
      * @return IPAddress
      * @throws NoSuchAttributeException
@@ -424,6 +523,7 @@ public class Event {
     public IPAddress getIPAddressObj(String attributeName) throws NoSuchAttributeException {
         return (IPAddress) get(attributeName);
     }
+
     /**
      * Set the object's attribute <tt>attributeName</tt> with the Object given
      *
@@ -467,6 +567,7 @@ public class Event {
             else {
                 throw new NoSuchAttributeException("Attribute " + attribute + " does not exist for event " + name);
             }
+            getEventTemplateDB().checkForSize(name, attribute, anObject);
         }
 
         if (anObject.getTypeObject() != null) {
@@ -482,6 +583,63 @@ public class Event {
             bytesStoreSize += (attribute.length() + 1) + anObject.bytesStoreSize(encoding);
             attributes.put(attribute, anObject);
         }
+    }
+
+    public void setInt16Array(String attributeName, short[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.INT16_ARRAY_STRING,
+                                        TypeID.INT16_ARRAY_TOKEN,
+                                        value));
+    }
+
+    public void setInt32Array(String attributeName, int[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.INT32_ARRAY_STRING,
+                                        TypeID.INT32_ARRAY_TOKEN,
+                                        value));
+    }
+
+    public void setInt64Array(String attributeName, long[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.INT64_ARRAY_STRING,
+                                        TypeID.INT64_ARRAY_TOKEN,
+                                        value));
+    }
+
+    public void setUInt16Array(String attributeName, int[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.UINT16_ARRAY_STRING,
+                                        TypeID.UINT16_ARRAY_TOKEN,
+                                        value));
+    }
+
+    public void setUInt32Array(String attributeName, long[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.UINT32_ARRAY_STRING,
+                                        TypeID.UINT32_ARRAY_TOKEN,
+                                        value));
+    }
+
+    public void setUInt64Array(String attributeName, long[] value) throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.UINT64_ARRAY_STRING,
+                                        TypeID.UINT64_ARRAY_TOKEN,
+                                        value));
+    }
+
+    public void setStringArray(String attributeName, String[] value)
+            throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.STRING_ARRAY_STRING,
+                                        TypeID.STRING_ARRAY_TOKEN,
+                                        value));
+    }
+
+    public void setBooleanArray(String attributeName, boolean[] value)
+            throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.BOOLEAN_ARRAY_STRING,
+                                        TypeID.BOOLEAN_ARRAY_TOKEN,
+                                        value));
+    }
+
+    public void setByteArray(String attributeName, byte[] value)
+            throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.BYTE_ARRAY_STRING,
+                                        TypeID.BYTE_ARRAY_TOKEN,
+                                        value));
     }
 
     /**
@@ -831,6 +989,34 @@ public class Event {
                     case TypeID.IPADDR_TOKEN:
                         offset += Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
                         break;
+                    case TypeID.STRING_ARRAY_TOKEN:
+                        offset += Serializer.serializeStringArray
+                                (((String[]) data), bytes, offset, encoding);
+                        break;
+                    case TypeID.INT16_ARRAY_TOKEN:
+                        offset += Serializer.serializeInt16Array((short[]) data, bytes, offset);
+                        break;
+                    case TypeID.INT32_ARRAY_TOKEN:
+                        offset += Serializer.serializeInt32Array((int[]) data, bytes, offset);
+                        break;
+                    case TypeID.INT64_ARRAY_TOKEN:
+                        offset += Serializer.serializeInt64Array((long[]) data, bytes, offset);
+                        break;
+                    case TypeID.UINT16_ARRAY_TOKEN:
+                        offset += Serializer.serializeUInt16Array((int[]) data, bytes, offset);
+                        break;
+                    case TypeID.UINT32_ARRAY_TOKEN:
+                        offset += Serializer.serializeUInt32Array((long[]) data, bytes, offset);
+                        break;
+                    case TypeID.UINT64_ARRAY_TOKEN:
+                        offset += Serializer.serializeUInt64Array((long[]) data, bytes, offset);
+                        break;
+                    case TypeID.BOOLEAN_ARRAY_TOKEN:
+                        offset += Serializer.serializeBooleanArray((boolean[]) data, bytes, offset);
+                        break;
+                    case TypeID.BYTE_ARRAY_TOKEN:
+                        offset += Serializer.serializeByteArray((byte[]) data, bytes, offset);
+                        break;
                     default:
                         Log.warning("Unknown BaseType token: " + typeToken);
                         break;
@@ -920,6 +1106,42 @@ public class Event {
                     case TypeID.IPADDR_TOKEN:
                         byte[] inetAddress = Deserializer.deserializeIPADDR(state, bytes);
                         setIPAddress(attribute, inetAddress);
+                        break;
+                    case TypeID.STRING_ARRAY_TOKEN:
+                        String[] sArray = Deserializer.deserializeStringArray(state, bytes, encoding);
+                        setStringArray(attribute, sArray);
+                        break;
+                    case TypeID.INT16_ARRAY_TOKEN:
+                        short[] as = Deserializer.deserializeInt16Array(state, bytes);
+                        setInt16Array(attribute, as);
+                        break;
+                    case TypeID.INT32_ARRAY_TOKEN:
+                        int[] ai = Deserializer.deserializeInt32Array(state, bytes);
+                        setInt32Array(attribute, ai);
+                        break;
+                    case TypeID.INT64_ARRAY_TOKEN:
+                        long[] al = Deserializer.deserializeInt64Array(state, bytes);
+                        setInt64Array(attribute, al);
+                        break;
+                    case TypeID.UINT16_ARRAY_TOKEN:
+                        int[] uas = Deserializer.deserializeUInt16Array(state, bytes);
+                        setUInt16Array(attribute, uas);
+                        break;
+                    case TypeID.UINT32_ARRAY_TOKEN:
+                        long[] uai = Deserializer.deserializeUInt32Array(state, bytes);
+                        setUInt32Array(attribute, uai);
+                        break;
+                    case TypeID.UINT64_ARRAY_TOKEN:
+                        long[] ual = Deserializer.deserializeUInt64Array(state, bytes);
+                        setUInt64Array(attribute, ual);
+                        break;
+                    case TypeID.BOOLEAN_ARRAY_TOKEN:
+                        boolean[] ba = Deserializer.deserializeBooleanArray(state, bytes);
+                        setBooleanArray(attribute, ba);
+                        break;
+                    case TypeID.BYTE_ARRAY_TOKEN:
+                        byte[] bar = Deserializer.deserializeByteArray(state, bytes);
+                        setByteArray(attribute, bar);
                         break;
                     default:
                         Log.warning("Unknown type " + type + " in deserialization");
@@ -1021,26 +1243,37 @@ public class Event {
     /**
      * This method can be used to validate an event after it has been created.
      *
-     * @throws EventSystemException
+     * @throws ValidationExceptions A list of validation errors
      */
-    public void validate() throws EventSystemException {
+    public void validate() throws ValidationExceptions {
         ValidationExceptions ve = new ValidationExceptions(name);
 
         EventTemplateDB templ = getEventTemplateDB();
         if (templ == null) {
-            throw new EventSystemException("No template defined.");
+            ve.addException(new EventSystemException("No template defined."));
+            throw ve;
         }
         if (!templ.checkForEvent(name)) {
-            throw new NoSuchEventException("Event " + name + " does not exist in event definition");
+            ve.addException(new NoSuchEventException("Event " + name + " does not exist in event definition"));
+            throw ve;
         }
         for (String key : attributes.keySet()) {
             if (!templ.checkForAttribute(name, key)) {
                 ve.addException(new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name));
                 continue;
             }
-            Object value = get(key);
+            Object value;
+            try {
+                value = get(key);
+            }
+            catch (NoSuchAttributeException e) {
+                ve.addException(e);
+                continue;
+            }
+
             BaseType expected = templ.getBaseTypeForObjectAttribute(name, key, value);
             BaseType bt = BaseType.baseTypeFromObject(value);
+
             /**
              * There are no unsigned values in java so they are kind of a special case
              * in that i can't guess which one the person meant. This small hack treats
@@ -1056,9 +1289,19 @@ public class Event {
             }
             if (!templ.checkTypeForAttribute(name, key, bt)) {
                 ve.addException(new NoSuchAttributeTypeException("Wrong type '" + bt.getTypeName() +
-                                                       "' for " + name + "." + key));
+                                                                 "' for " + name + "." + key));
             }
         }
+        Map<String, BaseType> map = templ.getEvents().get(name);
+        for (String key : map.keySet()) {
+            BaseType bt = map.get(key);
+            if (bt.isRequired()) {
+                if (!attributes.containsKey(key)) {
+                    ve.addException(new AttributeRequiredException(key));
+                }
+            }
+        }
+
         if (ve.hasExceptions()) {
             throw ve;
         }

@@ -35,18 +35,60 @@ public class BaseType {
      */
     Object typeObject = null;
 
+    /**
+     * Is this guy required
+     */
+    private boolean required;
+
+    /**
+     * What is the size restriction on this guy
+     */
+    private int sizeRestriction;
+
+    /**
+     * What the default value for this guy should be.
+     */
+    private Object defaultValue;
+
     public BaseType() {
     }
 
     public BaseType(String typeName, byte typeToken) {
-        this.typeName = typeName;
-        this.typeToken = typeToken;
+        this(typeName, typeToken, null, false, -1);
     }
 
     public BaseType(String typeName, byte typeToken, Object typeObject) {
+        this(typeName, typeToken, typeObject, false, -1);
+    }
+
+    public BaseType(String typeName,
+                    byte typeToken,
+                    Object typeObject,
+                    boolean required,
+                    int sizeRestriction) {
+         this(typeName, typeToken, typeObject, required, sizeRestriction, null);
+    }
+
+    public BaseType(String typeName,
+                    byte typeToken,
+                    Object typeObject,
+                    boolean required,
+                    int sizeRestriction,
+                    Object defaultValue) {
+        this.required = required;
+        this.sizeRestriction = sizeRestriction;
         this.typeName = typeName;
-        this.typeToken = typeToken;
         this.typeObject = typeObject;
+        this.typeToken = typeToken;
+        this.defaultValue = defaultValue;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     public void setTypeName(String typeName) {
@@ -71,6 +113,22 @@ public class BaseType {
 
     public Object getTypeObject() {
         return typeObject;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public Integer getSizeRestriction() {
+        return sizeRestriction;
+    }
+
+    public void setSizeRestriction(Integer sizeRestriction) {
+        this.sizeRestriction = sizeRestriction;
     }
 
     public int getByteSize(short encoding) throws NoSuchAttributeTypeException {
@@ -104,6 +162,38 @@ public class BaseType {
                 break;
             case TypeID.BOOLEAN_TOKEN:
                 size = 1;
+                break;
+            case TypeID.STRING_ARRAY_TOKEN:
+                int count = 2; // start with the length of the array
+                String[] anArray = (String[]) typeObject;
+                for (String s : anArray) {
+                    count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
+                }
+                size = count;
+                break;
+            case TypeID.INT16_ARRAY_TOKEN:
+                size = ((short[]) typeObject).length*2+2;
+                break;
+            case TypeID.INT32_ARRAY_TOKEN:
+                size = ((int[]) typeObject).length*4+2;
+                break;
+            case TypeID.INT64_ARRAY_TOKEN:
+                size = ((long[]) typeObject).length*8+2;
+                break;
+            case TypeID.UINT16_ARRAY_TOKEN:
+                size = ((int[]) typeObject).length*4+2;
+                break;
+            case TypeID.UINT32_ARRAY_TOKEN:
+                size = ((long[]) typeObject).length*8+2;
+                break;
+            case TypeID.UINT64_ARRAY_TOKEN:
+                size = ((long[]) typeObject).length*8+2;
+                break;
+            case TypeID.BOOLEAN_ARRAY_TOKEN:
+                size = ((boolean[]) typeObject).length+2;
+                break;
+            case TypeID.BYTE_ARRAY_TOKEN:
+                size = ((byte[]) typeObject).length+2;
                 break;
             default:
                 throw new NoSuchAttributeTypeException("Unknown size of BaseType " + typeName);

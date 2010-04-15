@@ -1,7 +1,6 @@
 package org.lwes.util;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This is a wrapper class for logging.  Instead of embedding log4j or JDK logging
@@ -14,7 +13,7 @@ import java.util.logging.Logger;
  * @author Michael P. Lum
  */
 public class Log {
-	private static Logger logger = Logger.getLogger("org.lwes");
+	private static org.apache.commons.logging.Log logger = LogFactory.getLog(Log.class);
 
     /**
      * Check if debug logging is turned on. This should *always* be called
@@ -23,7 +22,7 @@ public class Log {
      * @return true if debug logging is on.
      */
     public static boolean isLogDebug() {
-        return logger.isLoggable(Level.FINER);
+        return logger.isDebugEnabled();
     }
 
     /**
@@ -33,7 +32,7 @@ public class Log {
      * @return true if trace logging is on.
      */
     public static boolean isLogTrace() {
-        return logger.isLoggable(Level.FINEST);
+        return logger.isTraceEnabled();
     }
 
     /**
@@ -43,7 +42,7 @@ public class Log {
      * @return true if info logging is on.
      */
     public static boolean isLogInfo() {
-        return logger.isLoggable(Level.FINE);
+        return logger.isInfoEnabled();
     }
 
 	/**
@@ -51,7 +50,7 @@ public class Log {
 	 * @param message the message to be logged
 	 */
 	public static void trace(String message) {
-		logger.log(Level.FINEST, message);
+		logger.trace(message);
 	}
 
 	/**
@@ -59,7 +58,7 @@ public class Log {
 	 * @param message the message to be logged
 	 */
 	public static void debug(String message) {
-		logger.log(Level.FINER, message);
+		logger.debug(message);
 	}
 
 	/**
@@ -67,7 +66,7 @@ public class Log {
 	 * @param message the message to be logged
 	 */
 	public static void info(String message) {
-		logger.log(Level.FINE, message);
+		logger.info(message);
 	}
 
 	/**
@@ -75,7 +74,7 @@ public class Log {
 	 * @param message the message to be logged
 	 */
 	public static void warning(String message) {
-		logger.log(Level.WARNING, message);
+		logger.warn(message);
 	}
 
 	/**
@@ -84,7 +83,7 @@ public class Log {
 	 * @param t the Throwable associated with the log message
 	 */
 	public static void warning(String message, Throwable t) {
-		logger.log(Level.WARNING, message, t);
+		logger.warn(message, t);
 	}
 
 
@@ -93,7 +92,7 @@ public class Log {
 	 * @param message the message to be logged
 	 */
 	public static void error(String message) {
-		logger.log(Level.SEVERE, message);
+		logger.error(message);
 	}
 
 	/**
@@ -102,6 +101,6 @@ public class Log {
 	 * @param t the Throwable associated with the log message
 	 */
 	public static void error(String message, Throwable t) {
-		logger.log(Level.SEVERE, message, t);
+		logger.error(message, t);
 	}
 }

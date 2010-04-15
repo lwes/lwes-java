@@ -99,6 +99,145 @@ public class Serializer {
 
     }
 
+    /**
+     * String arrays are serialized as follows:
+     * <array_name_len><array_name_bytes><type>
+     * <array_length><serialized_type_1>...<serialized_type_n>
+     *
+     * @param value
+     * @param bytes
+     * @param offset
+     * @param encoding
+     * @return
+     */
+    public static int serializeStringArray(String[] value,
+                                           byte[] bytes,
+                                           int offset,
+                                           short encoding) {
+
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (String s : value) {
+            numbytes = serializeSTRING(s, bytes, offset, encoding);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeInt16Array(short[] value,
+                                          byte[] bytes,
+                                          int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (short s : value) {
+            numbytes = serializeINT16(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeInt32Array(int[] value,
+                                          byte[] bytes,
+                                          int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (int s : value) {
+            numbytes = serializeINT32(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeInt64Array(long[] value,
+                                          byte[] bytes,
+                                          int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (long s : value) {
+            numbytes = serializeINT64(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeUInt16Array(int[] value,
+                                           byte[] bytes,
+                                           int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (int s : value) {
+            numbytes = serializeUINT16(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeUInt32Array(long[] value,
+                                           byte[] bytes,
+                                           int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (long s : value) {
+            numbytes = serializeUINT32(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeUInt64Array(long[] value,
+                                           byte[] bytes,
+                                           int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (long s : value) {
+            numbytes = serializeUINT64(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeBooleanArray(boolean[] value,
+                                            byte[] bytes,
+                                            int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (boolean s : value) {
+            numbytes = serializeBOOLEAN(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeByteArray(byte[] value,
+                                         byte[] bytes,
+                                         int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (byte s : value) {
+            numbytes = serializeBYTE(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+    
     /*
        * @deprecated
        */

@@ -63,7 +63,7 @@ public class IPAddress implements java.io.Serializable {
             System.err.println("ERROR : bad inet addr\n");
             throw new RuntimeException("Bad inet address");
         }
-        inet_addr = anIPAddress.clone();
+        inet_addr = anIPAddress;
     }
 
     /**
@@ -101,7 +101,7 @@ public class IPAddress implements java.io.Serializable {
      * @return a byte array containing the IPAddress in network order
      */
     public byte[] getInetAddressAsBytes() {
-        return inet_addr.clone();
+        return inet_addr;
     }
 
     /**

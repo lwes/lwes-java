@@ -1,0 +1,13 @@
+MetaEventInfo
+{
+  ip_addr SenderIP;    # IP address of Sender
+  uint16  SenderPort;  # IP port of Sender
+  int64   ReceiptTime; # time this event was received, in millis since epoch
+  int16   enc;         # encoding of strings in the event; 0: iso-8859-1, 1: utf-8
+  uint16  SiteID;      # id of site sending the event
+}
+
+# Debugging messages
+EmptyEvent
+{
+}
