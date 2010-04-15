@@ -196,7 +196,7 @@ public class EventTemplateDB {
                                                   boolean required) {
         return addEventAttribute(anEventName, anAttributeName, anAttributeType, size, required, null);
     }
-    
+
     /**
      * Add an attribute to an Event in the EventTemplateDB
      *
@@ -244,6 +244,9 @@ public class EventTemplateDB {
                     BaseType bt = knownTypes.get(anAttributeType).cloneBaseType();
                     bt.setRequired(required);
                     bt.setSizeRestriction(size);
+                    if (defaultValue != null) {
+                        bt.setDefaultValue(defaultValue);
+                    }
                     evtHash.put(anAttributeName, bt);
                     return true;
                 }

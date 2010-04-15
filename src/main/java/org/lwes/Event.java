@@ -105,6 +105,7 @@ public class Event {
         validating = validate;
         setEventName(eventName);
         setEncoding(encoding);
+        setDefaultValues(eventTemplateDB);
     }
 
     /**
@@ -137,6 +138,23 @@ public class Event {
         setEventTemplateDB(eventTemplateDB);
         validating = validate;
         deserialize(bytes);
+        setDefaultValues(eventTemplateDB);
+    }
+
+    protected void setDefaultValues(EventTemplateDB template) throws EventSystemException {
+        if (template == null) {
+            return;
+        }
+        Map<String, BaseType> m = template.getBaseTypesForEvent(getEventName());
+        for (String key : m.keySet()) {
+            BaseType b = m.get(key);
+            if (b.getDefaultValue() != null) {
+                if (Log.isLogDebug()) {
+                    Log.debug("Setting default value: "+key+"="+b.getDefaultValue());
+                }
+                set(key, b.getDefaultValue());
+            }
+        }
     }
 
     /**
