@@ -40,8 +40,8 @@ public class DefaultValueTest {
 //        assertEquals("pi value wrong", 3.141594, evt.get("pi"));
 
         // booleans
-//        assertNotNull("aBool not set", evt.get("aBool"));
-//        assertEquals("aBool value wrong", true, evt.get("aBool"));
+        assertNotNull("aBool not set", evt.get("aBool"));
+        assertEquals("aBool value wrong", true, evt.get("aBool"));
 
     }
 }

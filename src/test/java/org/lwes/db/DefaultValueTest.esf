@@ -14,5 +14,5 @@ DefaultValueEvent
 {
    required int32    anInt = 5;
    #required float    pi    = 3.141594; # numeric default value
-   #optional boolean  aBool = true;    # boolean default value
+   optional boolean  aBool = true;    # boolean default value
 }

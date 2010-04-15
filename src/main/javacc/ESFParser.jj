@@ -57,7 +57,7 @@ TOKEN :
 {
     < REQ: "required" >
   | < OPT: "optional" >
-  | < ID: ["a"-"z","A"-"Z","_",":","0"-"9"] (["a"-"z","A"-"Z","_",":","0"-"9"])* >
+  | < ID: ["a"-"z","A"-"Z","_",":","0"-"9","."] (["a"-"z","A"-"Z","_",":","0"-"9","."])* >
   | < LBRACKET: "[" >
   | < RBRACKET: "]" >
 }
@@ -127,12 +127,17 @@ Object defaultValue() :
 {
     t = <ID>
     {
-    try {
-      return Integer.parseInt(t.image);
-    }
-    catch(NumberFormatException e) {
-      return Double.parseDouble(t.image);
-    }
+      if (t.image.equals("true") || t.image.equals("false")) {
+        return Boolean.parseBoolean(t.image);
+      }
+      else {
+        try {
+          return Integer.parseInt(t.image);
+        }
+        catch(NumberFormatException e) {
+          return Double.parseDouble(t.image);
+        }
+      }
     }
 }
 
