@@ -17,6 +17,6 @@ DefaultValueEvent
             boolean  aBoolOpt = false;    # boolean default value
    required int32    anInt    = 5;
             int32    anIntOpt = 6;
-   #required float    pi       = 3.141594; # numeric default value
-   #         float    piOpt    = 3.141594; # numeric default value
+   required double    pi       = 3.141594; # numeric default value
+            double    piOpt    = 3.141594; # numeric default value
 }

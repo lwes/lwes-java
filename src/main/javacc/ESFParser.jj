@@ -27,6 +27,10 @@ public class ESFParser
 
   public String getCurrentEvent()
     { return currentEvent; }
+
+  public String removeQuotes(String str) {
+    return str.replace("\"","");
+  }
 }
 
 PARSER_END(ESFParser)
@@ -59,11 +63,12 @@ TOKEN :
   | < OPT: "optional" >
   | < TRUE: "true" >
   | < FALSE: "false" >
-  | < ID: ["a"-"z","A"-"Z","_",":","0"-"9","."] (["a"-"z","A"-"Z","_",":","0"-"9","."])* >
   | < LBRACKET: "[" >
   | < RBRACKET: "]" >
   | < INTEGER_LITERAL: ["1"-"9"] (["0"-"9"])* >
   | < STRING_LITERAL: "\""(<ID>)"\"" >
+  | < DOUBLE_LITERAL: (["0"-"9"])+ "." (["0"-"9"])* >
+  | < ID: ["a"-"z","A"-"Z","_",":","0"-"9","."] (["a"-"z","A"-"Z","_",":","0"-"9","."])* >
 
 }
 
@@ -132,7 +137,7 @@ String StringLiteral() :
 {
     t = <STRING_LITERAL>
     {
-       return t.image;
+       return removeQuotes(t.image);
     }
 }
 
@@ -155,9 +160,8 @@ int IntegerLiteral() :
     Token t;
 }
 {
-  t = <ID>
+  t = <INTEGER_LITERAL>
   {
-  Log.debug("INTEGER LITERAL");
     try {
       return Integer.parseInt(t.image);
     } catch (NumberFormatException e) {
@@ -166,12 +170,31 @@ int IntegerLiteral() :
   }
 }
 
+double DoubleLiteral() :
+{
+    Token t;
+}
+{
+    t = <DOUBLE_LITERAL>
+    {
+       try {
+         return Double.parseDouble(t.image);
+       } catch (NumberFormatException e) {
+         throw new Error();
+       }
+    }
+}
+
 Object defaultValue() :
 {
     Object obj;
 }
 {
     obj = IntegerLiteral()
+    {
+      return obj;
+    }
+    | obj = DoubleLiteral()
     {
       return obj;
     }
@@ -206,6 +229,7 @@ void attribute() :
               aType.equals("int64")   ||
               aType.equals("uint64")  ||
               aType.equals("byte")    ||
+              aType.equals("double")   ||
               aType.equals("boolean")
             )
          )

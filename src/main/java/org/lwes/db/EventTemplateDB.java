@@ -222,7 +222,13 @@ public class EventTemplateDB {
         try {
             if (anEventName.equals(META_EVENT_INFO)) {
                 if (checkForType(anAttributeType)) {
-                    reservedWords.put(anAttributeName, knownTypes.get(anAttributeType));
+                    BaseType bt = knownTypes.get(anAttributeType).cloneBaseType();
+                    bt.setRequired(required);
+                    bt.setSizeRestriction(size);
+                    if (defaultValue != null) {
+                        bt.setDefaultValue(defaultValue);
+                    }
+                    reservedWords.put(anAttributeName, bt);
                     return true;
                 }
                 else {
@@ -673,6 +679,9 @@ public class EventTemplateDB {
         knownTypes.put(TypeID.BYTE_ARRAY_STRING,
                        new BaseType(TypeID.BYTE_ARRAY_STRING,
                                     TypeID.BYTE_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.DOUBLE_STRING,
+                       new BaseType(TypeID.DOUBLE_STRING,
+                                    TypeID.DOUBLE_TOKEN, null));
     }
 
     public Map<String, BaseType> getMetaFields() {

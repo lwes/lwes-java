@@ -88,6 +88,8 @@ public class TypeID {
     public final static byte BYTE_ARRAY_TOKEN = (byte) 0x12;
 
     public final static byte BYTE_TOKEN = (byte) 0x13;
+    
+    public final static byte DOUBLE_TOKEN = (byte) 0x14;
 
     /**
      * The  string used by <tt>uint16</tt> in the Event Serialization Protocol
@@ -127,6 +129,7 @@ public class TypeID {
     public final static String BOOLEAN_STRING = "boolean";
 
     public final static String BYTE_STRING = "byte";
+    public final static String DOUBLE_STRING = "double";
 
     public final static String STRING_ARRAY_STRING = "[Lstring";
     public final static String UINT16_ARRAY_STRING = "[Luint16";

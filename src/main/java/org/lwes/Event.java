@@ -148,6 +148,7 @@ public class Event {
         Map<String, BaseType> m = template.getBaseTypesForEvent(getEventName());
         for (String key : m.keySet()) {
             BaseType b = m.get(key);
+            Log.debug("checking for default: "+key+"="+b.getDefaultValue());
             if (b.getDefaultValue() != null) {
                 if (Log.isLogDebug()) {
                     Log.debug("Setting default value: "+key+"="+b.getDefaultValue());
