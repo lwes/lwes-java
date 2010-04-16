@@ -1,9 +1,10 @@
 package org.lwes.serializer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.EventSystemException;
 import org.lwes.TypeID;
 import org.lwes.util.IPAddress;
-import org.lwes.util.Log;
 import org.lwes.util.NumberCodec;
 
 import java.util.regex.Pattern;
@@ -16,6 +17,8 @@ import java.util.regex.Pattern;
  */
 public class StringParser {
 
+    private static transient Log log = LogFactory.getLog(StringParser.class);
+
 	public static Object fromStringBYTE(String string)
 			throws EventSystemException {
 		Object toReturn = null;
@@ -25,9 +28,9 @@ public class StringParser {
 
 	public static Object fromStringBOOLEAN(String string)
 			throws EventSystemException {
-		Log.trace("Parsing boolean");
+		log.trace("Parsing boolean");
 		Object toReturn = Boolean.valueOf(string);
-		Log.trace("Got '" + toReturn + "'");
+		log.trace("Got '" + toReturn + "'");
 		return toReturn;
 	}
 
@@ -35,7 +38,7 @@ public class StringParser {
 			throws EventSystemException {
 		Object toReturn = null;
 
-		Log.trace("Parsing uint16");
+		log.trace("Parsing uint16");
 		if (Pattern.matches(TypeID.HEX_SHORT_REGEX, string)) {
 			if (string.startsWith("0x"))
 				string = string.substring(2);
@@ -56,7 +59,7 @@ public class StringParser {
 						+ "range [0-65535] ");
 			}
 		}
-		Log.trace("received '" + toReturn + "'");
+		log.trace("received '" + toReturn + "'");
 
 		return toReturn;
 	}
@@ -65,7 +68,7 @@ public class StringParser {
 			throws EventSystemException {
 		Object toReturn = null;
 
-		Log.trace("Parsing int16");
+		log.trace("Parsing int16");
 		if (Pattern.matches(TypeID.HEX_SHORT_REGEX, string)) {
 			if (string.startsWith("0x"))
 				string = string.substring(2);
@@ -85,7 +88,7 @@ public class StringParser {
 						+ "range [-32768 - 32767] ");
 			}
 		}
-		Log.trace("received '" + toReturn + "'");
+		log.trace("received '" + toReturn + "'");
 
 		return toReturn;
 	}
@@ -94,7 +97,7 @@ public class StringParser {
 			throws EventSystemException {
 		Object toReturn = null;
 
-		Log.trace("Parsing uint32");
+		log.trace("Parsing uint32");
 		if (Pattern.matches(TypeID.HEX_INT_REGEX, string)) {
 			if (string.startsWith("0x"))
 				string = string.substring(2);
@@ -118,7 +121,7 @@ public class StringParser {
 						+ "] ");
 			}
 		}
-		Log.trace("received '" + toReturn + "'");
+		log.trace("received '" + toReturn + "'");
 
 		return toReturn;
 	}
@@ -127,7 +130,7 @@ public class StringParser {
 			throws EventSystemException {
 		Object toReturn = null;
 
-		Log.trace("Parsing int32");
+		log.trace("Parsing int32");
 		if (Pattern.matches(TypeID.HEX_INT_REGEX, string)) {
 			if (string.startsWith("0x"))
 				string = string.substring(2);
@@ -141,7 +144,7 @@ public class StringParser {
 				throw new EventSystemException(nfe);
 			}
 		}
-		Log.trace("received '" + toReturn + "'");
+		log.trace("received '" + toReturn + "'");
 
 		return toReturn;
 	}
@@ -150,7 +153,7 @@ public class StringParser {
 			throws EventSystemException {
 		Object toReturn = null;
 
-		Log.trace("Parsing uint64");
+		log.trace("Parsing uint64");
 		if (Pattern.matches(TypeID.HEX_LONG_REGEX, string)) {
 			if (string.startsWith("0x"))
 				string = string.substring(2);
@@ -164,7 +167,7 @@ public class StringParser {
 				throw new EventSystemException("Got Exception " + nfe);
 			}
 		}
-		Log.trace("received '" + toReturn + "'");
+		log.trace("received '" + toReturn + "'");
 
 		return toReturn;
 	}
@@ -173,7 +176,7 @@ public class StringParser {
 			throws EventSystemException {
 		Object toReturn = null;
 
-		Log.trace("Parsing int64");
+		log.trace("Parsing int64");
 		if (Pattern.matches(TypeID.HEX_LONG_REGEX, string)) {
 			if (string.startsWith("0x"))
 				string = string.substring(2);
@@ -187,7 +190,7 @@ public class StringParser {
 				throw new EventSystemException(nfe);
 			}
 		}
-		Log.trace("received '" + toReturn + "'");
+		log.trace("received '" + toReturn + "'");
 
 		return toReturn;
 	}
@@ -195,7 +198,7 @@ public class StringParser {
 	public static Object fromStringSTRING(String string)
 			throws EventSystemException {
 
-		Log.trace("Parsing string '" + string + "'");
+		log.trace("Parsing string '" + string + "'");
 		return string;
 	}
 
@@ -203,7 +206,7 @@ public class StringParser {
 			throws EventSystemException {
 		Object toReturn = null;
 
-		Log.trace("Parsing IPAddress");
+		log.trace("Parsing IPAddress");
 
 		if (Pattern.matches(TypeID.IP_ADDR_REGEX, string)) {
 			toReturn = new IPAddress(string);
@@ -214,7 +217,7 @@ public class StringParser {
 		} else {
 			throw new EventSystemException("Invalid IP Address");
 		}
-		Log.trace("received '" + toReturn + "'");
+		log.trace("received '" + toReturn + "'");
 
 		return toReturn;
 	}
