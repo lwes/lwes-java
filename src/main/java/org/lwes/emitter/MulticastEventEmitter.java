@@ -1,8 +1,9 @@
 package org.lwes.emitter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
-import org.lwes.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +33,8 @@ import java.net.MulticastSocket;
  * @since 0.0.1
  */
 public class MulticastEventEmitter extends AbstractEventEmitter {
+
+    private static transient Log log = LogFactory.getLog(MulticastEventEmitter.class);
 
     /* the actual multicast socket being used */
     private MulticastSocket socket = null;
@@ -244,7 +247,7 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
                 collectStatistics();
             }
             catch (EventSystemException e) {
-                Log.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
         }
     }

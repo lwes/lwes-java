@@ -3,14 +3,17 @@ package org.lwes.emitter;
  * @author fmaritato
  */
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.Event;
 import org.lwes.EventFactory;
 import org.lwes.EventSystemException;
-import org.lwes.util.Log;
 
 import java.io.IOException;
 
 public abstract class AbstractEventEmitter implements EventEmitter {
+
+    private static transient Log log = LogFactory.getLog(AbstractEventEmitter.class);
 
     private EventFactory factory = new EventFactory();
 
@@ -29,7 +32,7 @@ public abstract class AbstractEventEmitter implements EventEmitter {
             emit(e);
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -41,7 +44,7 @@ public abstract class AbstractEventEmitter implements EventEmitter {
             sendEventWithStatistics(e, freqThisPeriod);
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 

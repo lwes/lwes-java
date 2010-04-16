@@ -1,9 +1,10 @@
 package org.lwes.emitter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.Event;
 import org.lwes.EventFactory;
 import org.lwes.EventSystemException;
-import org.lwes.util.Log;
 import org.lwes.util.NumberCodec;
 
 import java.io.IOException;
@@ -34,6 +35,9 @@ import java.net.InetAddress;
  */
 
 public class UnicastEventEmitter implements EventEmitter {
+
+    private static transient Log log = LogFactory.getLog(UnicastEventEmitter.class);
+
 	/* an EventFactory */
 	private EventFactory factory = new EventFactory();
 
@@ -149,7 +153,7 @@ public class UnicastEventEmitter implements EventEmitter {
 		} catch(IOException ie) {
 			throw ie;
 		} catch(Exception e) {
-			Log.error("Unable to initialize UnicastEventEmitter", e);
+			log.error("Unable to initialize UnicastEventEmitter", e);
 		}
 	}
 
@@ -219,8 +223,8 @@ public class UnicastEventEmitter implements EventEmitter {
 		DatagramPacket dp = new DatagramPacket(bytes, bytes.length, address, port);
 		socket.send(dp);
 
-        if (Log.isLogTrace()) {
-            Log.trace("Sent to network '" +
+        if (log.isTraceEnabled()) {
+            log.trace("Sent to network '" +
                       NumberCodec.byteArrayToHexString(dp.getData(), 0, dp.getLength()));
         }
 	}
