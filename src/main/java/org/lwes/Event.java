@@ -1,12 +1,13 @@
 package org.lwes;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.db.EventTemplateDB;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.CharacterEncoding;
 import org.lwes.util.IPAddress;
-import org.lwes.util.Log;
 import org.lwes.util.NumberCodec;
 
 import java.math.BigInteger;
@@ -17,6 +18,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Event {
+
+    private static transient Log log = LogFactory.getLog(Event.class);
 
     public static final int MAX_MESSAGE_SIZE = 65507;
 
@@ -148,10 +151,10 @@ public class Event {
         Map<String, BaseType> m = template.getBaseTypesForEvent(getEventName());
         for (String key : m.keySet()) {
             BaseType b = m.get(key);
-            Log.debug("checking for default: "+key+"="+b.getDefaultValue());
+            log.debug("checking for default: "+key+"="+b.getDefaultValue());
             if (b.getDefaultValue() != null) {
-                if (Log.isLogDebug()) {
-                    Log.debug("Setting default value: "+key+"="+b.getDefaultValue());
+                if (log.isDebugEnabled()) {
+                    log.debug("Setting default value: "+key+"="+b.getDefaultValue());
                 }
                 set(key, b.getDefaultValue());
             }
@@ -949,7 +952,7 @@ public class Event {
                 if (encodingObj != null) {
                     if (encodingType == TypeID.INT16_TOKEN) {
                         encoding = (Short) encodingObj;
-                        Log.trace("Character encoding: " + encoding);
+                        log.trace("Character encoding: " + encoding);
                         offset += Serializer.serializeATTRIBUTEWORD(ENCODING, bytes, offset);
                         offset += Serializer.serializeBYTE(encodingType, bytes, offset);
                         offset += Serializer.serializeUINT16(encoding, bytes, offset);
@@ -957,7 +960,7 @@ public class Event {
                 }
             }
             else {
-                Log.warning("Character encoding null in event " + name);
+                log.warn("Character encoding null in event " + name);
             }
 
             Enumeration<String> e = attributes.keys();
@@ -973,7 +976,7 @@ public class Event {
 
                 /* don't try to serialize nulls */
                 if (data == null) {
-                    Log.warning("Attribute " + key + " was null in event " + name);
+                    log.warn("Attribute " + key + " was null in event " + name);
                     continue;
                 }
 
@@ -1037,11 +1040,11 @@ public class Event {
                         offset += Serializer.serializeByteArray((byte[]) data, bytes, offset);
                         break;
                     default:
-                        Log.warning("Unknown BaseType token: " + typeToken);
+                        log.warn("Unknown BaseType token: " + typeToken);
                         break;
                 } // switch(typeToken)
 
-                Log.trace("Serialized attribute " + key);
+                log.trace("Serialized attribute " + key);
             } // while(e.hasMoreElements())
         } // if(attributes != null)
 
@@ -1065,18 +1068,18 @@ public class Event {
         state.reset();
         setEventName(Deserializer.deserializeEVENTWORD(state, bytes));
         long num = Deserializer.deserializeUINT16(state, bytes);
-        if (Log.isLogTrace()) {
-            Log.trace("Event name = " + getEventName());
-            Log.trace("Number of attribute: " + num);
+        if (log.isTraceEnabled()) {
+            log.trace("Event name = " + getEventName());
+            log.trace("Number of attribute: " + num);
         }
         for (int i = 0; i < num; ++i) {
             String attribute = Deserializer.deserializeATTRIBUTEWORD(state, bytes);
 
             byte type = Deserializer.deserializeBYTE(state, bytes);
-            if (Log.isLogTrace()) {
-                Log.trace("Attribute: " + attribute);
-                Log.trace("Type: " + TypeID.byteIDToString(type));
-                Log.trace("State: " + state);
+            if (log.isTraceEnabled()) {
+                log.trace("Attribute: " + attribute);
+                log.trace("Type: " + TypeID.byteIDToString(type));
+                log.trace("State: " + state);
             }
             if (attribute != null) {
                 if (i == 0 && attribute.equals(ENCODING)) {
@@ -1085,7 +1088,7 @@ public class Event {
                         continue;
                     }
                     else {
-                        Log.warning("Found encoding, but type was not int16 while deserializing");
+                        log.warn("Found encoding, but type was not int16 while deserializing");
                     }
                 }
 
@@ -1163,7 +1166,7 @@ public class Event {
                         setByteArray(attribute, bar);
                         break;
                     default:
-                        Log.warning("Unknown type " + type + " in deserialization");
+                        log.warn("Unknown type " + type + " in deserialization");
                 }
             }
         } // for (int i =0 ...
@@ -1225,7 +1228,7 @@ public class Event {
                                     .append(";\n");
                         }
                         catch (EventSystemException exc) {
-                            Log.warning("Event.toString : ", exc);
+                            log.warn("Event.toString : ", exc);
                         }
                     }
                     else {

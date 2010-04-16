@@ -1,9 +1,10 @@
 package org.lwes;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.serializer.StringParser;
 import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
-import org.lwes.util.Log;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -20,6 +21,9 @@ import java.net.InetAddress;
  * @author Anthony Molinaro
  */
 public class BaseType {
+
+    private static transient Log log = LogFactory.getLog(BaseType.class);
+
     /**
      * The name of this type used in the ESF file
      */
@@ -268,7 +272,7 @@ public class BaseType {
             return new BaseType(TypeID.UINT64_STRING, TypeID.UINT64_TOKEN, value);
         }
         else {
-            Log.warning("unaccounted for object class: "+value.getClass().getName());
+            log.warn("unaccounted for object class: "+value.getClass().getName());
             return null;
         }
     }
