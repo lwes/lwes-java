@@ -128,7 +128,7 @@ int arraySize() :
   Token t;
 }
 {
-    t = <ID>
+    t = <INTEGER_LITERAL>
     {
     return Integer.parseInt(t.image);
     }
