@@ -9,10 +9,14 @@ PARSER_BEGIN(ESFParser)
 
 package org.lwes.db;
 
-import org.lwes.util.Log;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ESFParser
 {
+
+    private static transient Log log = LogFactory.getLog(ESFParser.class);
+
   private String currentEvent;
   private EventTemplateDB eventTemplateDB;
 
@@ -240,10 +244,10 @@ void attribute() :
       String evt = getCurrentEvent();
       if ( evt == null ) throw new ParseException("Bad Event");
 
-      if (Log.isLogTrace()) {
-        Log.trace("Type: "+aType+" attr: "+anAttribute+" size: "+anArraySize);
-        Log.trace("Required: "+required);
-        Log.trace("default value: "+aDefaultValue);
+      if (log.isTraceEnabled()) {
+        log.trace("Type: "+aType+" attr: "+anAttribute+" size: "+anArraySize);
+        log.trace("Required: "+required);
+        log.trace("default value: "+aDefaultValue);
       }
 
       if (anArraySize > 0) {

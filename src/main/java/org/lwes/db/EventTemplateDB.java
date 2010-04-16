@@ -1,11 +1,12 @@
 package org.lwes.db;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.BaseType;
 import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 import org.lwes.TypeID;
 import org.lwes.util.IPAddress;
-import org.lwes.util.Log;
 
 import java.io.File;
 import java.io.InputStream;
@@ -23,8 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Anthony Molinaro
  * @author Michael P. Lum
+ * @author Frank Maritato
  */
 public class EventTemplateDB {
+
+    private static transient Log log = LogFactory.getLog(EventTemplateDB.class);
     /**
      * the meta event info inherent to every event
      */
@@ -118,7 +122,7 @@ public class EventTemplateDB {
             parser.eventlist();
         }
         catch (java.io.FileNotFoundException e) {
-            Log.warning("File not found ", e);
+            log.warn("File not found ", e);
 
             /*
                 * treat this as just a warning and allow things to continue, this
@@ -127,11 +131,11 @@ public class EventTemplateDB {
                 */
         }
         catch (ParseException e) {
-            Log.warning("Parser error in ESF file " + getESFFile(), e);
+            log.warn("Parser error in ESF file " + getESFFile(), e);
             return false;
         }
         catch (Exception e) {
-            Log.error("Error parsing ESF file " + getESFFile(), e);
+            log.error("Error parsing ESF file " + getESFFile(), e);
             /* catch IO, NPEs and other exceptions but still continue */
             return false;
         }
@@ -156,7 +160,9 @@ public class EventTemplateDB {
             }
 
             if (events.containsKey(anEventName)) {
-                Log.info("Event " + anEventName + " already exists in event DB");
+                if (log.isInfoEnabled()) {
+                    log.info("Event " + anEventName + " already exists in event DB");
+                }
                 return false;
             }
 
@@ -173,7 +179,7 @@ public class EventTemplateDB {
             events.put(anEventName, evtHash);
         }
         catch (Exception e) {
-            Log.warning("Error adding event to EventTemplateDB", e);
+            log.warn("Error adding event to EventTemplateDB", e);
         }
 
         return true;
@@ -232,15 +238,19 @@ public class EventTemplateDB {
                     return true;
                 }
                 else {
-                    Log.info("Meta keyword " + anEventName + "." + anAttributeName +
-                             "has unknown type " + anAttributeType + ", skipping");
+                    if (log.isInfoEnabled()) {
+                        log.info("Meta keyword " + anEventName + "." + anAttributeName +
+                                 "has unknown type " + anAttributeType + ", skipping");
+                    }
                     return false;
                 }
             }
 
             if (reservedWords.containsKey(anEventName)) {
-                Log.warning("Unable to add attribute named " + anAttributeName +
-                            "as it is a reserved word, skipping");
+                if (log.isWarnEnabled()) {
+                    log.warn("Unable to add attribute named " + anAttributeName +
+                             "as it is a reserved word, skipping");
+                }
                 return false;
             }
 
@@ -257,18 +267,22 @@ public class EventTemplateDB {
                     return true;
                 }
                 else {
-                    Log.warning("Type " + anAttributeType + " does not exist for " +
-                                anAttributeName + ", skipping");
+                    if (log.isWarnEnabled()) {
+                        log.warn("Type " + anAttributeType + " does not exist for " +
+                                 anAttributeName + ", skipping");
+                    }
                     return false;
                 }
             }
             else {
-                Log.warning("No such event " + anEventName + ", skipping");
+                if (log.isWarnEnabled()) {
+                    log.warn("No such event " + anEventName + ", skipping");
+                }
                 return false;
             }
         }
         catch (Exception e) {
-            Log.error("Error adding attribute " + anAttributeName + " to " + anEventName, e);
+            log.error("Error adding attribute " + anAttributeName + " to " + anEventName, e);
             return false;
         }
     }
@@ -300,20 +314,20 @@ public class EventTemplateDB {
                              BaseType attributeValue) throws EventAttributeSizeException {
 
         if (!attributeValue.getTypeName().startsWith("[L")) {
-            if (Log.isLogDebug()) {
-                Log.debug("value for attribute " + attributeName + " is not an array.");
+            if (log.isDebugEnabled()) {
+                log.debug("value for attribute " + attributeName + " is not an array.");
             }
             return;
         }
 
         Map<String, BaseType> evtMap = events.get(eventName);
         if (evtMap == null) {
-            Log.error("event definition did not exist");
+            log.error("event definition did not exist");
             return;
         }
         BaseType attrBaseType = evtMap.get(attributeName);
         if (attrBaseType == null) {
-            Log.error("attribute definition did not exist");
+            log.error("attribute definition did not exist");
             return;
         }
 
@@ -321,26 +335,26 @@ public class EventTemplateDB {
         int size = attrBaseType.getSizeRestriction();
         Object o = attributeValue.getTypeObject();
         if (o instanceof short[]) {
-            sizeToCheck = ((short[])o).length;
+            sizeToCheck = ((short[]) o).length;
         }
         else if (o instanceof int[]) {
-            sizeToCheck = ((int[])o).length;
+            sizeToCheck = ((int[]) o).length;
         }
         else if (o instanceof long[]) {
-            sizeToCheck = ((long[])o).length;
+            sizeToCheck = ((long[]) o).length;
         }
         else if (o instanceof boolean[]) {
-            sizeToCheck = ((boolean[])o).length;
+            sizeToCheck = ((boolean[]) o).length;
         }
         else if (o instanceof byte[]) {
-            sizeToCheck = ((byte[])o).length;
+            sizeToCheck = ((byte[]) o).length;
         }
         else {
             Object[] arr = (Object[]) attributeValue.getTypeObject();
             sizeToCheck = arr.length;
         }
-        if (Log.isLogTrace()) {
-            Log.trace("sizeToCheck: " + sizeToCheck + " size: " + size);
+        if (log.isTraceEnabled()) {
+            log.trace("sizeToCheck: " + sizeToCheck + " size: " + size);
         }
         if (size > 0 && sizeToCheck > size) {
             throw new EventAttributeSizeException(attributeName, sizeToCheck, size);
@@ -436,13 +450,14 @@ public class EventTemplateDB {
         if (checkForAttribute(anEventName, anAttributeName)) {
             Map<String, BaseType> evtHash = events.get(anEventName);
             String storedTypeName = evtHash.get(anAttributeName).getTypeName();
-            System.out
-                    .println("attr: " +
-                             anAttributeName +
-                             " stored: " +
-                             storedTypeName +
-                             " passed in: " +
-                             anAttributeType);
+            if (log.isDebugEnabled()) {
+                log.debug("attr: " +
+                          anAttributeName +
+                          " stored: " +
+                          storedTypeName +
+                          " passed in: " +
+                          anAttributeType);
+            }
             if (anAttributeType.equals(storedTypeName)) {
                 return true;
             }
@@ -510,11 +525,15 @@ public class EventTemplateDB {
             return null;
         }
 
-        Log.trace("parseAttribute: " + anEventName + "." + anAttributeName + "=" +
-                  stringAttributeValue);
+        if (log.isTraceEnabled()) {
+            log.trace("parseAttribute: " + anEventName + "." + anAttributeName + "=" +
+                      stringAttributeValue);
+        }
 
         if (checkForAttribute(anEventName, anAttributeName)) {
-            Log.trace("parseAttribute: passed first if attribute exists");
+            if (log.isTraceEnabled()) {
+                log.trace("parseAttribute: passed first if attribute exists");
+            }
 
             Map<String, BaseType> evtHash = events.get(anEventName);
             try {
@@ -525,14 +544,18 @@ public class EventTemplateDB {
                 }
 
                 retObject = bt.parseFromString(stringAttributeValue);
-                Log.trace("parseAttribute: parsed " + retObject);
+                if (log.isTraceEnabled()) {
+                    log.trace("parseAttribute: parsed " + retObject);
+                }
             }
             catch (EventSystemException btpe) {
-                Log.error("Unable to parseAttribute", btpe);
+                log.error("Unable to parseAttribute", btpe);
             }
         }
 
-        Log.trace("parseAttribute: returning " + retObject);
+        if (log.isTraceEnabled()) {
+            log.trace("parseAttribute: returning " + retObject);
+        }
         return retObject;
     }
 
@@ -580,7 +603,7 @@ public class EventTemplateDB {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("\n" + META_EVENT_INFO + "\n{\n");
+        sb.append("\n").append(META_EVENT_INFO).append("\n{\n");
         String[] reservedKeys = new String[reservedWords.size()];
         int i = 0, j = 0;
 
@@ -627,6 +650,10 @@ public class EventTemplateDB {
             sb.append("}\n");
         }
         return sb.toString();
+    }
+
+    public String toStringOneLine() {
+        return toString().replace("\n", " ");
     }
 
     /**

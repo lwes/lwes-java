@@ -1,11 +1,12 @@
 package org.lwes.db;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.lwes.Event;
 import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
-import org.lwes.util.Log;
 
 import java.io.File;
 import java.util.Enumeration;
@@ -20,6 +21,8 @@ import static org.junit.Assert.assertTrue;
  */
 
 public class ArrayTest {
+
+    private static transient Log log = LogFactory.getLog(ArrayTest.class);
 
     private static final String ESF = "src/test/java/org/lwes/db/ArrayTest.esf";
     private static final String TEST_EVENT = "TestEvent";
@@ -79,8 +82,8 @@ public class ArrayTest {
                                                       "10", "11", "12"});
         }
         catch (EventAttributeSizeException e) {
-            if (Log.isLogDebug()) {
-                Log.debug(e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage());
             }
             exceptionThrown = true;
         }
@@ -114,8 +117,8 @@ public class ArrayTest {
                                                     10, 11, 12});
         }
         catch (EventAttributeSizeException e) {
-            if (Log.isLogDebug()) {
-                Log.debug(e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage());
             }
             exceptionThrown = true;
         }
@@ -152,8 +155,8 @@ public class ArrayTest {
                                                   10, 11, 12});
         }
         catch (EventAttributeSizeException e) {
-            if (Log.isLogDebug()) {
-                Log.debug(e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage());
             }
             exceptionThrown = true;
         }
@@ -189,8 +192,8 @@ public class ArrayTest {
                                                    10, 11, 12});
         }
         catch (EventAttributeSizeException e) {
-            if (Log.isLogDebug()) {
-                Log.debug(e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage());
             }
             exceptionThrown = true;
         }
@@ -224,8 +227,8 @@ public class ArrayTest {
                                                    10, 11, 12});
         }
         catch (EventAttributeSizeException e) {
-            if (Log.isLogDebug()) {
-                Log.debug(e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage());
             }
             exceptionThrown = true;
         }
@@ -262,8 +265,8 @@ public class ArrayTest {
                                                     10, 11, 12});
         }
         catch (EventAttributeSizeException e) {
-            if (Log.isLogDebug()) {
-                Log.debug(e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage());
             }
             exceptionThrown = true;
         }
@@ -299,8 +302,8 @@ public class ArrayTest {
                                                     10, 11, 12});
         }
         catch (EventAttributeSizeException e) {
-            if (Log.isLogDebug()) {
-                Log.debug(e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage());
             }
             exceptionThrown = true;
         }

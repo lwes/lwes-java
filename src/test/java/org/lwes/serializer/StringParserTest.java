@@ -1,21 +1,23 @@
 package org.lwes.serializer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.lwes.EventSystemException;
+import org.lwes.util.IPAddress;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import org.junit.Test;
-import org.lwes.EventSystemException;
-import org.lwes.util.IPAddress;
-import org.lwes.util.Log;
 
 /**
  * @author fmaritato
  */
-
-
 public class StringParserTest {
+
+    private static transient Log log = LogFactory.getLog(StringParserTest.class);
 
     @Test
     public void testFromStringBOOLEAN() {
@@ -25,7 +27,7 @@ public class StringParserTest {
             assertTrue(b);
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -37,7 +39,7 @@ public class StringParserTest {
             assertNull(StringParser.fromStringBYTE("1"));
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -50,7 +52,7 @@ public class StringParserTest {
             assertEquals("fromStringINT16 failed", (short) 12, s.shortValue());
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -72,7 +74,7 @@ public class StringParserTest {
             assertEquals("int value was incorrect", 355567, intVal);
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -86,7 +88,7 @@ public class StringParserTest {
             assertEquals("fromStringINT64 failed", Long.MAX_VALUE, v.longValue());
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -99,7 +101,7 @@ public class StringParserTest {
             assertEquals("fromStringIPADDR failed", "192.168.1.1", ip.toString());
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -116,7 +118,7 @@ public class StringParserTest {
             assertEquals("fromStringINT16 failed", 65534, s.intValue());
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -133,7 +135,7 @@ public class StringParserTest {
             assertEquals("fromStringUINT32", 4294967294l, obj.longValue());
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -152,7 +154,7 @@ public class StringParserTest {
             assertEquals("fromStringINT64 failed", Long.MAX_VALUE, v.longValue());
         }
         catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }

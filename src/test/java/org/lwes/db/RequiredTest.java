@@ -3,12 +3,13 @@ package org.lwes.db;
  * @author fmaritato
  */
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.lwes.AttributeRequiredException;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
 import org.lwes.ValidationExceptions;
-import org.lwes.util.Log;
 
 import java.io.File;
 import java.util.Enumeration;
@@ -20,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class RequiredTest {
+
+    private static transient Log log = LogFactory.getLog(RequiredTest.class);
 
     private static final String ESF = "src/test/java/org/lwes/db/RequiredTest.esf";
     private static final String TEST_EVENT = "TestEvent";
@@ -46,8 +49,8 @@ public class RequiredTest {
             evt.validate();
         }
         catch (ValidationExceptions e) {
-            if (Log.isLogDebug()) {
-                Log.debug(e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage());
             }
             exceptionThrown = true;
             List<EventSystemException> exceps = e.getAllExceptions();
@@ -61,15 +64,15 @@ public class RequiredTest {
         exceptionThrown = false;
         // Verify no exception when all required fields are set.
         evt.setString("field1", "value");
-        if (Log.isLogDebug()) {
-            Log.debug(evt.toString());
+        if (log.isDebugEnabled()) {
+            log.debug(evt.toString());
         }
         try {
             evt.validate();
         }
         catch (EventSystemException e) {
-            if (Log.isLogDebug()) {
-                Log.debug(e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage());
             }
             exceptionThrown = true;
         }
