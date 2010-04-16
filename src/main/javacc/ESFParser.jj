@@ -57,9 +57,14 @@ TOKEN :
 {
     < REQ: "required" >
   | < OPT: "optional" >
+  | < TRUE: "true" >
+  | < FALSE: "false" >
   | < ID: ["a"-"z","A"-"Z","_",":","0"-"9","."] (["a"-"z","A"-"Z","_",":","0"-"9","."])* >
   | < LBRACKET: "[" >
   | < RBRACKET: "]" >
+  | < INTEGER_LITERAL: ["1"-"9"] (["0"-"9"])* >
+  | < STRING_LITERAL: "\""(<ID>)"\"" >
+
 }
 
 /**
@@ -120,24 +125,63 @@ int arraySize() :
     }
 }
 
-Object defaultValue() :
+String StringLiteral() :
 {
     Token t;
 }
 {
-    t = <ID>
+    t = <STRING_LITERAL>
     {
-      if (t.image.equals("true") || t.image.equals("false")) {
-        return Boolean.parseBoolean(t.image);
-      }
-      else {
-        try {
-          return Integer.parseInt(t.image);
-        }
-        catch(NumberFormatException e) {
-          return Double.parseDouble(t.image);
-        }
-      }
+       return t.image;
+    }
+}
+
+boolean BooleanLiteral() :
+{}
+{
+  <TRUE>
+  {
+    return true;
+  }
+  |
+  <FALSE>
+  {
+    return false;
+  }
+}
+
+int IntegerLiteral() :
+{
+    Token t;
+}
+{
+  t = <ID>
+  {
+  Log.debug("INTEGER LITERAL");
+    try {
+      return Integer.parseInt(t.image);
+    } catch (NumberFormatException e) {
+      throw new Error();
+    }
+  }
+}
+
+Object defaultValue() :
+{
+    Object obj;
+}
+{
+    obj = IntegerLiteral()
+    {
+      return obj;
+    }
+    | obj = BooleanLiteral()
+    {
+      return obj;
+    }
+    | obj = StringLiteral()
+    {
+      return obj;
     }
 }
 
@@ -152,7 +196,7 @@ void attribute() :
 {
   ((("required" {required = true;} | "optional") (aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] [ "=" aDefaultValue = defaultValue() ] ";"))
 |
-  (aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] ";")  ) {
+  (aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] [ "=" aDefaultValue = defaultValue() ] ";")  ) {
       if ( !( aType.equals("uint16")  ||
               aType.equals("int16")   ||
               aType.equals("uint32")  ||

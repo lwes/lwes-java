@@ -6,13 +6,17 @@ MetaEventInfo
   int16   enc;         # encoding of strings in the event; 0: iso-8859-1, 1: utf-8
   uint16  SiteID;      # id of site sending the event
 
-  #string  version = "1.0.0"; # event version
+  required string version = "1.0.0";
+  string  versionOpt = "1.0.1"; # event version
 }
 
 # Debugging messages
 DefaultValueEvent
 {
-   required int32    anInt = 5;
-   #required float    pi    = 3.141594; # numeric default value
-   optional boolean  aBool = true;    # boolean default value
+   optional boolean  aBool    = true;    # boolean default value
+            boolean  aBoolOpt = false;    # boolean default value
+   required int32    anInt    = 5;
+            int32    anIntOpt = 6;
+   #required float    pi       = 3.141594; # numeric default value
+   #         float    piOpt    = 3.141594; # numeric default value
 }
