@@ -1,7 +1,8 @@
 package org.lwes.listener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.Event;
-import org.lwes.util.Log;
 
 /**
  * Dispatches events to downstream handlers using threads.
@@ -9,11 +10,14 @@ import org.lwes.util.Log;
  * @author Michael P. Lum
  */
 public class ThreadedEventDispatcher extends Thread {
+
+    private static transient Log log = LogFactory.getLog(ThreadedEventDispatcher.class);
+
 	/* dequeuer controlling this object */
 	private ThreadedDequeuer dequeuer;
 	private EventHandler eventHandler;
 	private Event event;
-	
+
 	protected ThreadedEventDispatcher(ThreadedDequeuer aDequeuer) {
 		this.dequeuer = aDequeuer;
 		super.start();
@@ -31,18 +35,18 @@ public class ThreadedEventDispatcher extends Thread {
 			throw new IllegalStateException("Processor already has a listener");
 		}
 	}
-	
+
 	public final boolean isActive() {
 		return (! isIdle());
 	}
-	
+
 	public final boolean isIdle() {
 		final boolean p1 = (eventHandler == null);
 		final boolean p2 = (event == null);
 		if(p1 == p2) return p1;
 		else throw new IllegalStateException("Contradictory state indication");
 	}
-	
+
 	public void run() {
 		while(true) {
 			synchronized(this) {
@@ -50,7 +54,7 @@ public class ThreadedEventDispatcher extends Thread {
 					try {
 						eventHandler.handleEvent(event);
 					} catch(Exception e) {
-						Log.warning("Caught exception handling event", e);
+						log.warn("Caught exception handling event", e);
 					}
 					clearTask();
 				} else {
@@ -61,13 +65,13 @@ public class ThreadedEventDispatcher extends Thread {
 			}
 		}
 	}
-	
+
 	private void clearTask() {
 		synchronized(this) {
 			eventHandler = null;
 			event = null;
 		}
-		
+
 		dequeuer.makeAvailable(this);
 	}
 

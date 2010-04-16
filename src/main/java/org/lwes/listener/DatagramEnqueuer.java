@@ -1,6 +1,7 @@
 package org.lwes.listener;
 
-import org.lwes.util.Log;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -15,100 +16,110 @@ import java.net.MulticastSocket;
  *
  * @author Anthony Molinaro
  * @author Michael P. Lum
- *
  */
 public class DatagramEnqueuer extends ThreadedEnqueuer {
-	/* max datagram size in bytes */
-	private static final int MAX_DATAGRAM_SIZE = 65535;
-	private String DEFAULT_ADDRESS = "224.0.0.69";
 
-	/* the default network settings */
-	private InetAddress address = null;
-	private int port = 9191;
-	private InetAddress iface = null;
-	private int ttl = 31;
+    private static transient Log log = LogFactory.getLog(DatagramEnqueuer.class);
 
-	/* the network socket */
-	private DatagramSocket socket = null;
+    /* max datagram size in bytes */
+    private static final int MAX_DATAGRAM_SIZE = 65535;
+    private String DEFAULT_ADDRESS = "224.0.0.69";
 
-	/* a running buffer */
-	private byte[] buffer = null;
+    /* the default network settings */
+    private InetAddress address = null;
+    private int port = 9191;
+    private InetAddress iface = null;
+    private int ttl = 31;
 
-	/* thread control */
-	private boolean running = false;
+    /* the network socket */
+    private DatagramSocket socket = null;
 
-	public DatagramEnqueuer() {
-		super();
-		buffer = new byte[MAX_DATAGRAM_SIZE];
-	}
+    /* a running buffer */
+    private byte[] buffer = null;
 
-	/**
-	 * Gets the network address being used for this listener.
-	 * @return the address
-	 */
-	public InetAddress getAddress() {
-		return address;
-	}
+    /* thread control */
+    private boolean running = false;
 
-	/**
-	 * Sets the address being used for this listener.
-	 * @param address the address to use
-	 */
-	public void setAddress(InetAddress address) {
-		this.address = address;
-	}
+    public DatagramEnqueuer() {
+        super();
+        buffer = new byte[MAX_DATAGRAM_SIZE];
+    }
 
-	/**
-	 * Gets the port being used for this listener.
-	 * @return the port number
-	 */
-	public int getPort() {
-		return port;
-	}
+    /**
+     * Gets the network address being used for this listener.
+     *
+     * @return the address
+     */
+    public InetAddress getAddress() {
+        return address;
+    }
 
-	/**
-	 * Sets the port being used for this listener.
-	 * @param port the port number
-	 */
-	public void setPort(int port) {
-		this.port = port;
-	}
+    /**
+     * Sets the address being used for this listener.
+     *
+     * @param address the address to use
+     */
+    public void setAddress(InetAddress address) {
+        this.address = address;
+    }
 
-	/**
-	 * Gets the network interface being used for this listener.
-	 * @return the interface
-	 */
-	public InetAddress getInterface() {
-		return iface;
-	}
+    /**
+     * Gets the port being used for this listener.
+     *
+     * @return the port number
+     */
+    public int getPort() {
+        return port;
+    }
 
-	/**
-	 * Sets the network interface to use for this listener.
-	 * @param iface the interface
-	 */
-	public void setInterface(InetAddress iface) {
-		this.iface = iface;
-	}
+    /**
+     * Sets the port being used for this listener.
+     *
+     * @param port the port number
+     */
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-	/**
-	 * Returns the multicast TTL (if applicable).
-	 * Applies to multicast listeners only.
-	 * @return the TTL value
-	 */
-	public int getTimeToLive() {
-		return ttl;
-	}
+    /**
+     * Gets the network interface being used for this listener.
+     *
+     * @return the interface
+     */
+    public InetAddress getInterface() {
+        return iface;
+    }
 
-	/**
-	 * Sets the multicast TTL.  This typically does not need to be modified.
-	 * Applies to multicast listeners only.
-	 * @param ttl the multicast TTL value.
-	 */
-	public void setTimeToLive(int ttl) {
-		this.ttl = ttl;
-	}
+    /**
+     * Sets the network interface to use for this listener.
+     *
+     * @param iface the interface
+     */
+    public void setInterface(InetAddress iface) {
+        this.iface = iface;
+    }
 
-	public void initialize() throws IOException {
+    /**
+     * Returns the multicast TTL (if applicable).
+     * Applies to multicast listeners only.
+     *
+     * @return the TTL value
+     */
+    public int getTimeToLive() {
+        return ttl;
+    }
+
+    /**
+     * Sets the multicast TTL.  This typically does not need to be modified.
+     * Applies to multicast listeners only.
+     *
+     * @param ttl the multicast TTL value.
+     */
+    public void setTimeToLive(int ttl) {
+        this.ttl = ttl;
+    }
+
+    public void initialize() throws IOException {
         if (address == null) {
             address = InetAddress.getByName(DEFAULT_ADDRESS);
         }
@@ -129,7 +140,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
                 socket = new DatagramSocket(port, address);
             }
         }
-        int bufSize = MAX_DATAGRAM_SIZE*50;
+        int bufSize = MAX_DATAGRAM_SIZE * 50;
         String bufSizeStr = System.getProperty("MulticastReceiveBufferSize");
         if (bufSizeStr != null && !"".equals(bufSizeStr)) {
             bufSize = Integer.parseInt(bufSizeStr);
@@ -137,41 +148,44 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
         socket.setReceiveBufferSize(bufSize);
     }
 
-	public synchronized void shutdown() {
-		running = false;
-	}
+    public synchronized void shutdown() {
+        running = false;
+    }
 
-	/**
-	 * While running, repeatedly read datagrams and insert them into the queue along with the
-	 * receipt time and other metadata.
-	 */
-	public void run() {
-		running = true;
+    /**
+     * While running, repeatedly read datagrams and insert them into the queue along with the
+     * receipt time and other metadata.
+     */
+    public void run() {
+        running = true;
 
-		while(running) {
-			try {
-				DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
-				socket.receive(datagram);
-                Log.trace("Received datagram: "+datagram);
+        while (running) {
+            try {
+                DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
+                socket.receive(datagram);
+                if (log.isTraceEnabled()) {
+                    log.trace("Received datagram: " + datagram);
+                }
+                /* we record the time *after* the receive because it blocks */
+                long receiptTime = System.currentTimeMillis();
 
-				/* we record the time *after* the receive because it blocks */
-				long receiptTime = System.currentTimeMillis();
+                /* copy the data into a tight buffer so we can release the loose buffer */
+                final byte[] tightBuffer = new byte[datagram.getLength()];
+                System.arraycopy(datagram.getData(), 0, tightBuffer, 0, tightBuffer.length);
+                datagram.setData(tightBuffer);
 
-				/* copy the data into a tight buffer so we can release the loose buffer */
-				final byte[] tightBuffer = new byte[datagram.getLength()];
-				System.arraycopy(datagram.getData(), 0, tightBuffer, 0, tightBuffer.length);
-				datagram.setData(tightBuffer);
+                /* create an element for the queue */
+                DatagramQueueElement element = new DatagramQueueElement();
+                element.setPacket(datagram);
+                element.setTimestamp(receiptTime);
 
-				/* create an element for the queue */
-				DatagramQueueElement element = new DatagramQueueElement();
-				element.setPacket(datagram);
-				element.setTimestamp(receiptTime);
-
-				/* add the element to the queue and notify everyone there's work to do */
-				queue.put(element);
-                Log.trace("Enqueued: "+element);
+                /* add the element to the queue and notify everyone there's work to do */
+                queue.put(element);
+                if (log.isTraceEnabled()) {
+                    log.trace("Enqueued: " + element);
+                }
 			} catch(Exception e) {
-				Log.warning("Unable to read datagram", e);
+				log.warn("Unable to read datagram", e);
 			}
 		}
 	}

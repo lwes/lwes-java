@@ -1,7 +1,8 @@
 package org.lwes.listener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.EventSystemException;
-import org.lwes.util.Log;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -14,6 +15,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Michael P. Lum
  */
 public class ThreadedProcessor implements Runnable {
+
+    private static transient Log log = LogFactory.getLog(ThreadedProcessor.class);
+
 	/* a flag to tell whether or not the thread is running */
 	private boolean running = false;
 
@@ -200,7 +204,7 @@ public class ThreadedProcessor implements Runnable {
 			try {
 				Thread.sleep(seconds * 1000L);
 			} catch (InterruptedException ie) {
-				Log.warning("ThreadedProcessor interrupted", ie);
+				log.warn("ThreadedProcessor interrupted", ie);
 			}
 		}
 	}

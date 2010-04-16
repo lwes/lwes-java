@@ -1,14 +1,18 @@
 package org.lwes.listener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.Event;
 import org.lwes.EventFactory;
 import org.lwes.util.IPAddress;
-import org.lwes.util.Log;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 
 public class DatagramDequeuer extends ThreadedDequeuer {
+
+    private static transient Log log = LogFactory.getLog(DatagramDequeuer.class);
+
     private boolean running = false;
 
     /* an event factory */
@@ -32,14 +36,16 @@ public class DatagramDequeuer extends ThreadedDequeuer {
             try {
                 QueueElement element = null;
                 element = queue.take();
-                Log.trace("Removed from queue: "+element);
-                handleElement((DatagramQueueElement)element);
+                if (log.isTraceEnabled()) {
+                    log.trace("Removed from queue: " + element);
+                }
+                handleElement((DatagramQueueElement) element);
             }
             catch (UnsupportedOperationException uoe) {
                 // not a problem, someone grabbed the event before we did
             }
             catch (Exception e) {
-                Log.error("Error in dequeueing event for processing", e);
+                log.error("Error in dequeueing event for processing", e);
             }
         }
     }
@@ -78,13 +84,15 @@ public class DatagramDequeuer extends ThreadedDequeuer {
             event.setInt64(Event.RECEIPT_TIME, timestamp);
             event.setIPAddress(Event.SENDER_IP, address);
             event.setUInt16(Event.SENDER_PORT, port);
-            if (Log.isLogTrace()) {
-                Log.trace("Dispatching event " + event.toString());
+            if (log.isTraceEnabled()) {
+                log.trace("Dispatching event " + event.toString());
             }
             dispatchEvent(event);
         }
         catch (Exception e) {
-            Log.warning("Unable to deserialize event in handleElement()", e);
+            if (log.isWarnEnabled()) {
+                log.warn("Unable to deserialize event in handleElement()", e);
+            }
         }
     }
 }
