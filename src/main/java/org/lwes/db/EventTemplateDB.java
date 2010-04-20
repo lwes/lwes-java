@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -349,9 +350,18 @@ public class EventTemplateDB {
         else if (o instanceof byte[]) {
             sizeToCheck = ((byte[]) o).length;
         }
+        else if (o instanceof double[]) {
+            sizeToCheck = ((double[]) o).length;
+        }
+        else if (o instanceof float[]) {
+            sizeToCheck = ((float[]) o).length;
+        }
+        else if (o instanceof List) {
+            List arr = (List) attributeValue.getTypeObject();
+            sizeToCheck = arr.size();
+        }
         else {
-            Object[] arr = (Object[]) attributeValue.getTypeObject();
-            sizeToCheck = arr.length;
+            throw new EventAttributeSizeException("Cannot determine size for "+attributeName);
         }
         if (log.isTraceEnabled()) {
             log.trace("sizeToCheck: " + sizeToCheck + " size: " + size);
@@ -706,9 +716,18 @@ public class EventTemplateDB {
         knownTypes.put(TypeID.BYTE_ARRAY_STRING,
                        new BaseType(TypeID.BYTE_ARRAY_STRING,
                                     TypeID.BYTE_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.DOUBLE_ARRAY_STRING,
+                       new BaseType(TypeID.DOUBLE_ARRAY_STRING,
+                                    TypeID.DOUBLE_ARRAY_TOKEN, null));
+        knownTypes.put(TypeID.FLOAT_ARRAY_STRING,
+                       new BaseType(TypeID.FLOAT_ARRAY_STRING,
+                                    TypeID.FLOAT_ARRAY_TOKEN, null));
         knownTypes.put(TypeID.DOUBLE_STRING,
                        new BaseType(TypeID.DOUBLE_STRING,
                                     TypeID.DOUBLE_TOKEN, null));
+        knownTypes.put(TypeID.FLOAT_STRING,
+                       new BaseType(TypeID.FLOAT_STRING,
+                                    TypeID.FLOAT_TOKEN, null));
     }
 
     public Map<String, BaseType> getMetaFields() {

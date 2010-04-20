@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
  * This is a wrapper class for InetAddress, which allows the setting of
  * an InetAddress with a byte arrays.  As well as other useful functions.
  *
+ * @deprecated 
  * @author Anthony Molinaro
  */
 public class IPAddress implements java.io.Serializable {

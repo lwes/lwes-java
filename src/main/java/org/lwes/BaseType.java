@@ -8,6 +8,7 @@ import org.lwes.util.IPAddress;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.util.List;
 
 /**
  * This class provides a base type for the base types in the event system. acts
@@ -70,7 +71,7 @@ public class BaseType {
                     Object typeObject,
                     boolean required,
                     int sizeRestriction) {
-         this(typeName, typeToken, typeObject, required, sizeRestriction, null);
+        this(typeName, typeToken, typeObject, required, sizeRestriction, null);
     }
 
     public BaseType(String typeName,
@@ -156,6 +157,12 @@ public class BaseType {
             case TypeID.UINT64_TOKEN:
                 size = 8;
                 break;
+            case TypeID.FLOAT_TOKEN:
+                size = 4;
+                break;
+            case TypeID.DOUBLE_TOKEN:
+                size = 8;
+                break;
             case TypeID.STRING_TOKEN:
                 String aString = (String) typeObject;
                 /* add size of string plus two bytes for the length */
@@ -169,35 +176,41 @@ public class BaseType {
                 break;
             case TypeID.STRING_ARRAY_TOKEN:
                 int count = 2; // start with the length of the array
-                String[] anArray = (String[]) typeObject;
+                List<String> anArray = (List) typeObject;
                 for (String s : anArray) {
                     count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
                 }
                 size = count;
                 break;
             case TypeID.INT16_ARRAY_TOKEN:
-                size = ((short[]) typeObject).length*2+2;
+                size = ((List) typeObject).size() * 2 + 2;
                 break;
             case TypeID.INT32_ARRAY_TOKEN:
-                size = ((int[]) typeObject).length*4+2;
+                size = ((List) typeObject).size() * 4 + 2;
                 break;
             case TypeID.INT64_ARRAY_TOKEN:
-                size = ((long[]) typeObject).length*8+2;
+                size = ((List) typeObject).size() * 8 + 2;
                 break;
             case TypeID.UINT16_ARRAY_TOKEN:
-                size = ((int[]) typeObject).length*4+2;
+                size = ((List) typeObject).size() * 4 + 2;
                 break;
             case TypeID.UINT32_ARRAY_TOKEN:
-                size = ((long[]) typeObject).length*8+2;
+                size = ((List) typeObject).size() * 8 + 2;
                 break;
             case TypeID.UINT64_ARRAY_TOKEN:
-                size = ((long[]) typeObject).length*8+2;
+                size = ((List) typeObject).size() * 8 + 2;
                 break;
             case TypeID.BOOLEAN_ARRAY_TOKEN:
-                size = ((boolean[]) typeObject).length+2;
+                size = ((List) typeObject).size() + 2;
                 break;
             case TypeID.BYTE_ARRAY_TOKEN:
-                size = ((byte[]) typeObject).length+2;
+                size = ((List) typeObject).size() + 2;
+                break;
+            case TypeID.DOUBLE_ARRAY_TOKEN:
+                size = ((List) typeObject).size() * 8 + 2;
+                break;
+            case TypeID.FLOAT_ARRAY_TOKEN:
+                size = ((List) typeObject).size() * 4 + 2;
                 break;
             default:
                 throw new NoSuchAttributeTypeException("Unknown size of BaseType " + typeName);
@@ -205,14 +218,9 @@ public class BaseType {
         return size;
     }
 
-    public int bytesStoreSize(short encoding) {
+    public int bytesStoreSize(short encoding) throws NoSuchAttributeTypeException {
         /* add size of data plus size of token denoting data type */
-        try {
-            return getByteSize(encoding) + 1;
-        }
-        catch (NoSuchAttributeTypeException e) {
-            return 0;
-        }
+        return getByteSize(encoding) + 1;
     }
 
     public Object parseFromString(String string) throws EventSystemException {
@@ -272,7 +280,7 @@ public class BaseType {
             return new BaseType(TypeID.UINT64_STRING, TypeID.UINT64_TOKEN, value);
         }
         else {
-            log.warn("unaccounted for object class: "+value.getClass().getName());
+            log.warn("unaccounted for object class: " + value.getClass().getName());
             return null;
         }
     }

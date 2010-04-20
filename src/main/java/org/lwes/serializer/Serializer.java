@@ -6,7 +6,9 @@ import org.lwes.util.IPAddress;
 import org.lwes.util.NumberCodec;
 
 import java.math.BigInteger;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.List;
 
 /**
  * This contains low level type serialization used by the
@@ -16,36 +18,58 @@ import java.net.InetAddress;
  */
 public class Serializer {
 
-    public static int serializeBYTE(byte aByte, byte[] bytes, int offset) {
-        bytes[offset] = aByte;
-        return (1);
-    }
-
-    public static int serializeBOOLEAN(boolean aBoolean, byte[] bytes, int offset) {
-        if (aBoolean) {
-            bytes[offset] = (byte) 0x01;
+    public static int serializeIPV4(Inet4Address value, byte[] bytes, int offset) {
+        byte[] bs = value.getAddress();
+        int i = offset;
+        for (byte b : bs) {
+            bytes[i++] = b;
         }
-        else {
-            bytes[offset] = (byte) 0x00;
-        }
-        return (1);
+        return offset - i;
     }
 
-    public static int serializeUINT16(int anUnsignedShortInt, byte[] bytes,
-                                      int offset) {
-        bytes[offset] = (byte) ((anUnsignedShortInt & (255 << 8)) >> 8);
-        bytes[offset + 1] = (byte) ((anUnsignedShortInt & (255 << 0)) >> 0);
-        return (2);
+    public static int serializeDOUBLE(Double value, byte[] bytes, int offset) {
+        long j = Double.doubleToLongBits(value);
+        bytes[offset + 7] = (byte) (j >>> 0);
+        bytes[offset + 6] = (byte) (j >>> 8);
+        bytes[offset + 5] = (byte) (j >>> 16);
+        bytes[offset + 4] = (byte) (j >>> 24);
+        bytes[offset + 3] = (byte) (j >>> 32);
+        bytes[offset + 2] = (byte) (j >>> 40);
+        bytes[offset + 1] = (byte) (j >>> 48);
+        bytes[offset + 0] = (byte) (j >>> 56);
+        return 8;
     }
 
-    public static int serializeINT16(short aShortInt, byte[] bytes, int offset) {
-        bytes[offset] = (byte) ((aShortInt & (255 << 8)) >> 8);
-        bytes[offset + 1] = (byte) ((aShortInt & (255 << 0)) >> 0);
-        return (2);
+    public static int serializeFLOAT(Float value, byte[] bytes, int offset) {
+        int i = Float.floatToIntBits(value);
+        bytes[offset + 3] = (byte) (i >>> 0);
+        bytes[offset + 2] = (byte) (i >>> 8);
+        bytes[offset + 1] = (byte) (i >>> 16);
+        bytes[offset + 0] = (byte) (i >>> 24);
+        return 4;
     }
 
-    public static int serializeUINT32(long anUnsignedInt, byte[] bytes,
-                                      int offset) {
+    public static int serializeBYTE(byte value, byte[] bytes, int offset) {
+        bytes[offset] = value;
+        return 1;
+    }
+
+    public static int serializeBOOLEAN(boolean value, byte[] bytes, int offset) {
+        bytes[offset] = (byte) (value ? 1 : 0);
+        return 1;
+    }
+
+    public static int serializeUINT16(int value, byte[] bytes, int offset) {
+        return serializeINT16((short) value, bytes, offset);
+    }
+
+    public static int serializeINT16(short value, byte[] bytes, int offset) {
+        bytes[offset + 1] = (byte) (value >>> 0);
+        bytes[offset + 0] = (byte) (value >>> 8);
+        return 2;
+    }
+
+    public static int serializeUINT32(long anUnsignedInt, byte[] bytes, int offset) {
         bytes[offset] = (byte) ((anUnsignedInt & 0xff000000) >> 24);
         bytes[offset + 1] = (byte) ((anUnsignedInt & 0x00ff0000) >> 16);
         bytes[offset + 2] = (byte) ((anUnsignedInt & 0x0000ff00) >> 8);
@@ -53,18 +77,24 @@ public class Serializer {
         return (4);
     }
 
-    public static int serializeINT32(int anInt, byte[] bytes,
-                                     int offset) {
-        bytes[offset] = (byte) ((anInt & (255 << 24)) >> 24);
-        bytes[offset + 1] = (byte) ((anInt & (255 << 16)) >> 16);
-        bytes[offset + 2] = (byte) ((anInt & (255 << 8)) >> 8);
-        bytes[offset + 3] = (byte) ((anInt & (255 << 0)) >> 0);
-        return (4);
+    public static int serializeINT32(int value, byte[] bytes, int offset) {
+        bytes[offset + 3] = (byte) (value >>> 0);
+        bytes[offset + 2] = (byte) (value >>> 8);
+        bytes[offset + 1] = (byte) (value >>> 16);
+        bytes[offset + 0] = (byte) (value >>> 24);
+        return 4;
     }
 
-    public static int serializeINT64(long anInt, byte[] bytes, int offset) {
-        NumberCodec.encodeLongUnchecked(anInt, bytes, offset);
-        return (8);
+    public static int serializeINT64(long value, byte[] bytes, int offset) {
+        bytes[offset + 7] = (byte) (value >>> 0);
+        bytes[offset + 6] = (byte) (value >>> 8);
+        bytes[offset + 5] = (byte) (value >>> 16);
+        bytes[offset + 4] = (byte) (value >>> 24);
+        bytes[offset + 3] = (byte) (value >>> 32);
+        bytes[offset + 2] = (byte) (value >>> 40);
+        bytes[offset + 1] = (byte) (value >>> 48);
+        bytes[offset + 0] = (byte) (value >>> 56);
+        return 8;
     }
 
     public static int serializeUINT64(long anInt, byte[] bytes, int offset) {
@@ -110,14 +140,14 @@ public class Serializer {
      * @param encoding
      * @return
      */
-    public static int serializeStringArray(String[] value,
+    public static int serializeStringArray(List<String> value,
                                            byte[] bytes,
                                            int offset,
                                            short encoding) {
 
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.length, bytes, offset);
+        numbytes = serializeUINT16(value.size(), bytes, offset);
         offset += numbytes;
         for (String s : value) {
             numbytes = serializeSTRING(s, bytes, offset, encoding);
@@ -126,12 +156,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeInt16Array(short[] value,
+    public static int serializeInt16Array(List<Short> value,
                                           byte[] bytes,
                                           int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.length, bytes, offset);
+        numbytes = serializeUINT16(value.size(), bytes, offset);
         offset += numbytes;
         for (short s : value) {
             numbytes = serializeINT16(s, bytes, offset);
@@ -140,12 +170,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeInt32Array(int[] value,
+    public static int serializeInt32Array(List<Integer> value,
                                           byte[] bytes,
                                           int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.length, bytes, offset);
+        numbytes = serializeUINT16(value.size(), bytes, offset);
         offset += numbytes;
         for (int s : value) {
             numbytes = serializeINT32(s, bytes, offset);
@@ -154,12 +184,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeInt64Array(long[] value,
+    public static int serializeInt64Array(List<Long> value,
                                           byte[] bytes,
                                           int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.length, bytes, offset);
+        numbytes = serializeUINT16(value.size(), bytes, offset);
         offset += numbytes;
         for (long s : value) {
             numbytes = serializeINT64(s, bytes, offset);
@@ -168,12 +198,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeUInt16Array(int[] value,
+    public static int serializeUInt16Array(List<Integer> value,
                                            byte[] bytes,
                                            int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.length, bytes, offset);
+        numbytes = serializeUINT16(value.size(), bytes, offset);
         offset += numbytes;
         for (int s : value) {
             numbytes = serializeUINT16(s, bytes, offset);
@@ -182,12 +212,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeUInt32Array(long[] value,
+    public static int serializeUInt32Array(List<Long> value,
                                            byte[] bytes,
                                            int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.length, bytes, offset);
+        numbytes = serializeUINT16(value.size(), bytes, offset);
         offset += numbytes;
         for (long s : value) {
             numbytes = serializeUINT32(s, bytes, offset);
@@ -196,12 +226,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeUInt64Array(long[] value,
+    public static int serializeUInt64Array(List<Long> value,
                                            byte[] bytes,
                                            int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.length, bytes, offset);
+        numbytes = serializeUINT16(value.size(), bytes, offset);
         offset += numbytes;
         for (long s : value) {
             numbytes = serializeUINT64(s, bytes, offset);
@@ -210,12 +240,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeBooleanArray(boolean[] value,
+    public static int serializeBooleanArray(List<Boolean> value,
                                             byte[] bytes,
                                             int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.length, bytes, offset);
+        numbytes = serializeUINT16(value.size(), bytes, offset);
         offset += numbytes;
         for (boolean s : value) {
             numbytes = serializeBOOLEAN(s, bytes, offset);
@@ -224,12 +254,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeByteArray(byte[] value,
+    public static int serializeByteArray(List<Byte> value,
                                          byte[] bytes,
                                          int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.length, bytes, offset);
+        numbytes = serializeUINT16(value.size(), bytes, offset);
         offset += numbytes;
         for (byte s : value) {
             numbytes = serializeBYTE(s, bytes, offset);
@@ -237,10 +267,34 @@ public class Serializer {
         }
         return (offset - offsetStart);
     }
-    
-    /*
-       * @deprecated
-       */
+
+    public static int serializeDoubleArray(List<Double> value, byte[] bytes, int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.size(), bytes, offset);
+        offset += numbytes;
+        for (double s : value) {
+            numbytes = serializeDOUBLE(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeFloatArray(List<Float> value, byte[] bytes, int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.size(), bytes, offset);
+        offset += numbytes;
+        for (float s : value) {
+            numbytes = serializeFLOAT(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    /**
+     * @deprecated
+     */
     public static int serializeEVENTWORD(String aString, byte[] bytes, int offset) {
         return serializeEVENTWORD(aString, bytes, offset, Event.DEFAULT_ENCODING);
     }
@@ -264,8 +318,14 @@ public class Serializer {
         return serializeEVENTWORD(aString, bytes, offset, Event.DEFAULT_ENCODING);
     }
 
-    public static int serializeIPADDR(IPAddress anIPAddress, byte[] bytes,
-                                      int offset) {
+    /**
+     * @param anIPAddress
+     * @param bytes
+     * @param offset
+     * @return
+     * @deprecated
+     */
+    public static int serializeIPADDR(IPAddress anIPAddress, byte[] bytes, int offset) {
         byte[] inetaddr = anIPAddress.getInetAddressAsBytes();
         bytes[offset + 3] = inetaddr[0];
         bytes[offset + 2] = inetaddr[1];
@@ -274,8 +334,14 @@ public class Serializer {
         return (4);
     }
 
-    public static int serializeIPADDR(InetAddress anIPAddress, byte[] bytes,
-                                      int offset) {
+    /**
+     * @param anIPAddress
+     * @param bytes
+     * @param offset
+     * @return
+     * @deprecated
+     */
+    public static int serializeIPADDR(InetAddress anIPAddress, byte[] bytes, int offset) {
         byte[] inetaddr = anIPAddress.getAddress();
         bytes[offset + 3] = inetaddr[0];
         bytes[offset + 2] = inetaddr[1];

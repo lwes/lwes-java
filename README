@@ -2,7 +2,7 @@ This is the Java API for the Light Weight Event System.
 
 ***
 Prerequisites
-- JDK 1.6.x (http://java.sun.com/)
+- JDK 1.5.x (http://java.sun.com/)
 - Maven 2.2.x (http://apache.maven.org/)
 
 ***
@@ -17,7 +17,8 @@ java -DMulticastReceiveBufferSize=8388608 ...
 
 ***
 1.0.0 Changes
-- Array support
+- New data types: byte, float, double, ipv4
+- Array support (Java implementation uses List)
 - Required/Optional
 - Size limitations
 

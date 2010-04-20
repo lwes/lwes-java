@@ -2,6 +2,10 @@ package org.lwes.serializer;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -13,9 +17,9 @@ public class SerializerTest {
 
     @Test
     public void testSerializeStringArray() {
-        String[] array = new String[]{
+        List array = new ArrayList(Arrays.asList(
                 "test", "one", "two", "three"
-        };
+        ));
 
         byte[] bytes = new byte[30];
         int offset = 0;
@@ -26,11 +30,12 @@ public class SerializerTest {
                                                        encoding);
         assertEquals("Number of bytes serialized incorrect", 25, numbytes);
         DeserializerState state = new DeserializerState();
-        String[] a = Deserializer.deserializeStringArray(state, bytes, encoding);
+        List<String> a = Deserializer.deserializeStringArray(state, bytes, encoding);
         assertNotNull(a);
-        assertEquals("wrong number of elements", 4, a.length);
-        for (int i = 0; i < a.length; i++) {
-            assertEquals("Element "+i+" incorrect", array[i], a[i]);
+        assertEquals("wrong number of elements", 4, a.size());
+        int index = 0;
+        for (String s : a) {
+            assertEquals("String array element wrong", array.get(index++), s);
         }
     }
 }

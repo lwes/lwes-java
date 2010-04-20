@@ -123,18 +123,7 @@ void attributeList() :
   attribute() ( attribute() )*
 }
 
-int arraySize() :
-{
-  Token t;
-}
-{
-    t = <INTEGER_LITERAL>
-    {
-    return Integer.parseInt(t.image);
-    }
-}
-
-String StringLiteral() :
+String stringLiteral() :
 {
     Token t;
 }
@@ -145,7 +134,7 @@ String StringLiteral() :
     }
 }
 
-boolean BooleanLiteral() :
+boolean booleanLiteral() :
 {}
 {
   <TRUE>
@@ -159,7 +148,7 @@ boolean BooleanLiteral() :
   }
 }
 
-int IntegerLiteral() :
+int integerLiteral() :
 {
     Token t;
 }
@@ -174,7 +163,7 @@ int IntegerLiteral() :
   }
 }
 
-double DoubleLiteral() :
+double doubleLiteral() :
 {
     Token t;
 }
@@ -194,21 +183,35 @@ Object defaultValue() :
     Object obj;
 }
 {
-    obj = IntegerLiteral()
+    obj = integerLiteral()
     {
       return obj;
     }
-    | obj = DoubleLiteral()
+    | obj = doubleLiteral()
     {
       return obj;
     }
-    | obj = BooleanLiteral()
+    | obj = booleanLiteral()
     {
       return obj;
     }
-    | obj = StringLiteral()
+    | obj = stringLiteral()
     {
       return obj;
+    }
+}
+
+boolean required() :
+{
+}
+{
+    <REQ>
+    {
+      return true;
+    }
+    | <OPT>
+    {
+      return false;
     }
 }
 
@@ -221,9 +224,9 @@ void attribute() :
   Object aDefaultValue = null;
 }
 {
-  ((("required" {required = true;} | "optional") (aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] [ "=" aDefaultValue = defaultValue() ] ";"))
+  (((required = required()) (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";"))
 |
-  (aType=type() anAttribute=attributeName() [ "[" anArraySize = arraySize() "]" ] [ "=" aDefaultValue = defaultValue() ] ";")  ) {
+  (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";")  ) {
       if ( !( aType.equals("uint16")  ||
               aType.equals("int16")   ||
               aType.equals("uint32")  ||
@@ -233,7 +236,9 @@ void attribute() :
               aType.equals("int64")   ||
               aType.equals("uint64")  ||
               aType.equals("byte")    ||
-              aType.equals("double")   ||
+              aType.equals("double")  ||
+              aType.equals("float")   ||
+              aType.equals("ipv4")    ||
               aType.equals("boolean")
             )
          )

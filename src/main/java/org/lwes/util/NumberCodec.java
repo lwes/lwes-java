@@ -284,7 +284,7 @@ public final class NumberCodec {
 	/**
 	 * Output a number in unsigned hexadecimal form, padding with zeroes,
 	 * with a fixed result size.  Extra opening "f"'s are removed.
-	 * @param  val      the number to convert
+	 * @param  num      the number to convert
 	 * @param  numBytes the number of bytes to write (each is two hex digits)
 	 * @return a String representing the number.
 	 */
@@ -297,7 +297,7 @@ public final class NumberCodec {
 	/**
 	 * Write a number in unsigned hexadecimal form, padding with zeroes,
 	 * with a fixed result size.  Extra opening "f"'s are removed.
-	 * @param  val      the number to convert
+	 * @param  num      the number to convert
 	 * @param  numBytes the number of bytes to write (each is two hex digits)
 	 * @param  buf      the StringBuffer into which to write
 	 */
@@ -515,7 +515,7 @@ public final class NumberCodec {
 			case ((byte)'0'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0x0 << 0 );
+					bytes[count] |= (byte) 0x0;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -528,7 +528,7 @@ public final class NumberCodec {
 			case ((byte)'1'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0x1 << 0 );
+					bytes[count] |= (byte) 0x1;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -541,7 +541,7 @@ public final class NumberCodec {
 			case ((byte)'2'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0x2 << 0 );
+					bytes[count] |= (byte) 0x2;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -554,7 +554,7 @@ public final class NumberCodec {
 			case ((byte)'3'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0x3 << 0 );
+					bytes[count] |= (byte) 0x3;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -567,7 +567,7 @@ public final class NumberCodec {
 			case ((byte)'4'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count]  |= (byte)( (byte)0x4 << 0 );
+					bytes[count]  |= (byte) 0x4;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -580,7 +580,7 @@ public final class NumberCodec {
 			case ((byte)'5'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0x5 << 0 );
+					bytes[count] |= (byte) 0x5;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -593,7 +593,7 @@ public final class NumberCodec {
 			case ((byte)'6'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0x6 << 0 );
+					bytes[count] |= (byte) 0x6;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -606,7 +606,7 @@ public final class NumberCodec {
 			case ((byte)'7'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0x7 << 0 );
+					bytes[count] |= (byte) 0x7;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -619,7 +619,7 @@ public final class NumberCodec {
 			case ((byte)'8'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0x8 << 0 );
+					bytes[count] |= (byte) 0x8;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -632,7 +632,7 @@ public final class NumberCodec {
 			case ((byte)'9'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0x9 << 0 );
+					bytes[count] |= (byte) 0x9;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -646,7 +646,7 @@ public final class NumberCodec {
 			case ((byte)'A'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0xa << 0 );
+					bytes[count] |= (byte) 0xa;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -660,7 +660,7 @@ public final class NumberCodec {
 			case ((byte)'B'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0xb << 0 );
+					bytes[count] |= (byte) 0xb;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -674,7 +674,7 @@ public final class NumberCodec {
 			case ((byte)'C'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0xc << 0 );
+					bytes[count] |= (byte) 0xc;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -689,7 +689,7 @@ public final class NumberCodec {
 			case ((byte)'D'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0xd << 0 );
+					bytes[count] |= (byte) 0xd;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -704,7 +704,7 @@ public final class NumberCodec {
 			case ((byte)'E'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0xe << 0 );
+					bytes[count] |= (byte) 0xe;
 					count++;
 					waitingForSecondNibble = false;
 				}
@@ -719,7 +719,7 @@ public final class NumberCodec {
 			case ((byte)'F'):
 				if ( waitingForSecondNibble )
 				{
-					bytes[count] |= (byte)( (byte)0xf << 0 );
+					bytes[count] |= (byte) 0xf;
 					count++;
 					waitingForSecondNibble = false;
 				}

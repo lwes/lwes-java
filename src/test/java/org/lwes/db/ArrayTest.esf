@@ -21,4 +21,6 @@ TestEvent
 
   boolean field8[5];
   byte field9[5];
+  double field10[5];
+  float field11[5];
 }
