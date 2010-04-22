@@ -12,6 +12,7 @@ import org.lwes.util.NumberCodec;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -359,6 +360,10 @@ public class Event {
         return getArray(attributeName);
     }
 
+    public List getIPV4Array(String attributeName) throws NoSuchAttributeException {
+        return getArray(attributeName);
+    }
+    
     /**
      * Method to check if an attribute is set in the event. This method does not throw
      * NoSuchAttributeException because it shouldn't really care. If it's not there, it's
@@ -500,20 +505,33 @@ public class Event {
      * @param attributeName the name of the attribute to fetch
      * @return the IP address in bytes
      * @throws NoSuchAttributeException if the attribute does not exist in this event
+     * @deprecated
      */
     public byte[] getIPAddress(String attributeName) throws NoSuchAttributeException {
         return ((IPAddress) get(attributeName)).getInetAddressAsBytes();
     }
 
     /**
-     * Accessor that returns the ip addres as an IPAddress object.
+     * Accessor that returns the ip address as an IPAddress object.
      *
      * @param attributeName name of the attribute to fetch
      * @return IPAddress
-     * @throws NoSuchAttributeException
+     * @throws NoSuchAttributeException if the attribute is not set.
+     * @deprecated
      */
     public IPAddress getIPAddressObj(String attributeName) throws NoSuchAttributeException {
         return (IPAddress) get(attributeName);
+    }
+
+    /**
+     * Accessor that returns the ip address as an InetAddress.
+     *
+     * @param attributeName name of the attribute in the event.
+     * @return InetAddress
+     * @throws NoSuchAttributeException if the attribute is not set.
+     */
+    public InetAddress getIPV4Address(String attributeName) throws NoSuchAttributeException {
+        return (InetAddress) get(attributeName);
     }
 
     /**
@@ -648,6 +666,13 @@ public class Event {
                                         value));
     }
 
+    public void setIPV4AddressArray(String attributeName, List value)
+            throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.IPV4_ARRAY_STRING,
+                                        TypeID.IPV4_ARRAY_TOKEN,
+                                        value));
+    }
+
     public void setDouble(String attributeName, Double value) throws EventSystemException {
         set(attributeName, new BaseType(TypeID.DOUBLE_STRING, TypeID.DOUBLE_TOKEN, value));
     }
@@ -676,6 +701,8 @@ public class Event {
      *
      * @param attributeName the attribute to set
      * @param aNumber       the value
+     * @throws NoSuchAttributeException     if the attribute does not exist in the event
+     * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setUInt16(String attributeName, Integer aNumber)
             throws EventSystemException {
@@ -702,6 +729,8 @@ public class Event {
      *
      * @param attributeName the attribute to set
      * @param aNumber       the value
+     * @throws NoSuchAttributeException     if the attribute does not exist in the event
+     * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setUInt32(String attributeName, Long aNumber)
             throws EventSystemException {
@@ -783,6 +812,7 @@ public class Event {
      * @param address       the ip address in bytes
      * @throws NoSuchAttributeException     if the attribute does not exist in the event
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
+     * @deprecated
      */
     public void setIPAddress(String attributeName, byte[] address)
             throws EventSystemException {
@@ -796,6 +826,7 @@ public class Event {
      * @param address       the ip address in bytes
      * @throws NoSuchAttributeException     if the attribute does not exist in the event
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
+     * @deprecated
      */
     public void setIPAddress(String attributeName, InetAddress address)
             throws EventSystemException {
@@ -809,10 +840,17 @@ public class Event {
      * @param address       the ip address in bytes
      * @throws NoSuchAttributeException     if the attribute does not exist in the event
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
+     * @deprecated
      */
     public void setIPAddress(String attributeName, IPAddress address)
             throws EventSystemException {
         set(attributeName, new BaseType(TypeID.IPADDR_STRING, TypeID.IPADDR_TOKEN, address));
+    }
+
+
+    public void setIPV4Address(String attributeName, InetAddress address)
+            throws EventSystemException {
+        set(attributeName, new BaseType(TypeID.IPV4_STRING, TypeID.IPV4_TOKEN, address));
     }
 
     /**
@@ -918,6 +956,9 @@ public class Event {
                     case TypeID.IPADDR_TOKEN:
                         offset += Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
                         break;
+                    case TypeID.IPV4_TOKEN:
+                        offset += Serializer.serializeIPV4((InetAddress) data, bytes, offset);
+                        break;
                     case TypeID.STRING_ARRAY_TOKEN:
                         offset += Serializer.serializeStringArray
                                 (((List) data), bytes, offset, encoding);
@@ -952,6 +993,9 @@ public class Event {
                     case TypeID.FLOAT_ARRAY_TOKEN:
                         offset += Serializer.serializeFloatArray((List) data, bytes, offset);
                         break;
+                    case TypeID.IPV4_ARRAY_TOKEN:
+                        offset += Serializer.serializeIPV4Array((List) data, bytes, offset);
+                        break;
                     default:
                         log.warn("Unknown BaseType token: " + typeToken);
                         break;
@@ -968,6 +1012,7 @@ public class Event {
      * Deserialize the Event from byte array
      *
      * @param bytes the byte array containing a serialized Event
+     * @throws EventSystemException
      */
     public void deserialize(byte[] bytes)
             throws EventSystemException {
@@ -1042,6 +1087,16 @@ public class Event {
                         byte[] inetAddress = Deserializer.deserializeIPADDR(state, bytes);
                         setIPAddress(attribute, inetAddress);
                         break;
+                    case TypeID.IPV4_TOKEN:
+                        InetAddress ipv4 = null;
+                        try {
+                            ipv4 = Deserializer.deserializeIPV4(state, bytes);
+                            setIPV4Address(attribute, ipv4);
+                        }
+                        catch (UnknownHostException e) {
+                            throw new EventSystemException(e);
+                        }
+                        break;
                     case TypeID.STRING_ARRAY_TOKEN:
                         List sArray = Deserializer.deserializeStringArray(state, bytes, encoding);
                         setStringArray(attribute, sArray);
@@ -1085,6 +1140,10 @@ public class Event {
                     case TypeID.FLOAT_ARRAY_TOKEN:
                         List fa = Deserializer.deserializeFloatArray(state, bytes);
                         setFloatArray(attribute, fa);
+                        break;
+                    case TypeID.IPV4_ARRAY_TOKEN:
+                        List ipv4a = Deserializer.deserializeIPV4Array(state, bytes);
+                        setIPV4AddressArray(attribute, ipv4a);
                         break;
                     default:
                         log.warn("Unknown type " + type + " in deserialization");
@@ -1167,7 +1226,7 @@ public class Event {
     }
 
     public String toOneLineString() {
-        return toString().replaceAll("\n"," ");    
+        return toString().replaceAll("\n", " ");
     }
 
     @Override

@@ -171,6 +171,9 @@ public class BaseType {
             case TypeID.IPADDR_TOKEN:
                 size = 4;
                 break;
+            case TypeID.IPV4_TOKEN:
+                size = 4;
+                break;
             case TypeID.BOOLEAN_TOKEN:
                 size = 1;
                 break;
@@ -210,6 +213,9 @@ public class BaseType {
                 size = ((List) typeObject).size() * 8 + 2;
                 break;
             case TypeID.FLOAT_ARRAY_TOKEN:
+                size = ((List) typeObject).size() * 4 + 2;
+                break;
+            case TypeID.IPV4_ARRAY_TOKEN:
                 size = ((List) typeObject).size() * 4 + 2;
                 break;
             default:

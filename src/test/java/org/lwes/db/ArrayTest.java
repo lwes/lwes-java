@@ -9,6 +9,8 @@ import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -390,5 +392,25 @@ public class ArrayTest {
         assertEquals("deserialized array length was incorrect", 2, a2.size());
         assertEquals("a2.get(0)", (float) 1.11, a2.get(0), .01);
         assertEquals("a2.get(1)", (float) 2.22, a2.get(1), .01);
+    }
+
+    @Test
+    public void testIPV4Array() throws EventSystemException, UnknownHostException {
+        Event evt = new Event("TestEvent", true, template);
+        evt.setIPV4AddressArray("field12", new ArrayList
+                (Arrays.asList(InetAddress.getByName("yp.com"),
+                               InetAddress.getByName("yahoo.com"))));
+        List ar = evt.getIPV4Array("field12");
+        assertNotNull("IPV4 array was null", ar);
+        assertEquals("number of fields is wrong ", 2, ar.size());
+
+        byte[] serializedEvent = evt.serialize();
+        Event evt2 = new Event(serializedEvent, true, template);
+        assertNotNull(evt2);
+        List<InetAddress> a2 = evt2.getFloatArray("field12");
+        assertNotNull(a2);
+        assertEquals("deserialized array length was incorrect", 2, a2.size());
+        assertTrue("a2.get(0)", a2.get(0).getHostName().endsWith(".yp.atti.com"));
+        assertTrue("a2.get(1)", a2.get(1).getHostName().endsWith(".yahoo.com"));
     }
 }

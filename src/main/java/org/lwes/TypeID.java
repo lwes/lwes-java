@@ -148,6 +148,7 @@ public class TypeID {
     public final static String BYTE_STRING = "byte";
     public final static String DOUBLE_STRING = "double";
     public final static String FLOAT_STRING = "float";
+    public final static String IPV4_STRING = "ipv4";
 
     public final static String STRING_ARRAY_STRING = "[Lstring";
     public final static String UINT16_ARRAY_STRING = "[Luint16";
@@ -160,7 +161,8 @@ public class TypeID {
     public final static String BYTE_ARRAY_STRING = "[Lbyte";
     public final static String DOUBLE_ARRAY_STRING = "[Ldouble";
     public final static String FLOAT_ARRAY_STRING = "[Lfloat";
-
+    public final static String IPV4_ARRAY_STRING = "[Lipv4";
+    
     /**
      * This is a regular expression for parsing an integer number from a string
      */

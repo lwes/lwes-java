@@ -728,6 +728,12 @@ public class EventTemplateDB {
         knownTypes.put(TypeID.FLOAT_STRING,
                        new BaseType(TypeID.FLOAT_STRING,
                                     TypeID.FLOAT_TOKEN, null));
+        knownTypes.put(TypeID.IPV4_STRING,
+                       new BaseType(TypeID.IPV4_STRING,
+                                    TypeID.IPV4_TOKEN, null));
+        knownTypes.put(TypeID.IPV4_ARRAY_STRING,
+                       new BaseType(TypeID.IPV4_ARRAY_STRING,
+                                    TypeID.IPV4_ARRAY_TOKEN, null));
     }
 
     public Map<String, BaseType> getMetaFields() {

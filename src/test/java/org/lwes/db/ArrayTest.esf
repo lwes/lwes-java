@@ -23,4 +23,6 @@ TestEvent
   byte field9[5];
   double field10[5];
   float field11[5];
+
+  ipv4 field12[5];
 }

@@ -346,6 +346,21 @@ public class Deserializer {
         return rtn;
     }
 
+    public static List deserializeIPV4Array(DeserializerState state,
+                                             byte[] bytes) {
+        int length = deserializeUINT16(state, bytes);
+        List<InetAddress> rtn = new ArrayList<InetAddress>(length);
+        for (int i = 0; i < length; i++) {
+            try {
+                rtn.add(deserializeIPV4(state, bytes));
+            }
+            catch (UnknownHostException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        return rtn;
+    }
+
     /**
      * Deserialize a String out of the byte array <tt>bytes</tt>
      *

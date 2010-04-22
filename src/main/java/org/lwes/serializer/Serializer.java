@@ -292,15 +292,26 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    /**
-     * @deprecated
-     */
+    public static int serializeIPV4Array(List<InetAddress> value, byte[] bytes, int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.size(), bytes, offset);
+        offset += numbytes;
+        for (InetAddress s : value) {
+            numbytes = serializeIPV4(s, bytes, offset);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
     public static int serializeEVENTWORD(String aString, byte[] bytes, int offset) {
         return serializeEVENTWORD(aString, bytes, offset, Event.DEFAULT_ENCODING);
     }
 
-    private static int serializeEVENTWORD(String aString, byte[] bytes,
-                                          int offset, short encoding) {
+    private static int serializeEVENTWORD(String aString,
+                                          byte[] bytes,
+                                          int offset,
+                                          short encoding) {
         byte[] stringBytes =
                 EncodedString.getBytes(aString, Event.ENCODING_STRINGS[encoding]);
         int length = stringBytes.length;
@@ -319,10 +330,12 @@ public class Serializer {
     }
 
     /**
-     * @param anIPAddress
-     * @param bytes
-     * @param offset
-     * @return
+     * Serialize IPAddress in *reverse* network order. Don't use this.
+     *
+     * @param anIPAddress the ip address to serialize
+     * @param bytes the byte array to modify
+     * @param offset what index in the array to start at
+     * @return how many bytes were set in the array
      * @deprecated
      */
     public static int serializeIPADDR(IPAddress anIPAddress, byte[] bytes, int offset) {
@@ -335,10 +348,12 @@ public class Serializer {
     }
 
     /**
-     * @param anIPAddress
-     * @param bytes
-     * @param offset
-     * @return
+     * Serializes an ip address in *reverse* network order. Don't use this.
+     *
+     * @param anIPAddress the ip address to serialize
+     * @param bytes the byte array to modify
+     * @param offset what index in the array to start at
+     * @return how many bytes were set in the array
      * @deprecated
      */
     public static int serializeIPADDR(InetAddress anIPAddress, byte[] bytes, int offset) {
@@ -347,6 +362,23 @@ public class Serializer {
         bytes[offset + 2] = inetaddr[1];
         bytes[offset + 1] = inetaddr[2];
         bytes[offset] = inetaddr[3];
+        return (4);
+    }
+
+    /**
+     * Serialize InetAddress in network order.
+     *
+     * @param ip the ip address to serialize
+     * @param bytes the byte array to modify
+     * @param offset what index in the array to start at
+     * @return how many bytes were set in the array
+     */
+    public static int serializeIPV4(InetAddress ip, byte[] bytes, int offset) {
+        byte[] inetaddr = ip.getAddress();
+        bytes[offset] = inetaddr[0];
+        bytes[offset + 1] = inetaddr[1];
+        bytes[offset + 2] = inetaddr[2];
+        bytes[offset + 3] = inetaddr[3];
         return (4);
     }
 }
