@@ -5,7 +5,7 @@
     <groupId>org.lwes</groupId>
     <artifactId>lwes-java</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.1</version>
+    <version>0.2.2-SNAPSHOT</version>
     <name>lwes-java</name>
     <url>http://maven.apache.org</url>
     <dependencies>
@@ -108,4 +108,14 @@
             </plugin>
         </plugins>
     </reporting>
+    <distributionManagement>
+      <repository>
+        <id>yp_local</id>
+        <url>http://maven.corp.atti.com:9999/nexus/content/repositories/thirdparty</url>
+      </repository>
+      <snapshotRepository>
+        <id>yp_local</id>
+        <url>http://maven.corp.atti.com:9999/nexus/content/repositories/snapshots</url>
+      </snapshotRepository>
+    </distributionManagement>    
 </project>

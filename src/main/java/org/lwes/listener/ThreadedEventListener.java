@@ -5,18 +5,28 @@ import org.lwes.EventSystemException;
 public abstract class ThreadedEventListener implements EventListener {
 	/* the processor for handling events */
 	protected ThreadedProcessor processor = new ThreadedProcessor();
-	
+
 	/* the event enqueuer and dequeuer */
 	private ThreadedEnqueuer enqueuer = null;
 	private ThreadedDequeuer dequeuer = null;
-	
+
+    private int queueSize = -1;
+
 	/**
 	 * Default constructor.
 	 */
 	public ThreadedEventListener() {
 	}
-		
-	/**
+
+    public int getQueueSize() {
+        return queueSize;
+    }
+
+    public void setQueueSize(int queueSize) {
+        this.queueSize = queueSize;
+    }
+
+    /**
 	 * Gets the enqueuer being used by this listener
 	 * @return the enqueuer
 	 */
@@ -53,9 +63,9 @@ public abstract class ThreadedEventListener implements EventListener {
 	 * @param handler the EventHandler to add
 	 */
 	public void addHandler(EventHandler handler) {
-		
+
 	}
-	
+
 	/**
 	 * Initializes this listener, and starts the processor threads
 	 * @throws EventSystemException if there is a problem initializing the listener
@@ -64,14 +74,15 @@ public abstract class ThreadedEventListener implements EventListener {
 		if(processor == null) throw new EventSystemException("No processor exists");
 		if(enqueuer == null) throw new EventSystemException("No enqueuer exists");
 		if(dequeuer == null) throw new EventSystemException("No dequeuer exists");
-		
+		       
+        processor.setQueueSize(queueSize);
 		processor.setEnqueuerPriority(Thread.MAX_PRIORITY);
 		processor.setDequeuerPriority(Thread.NORM_PRIORITY);
 		processor.setEnqueuer(enqueuer);
 		processor.setDequeuer(dequeuer);
 		processor.initialize();
 	}
-	
+
 	public void shutdown() throws EventSystemException {
 		if(processor == null) throw new EventSystemException("No processor exists");
 		processor.shutdown();

@@ -152,7 +152,9 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
 			try {
 				DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
 				socket.receive(datagram);
-                Log.trace("Received datagram: "+datagram);
+                if (Log.isLogTrace()) {
+                    Log.trace("Received datagram: "+datagram);
+                }
 
 				/* we record the time *after* the receive because it blocks */
 				long receiptTime = System.currentTimeMillis();
@@ -169,7 +171,9 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
 
 				/* add the element to the queue and notify everyone there's work to do */
 				queue.put(element);
-                Log.trace("Enqueued: "+element);
+                if (Log.isLogTrace()) {
+                    Log.trace("Enqueued: " + element);
+                }
 			} catch(Exception e) {
 				Log.warning("Unable to read datagram", e);
 			}
