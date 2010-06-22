@@ -187,7 +187,6 @@ public class ThreadedProcessor implements Runnable {
         /* create a queue if it doesn't exist */
         if (queue == null) {
             if (queueSize > 0) {
-                System.out.println("queueSize: "+queueSize);
                 queue = new LinkedBlockingQueue<QueueElement>(queueSize);
             }
             else {
