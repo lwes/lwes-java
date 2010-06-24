@@ -17,40 +17,39 @@ public class EncodedString {
 	private CharacterEncoding myEncoding;
 
 	public static String bytesToString(byte[] bytes, CharacterEncoding enc) {
-		String ret = null;
+		if (bytes == null) {
+            return null;
+        }
+
 		try {
-			ret = new String(bytes, enc.getEncodingString());
+			return new String(bytes, enc.getEncodingString());
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException("Unknown Encoding");
-		} catch (NullPointerException e) {
-			return null;
 		}
-		return ret;
 	}
 
-	public static String bytesToString(byte[] bytes, int offset,
-			int length, CharacterEncoding enc) {
-		String ret = null;
+	public static String bytesToString(byte[] bytes, int offset, int length, CharacterEncoding enc) {
+		if (bytes == null) {
+            return null;
+        }
+
 		try {
-			ret = new String(bytes, offset, length, enc.getEncodingString());
+			return new String(bytes, offset, length, enc.getEncodingString());
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException("Unknown Encoding");
-		} catch (NullPointerException e) {
-			return null;
 		}
-		return ret;
 	}
 
 	public static byte[] getBytes(String string, CharacterEncoding enc) {
-		byte[] ret = null;
+        if (string == null) {
+            return null;
+        }
+
 		try {
-			ret = string.getBytes(enc.getEncodingString());
+			return string.getBytes(enc.getEncodingString());
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException("Unknown Encoding");
-		} catch (NullPointerException e) {
-			return null;
 		}
-		return ret;
 	}
 
 	public EncodedString(String string, CharacterEncoding enc) {
