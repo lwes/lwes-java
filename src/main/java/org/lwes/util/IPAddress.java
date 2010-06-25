@@ -1,5 +1,9 @@
 package org.lwes.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -7,10 +11,12 @@ import java.net.UnknownHostException;
  * This is a wrapper class for InetAddress, which allows the setting of
  * an InetAddress with a byte arrays.  As well as other useful functions.
  *
- * @deprecated 
+ * @deprecated
  * @author Anthony Molinaro
  */
-public class IPAddress implements java.io.Serializable {
+public class IPAddress implements Serializable {
+    private static transient Log log = LogFactory.getLog(IPAddress.class);
+
     /* serializable UID */
     static final long serialVersionUID = -1;
 
@@ -61,7 +67,7 @@ public class IPAddress implements java.io.Serializable {
      */
     public IPAddress(byte[] anIPAddress) {
         if (anIPAddress.length != 4) {
-            System.err.println("ERROR : bad inet addr\n");
+            log.error("ERROR : bad inet addr\n");
             throw new RuntimeException("Bad inet address");
         }
         inet_addr = anIPAddress;
