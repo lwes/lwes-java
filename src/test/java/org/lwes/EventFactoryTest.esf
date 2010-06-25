@@ -1,0 +1,16 @@
+MetaEventInfo
+{
+  ip_addr SenderIP;    # IP address of Sender
+  uint16  SenderPort;  # IP port of Sender
+  int64   ReceiptTime; # time this event was received, in
+                       # milliseconds since epoch
+  int16   enc;         # encoding of strings in the event
+  uint16  SiteID;      # id of site sending the event
+}
+
+TestEvent
+{
+  required string field1;
+  optional string field2;
+  int32 field3;
+}
