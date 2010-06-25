@@ -1,10 +1,13 @@
 package org.lwes.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author fmaritato
@@ -14,6 +17,7 @@ public class NumberCodecTest {
 
     @Test
     public void testToHexString() {
+
         String s = NumberCodec.toHexString((byte) 1);
         assertNotNull(s);
         assertEquals("Byte to hex incorrect", "01", s);
@@ -33,6 +37,18 @@ public class NumberCodecTest {
         s = NumberCodec.toHexString(new BigInteger("1000"));
         assertNotNull(s);
         assertEquals("BigInteger to hex incorrect", "3e8", s);
+
+        s = NumberCodec.toHexString(null);
+        assertEquals("Null hex string failed.", "", s);
+
+    }
+
+    @Test
+    public void testFromHexString() {
+        short s = NumberCodec.shortFromHexString("09");
+        assertEquals((short) 9, s);
+        s = NumberCodec.shortFromHexString("0a");
+        assertEquals((short) 10, s);
     }
 
     @Test
@@ -66,6 +82,62 @@ public class NumberCodecTest {
 
         byte b = NumberCodec.byteFromHexString("0a");
         assertEquals("byteFromHexString fail", 10, b);
+
+        buf = NumberCodec.hexStringToByteArray("011");
+        assertNull("Invalid hex number null byte failed", buf);
+
+        buf = NumberCodec.hexStringToByteArray("0123456789abcdef");
+        assertNotNull(buf);
+    }
+
+    @Test
+    public void testCheckRange() {
+
+        boolean exceptionThrown = false;
+        try {
+            NumberCodec.encodeByte((byte) 116, null, 0, 1);
+        }
+        catch (IllegalArgumentException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
+
+        byte[] buf = new byte[64];
+        exceptionThrown = false;
+        try {
+            NumberCodec.checkRange(116, buf, 0, 10);
+        }
+        catch (IllegalArgumentException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
+
+        exceptionThrown = false;
+        try {
+            NumberCodec.encodeByte((byte) 116, buf, -1, 1);
+        }
+        catch (IllegalArgumentException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
+
+        exceptionThrown = false;
+        try {
+            NumberCodec.encodeByte((byte) 116, buf, 0, 500);
+        }
+        catch (IllegalArgumentException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
+
+        exceptionThrown = false;
+        try {
+            NumberCodec.encodeByte((byte) 116, buf, 0, -11);
+        }
+        catch (IllegalArgumentException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
     }
 
     @Test
@@ -73,6 +145,11 @@ public class NumberCodecTest {
 
         // encodeLong and decodeLong call the unchecked versions underneath.
         byte[] buf = new byte[64];
+
+        NumberCodec.encodeByte((byte) 116, buf, 0, buf.length);
+        byte b = NumberCodec.decodeByte(buf, 0, buf.length);
+        assertEquals("encode/decode byte unchecked fail", 116, b);
+
         NumberCodec.encodeLong(123l, buf, 0, buf.length);
         long lval = NumberCodec.decodeLong(buf, 0, buf.length);
         assertEquals("encode/decode long unchecked fail", 123l, lval);
@@ -85,5 +162,21 @@ public class NumberCodecTest {
         short sval = NumberCodec.decodeShort(buf, 0, buf.length);
         assertEquals("encode/decode short unchecked fail", 12, sval);
 
+        boolean exceptionThrown = false;
+        try {
+            NumberCodec.decodeLong(null);
+        }
+        catch (NumberFormatException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
+        try {
+            NumberCodec.decodeLong(buf);
+        }
+        catch (NumberFormatException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
     }
+
 }
