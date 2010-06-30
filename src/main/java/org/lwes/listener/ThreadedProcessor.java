@@ -21,188 +21,226 @@ public class ThreadedProcessor implements Runnable {
 	/* a flag to tell whether or not the thread is running */
 	private boolean running = false;
 
-	/* the number of seconds to sleep */
-	private int seconds = 30;
+    /* the number of seconds to sleep */
+    private int seconds = 30;
 
-	/* the thread placing events into the queue */
-	private ThreadedEnqueuer enqueuer = null;
+    /* the thread placing events into the queue */
+    private ThreadedEnqueuer enqueuer = null;
 
-	/* the thread dispatching events from the queue */
-	private ThreadedDequeuer dequeuer = null;
+    /* the thread dispatching events from the queue */
+    private ThreadedDequeuer dequeuer = null;
 
-	/* the enqueuer thread */
-	private Thread enqueuerThread = null;
+    /* the enqueuer thread */
+    private Thread enqueuerThread = null;
 
-	/* the dequeuer thread */
-	private Thread dequeuerThread = null;
+    /* the dequeuer thread */
+    private Thread dequeuerThread = null;
 
-	/* a watcher thread (myself) */
-	private Thread watcherThread = null;
+    /* a watcher thread (myself) */
+    private Thread watcherThread = null;
 
-	/* the queue for events */
-	private LinkedBlockingQueue<QueueElement> queue = null;
+    /* the queue for events */
+    private LinkedBlockingQueue<QueueElement> queue = null;
 
-	/* the priority for the enqueuing thread */
-	int enqueuerPriority = Thread.NORM_PRIORITY;
+    /* the priority for the enqueuing thread */
+    int enqueuerPriority = Thread.NORM_PRIORITY;
 
-	/* the priority for the dequeuing thread */
-	int dequeuerPriority = Thread.NORM_PRIORITY;
+    /* the priority for the dequeuing thread */
+    int dequeuerPriority = Thread.NORM_PRIORITY;
 
-	/* the priority for the watcher thread */
-	int watcherPriority = Thread.MIN_PRIORITY;
+    /* the priority for the watcher thread */
+    int watcherPriority = Thread.MIN_PRIORITY;
 
-	/**
-	 * Default constructor.
-	 */
-	public ThreadedProcessor() {
-	}
+    /**
+     * The maximum size of the queue. If you don't set it will be unlimited.
+     */
+    private int queueSize = -1;
 
-	/**
-	 * Gets the enqueuer being used by this event processor
-	 * @return the ThreadedEnqueuer being used by this processor
-	 */
-	public ThreadedEnqueuer getEnqueuer() {
-		return this.enqueuer;
-	}
+    /**
+     * Default constructor.
+     */
+    public ThreadedProcessor() {
+    }
 
-	/**
-	 * Sets the enqueuer to use for this event processor.
-	 * @param enqueuer the ThreadedEnqueuer to use
-	 */
-	public void setEnqueuer(ThreadedEnqueuer enqueuer) {
-		this.enqueuer = enqueuer;
-	}
+    /**
+     * Gets the enqueuer being used by this event processor
+     *
+     * @return the ThreadedEnqueuer being used by this processor
+     */
+    public ThreadedEnqueuer getEnqueuer() {
+        return this.enqueuer;
+    }
 
-	/**
-	 * Gets the dequeuer being used by this event processor
-	 * @return the ThreadedDequeuer being used by this processor
-	 */
-	public ThreadedDequeuer getDequeuer() {
-		return this.dequeuer;
-	}
+    /**
+     * Sets the enqueuer to use for this event processor.
+     *
+     * @param enqueuer the ThreadedEnqueuer to use
+     */
+    public void setEnqueuer(ThreadedEnqueuer enqueuer) {
+        this.enqueuer = enqueuer;
+    }
 
-	/**
-	 * Sets the dequeuer to use for this event processor.
-	 * @param dequeuer the ThreadedDequeuer to use
-	 */
-	public void setDequeuer(ThreadedDequeuer dequeuer) {
-		this.dequeuer = dequeuer;
-	}
+    /**
+     * Gets the dequeuer being used by this event processor
+     *
+     * @return the ThreadedDequeuer being used by this processor
+     */
+    public ThreadedDequeuer getDequeuer() {
+        return this.dequeuer;
+    }
 
-	/**
-	 * Returns the List being used as the queue
-	 * @return the List object
-	 */
-	public synchronized LinkedBlockingQueue<QueueElement> getQueue() {
-		return this.queue;
-	}
+    /**
+     * Sets the dequeuer to use for this event processor.
+     *
+     * @param dequeuer the ThreadedDequeuer to use
+     */
+    public void setDequeuer(ThreadedDequeuer dequeuer) {
+        this.dequeuer = dequeuer;
+    }
 
-	/**
-	 * Sets the List being used as the queue.
-	 * Warning: this list needs to be thread-synchronized!
-	 * @param queue the List to use for this processor
-	 */
-	public synchronized void setQueue(LinkedBlockingQueue<QueueElement> queue) {
-		this.queue = queue;
-	}
+    /**
+     * Returns the List being used as the queue
+     *
+     * @return the List object
+     */
+    public synchronized LinkedBlockingQueue<QueueElement> getQueue() {
+        return this.queue;
+    }
 
-	/**
-	 * Returns the thread priority of the enqueuer.
-	 * @return the thread priority
-	 */
-	public int getEnqueuerPriority() {
-		return this.enqueuerPriority;
-	}
+    /**
+     * Sets the List being used as the queue.
+     * Warning: this list needs to be thread-synchronized!
+     *
+     * @param queue the List to use for this processor
+     */
+    public synchronized void setQueue(LinkedBlockingQueue<QueueElement> queue) {
+        this.queue = queue;
+    }
 
-	/**
-	 * Sets the thread priority of the enqueuer.
-	 * @param priority the thread priority to use
-	 */
-	public void setEnqueuerPriority(int priority) {
-		this.enqueuerPriority = priority;
-	}
+    /**
+     * Returns the thread priority of the enqueuer.
+     *
+     * @return the thread priority
+     */
+    public int getEnqueuerPriority() {
+        return this.enqueuerPriority;
+    }
 
-	/**
-	 * Returns the thread priority of the dequeuer.
-	 * @return the thread priority
-	 */
-	public int getDequeuerPriority() {
-		return this.dequeuerPriority;
-	}
+    /**
+     * Sets the thread priority of the enqueuer.
+     *
+     * @param priority the thread priority to use
+     */
+    public void setEnqueuerPriority(int priority) {
+        this.enqueuerPriority = priority;
+    }
 
-	/**
-	 * Sets the thread priority of the dequeuer
-	 * @param priority the thread priority to use
-	 */
-	public void setDequeuerPriority(int priority) {
-		this.dequeuerPriority = priority;
-	}
+    /**
+     * Returns the thread priority of the dequeuer.
+     *
+     * @return the thread priority
+     */
+    public int getDequeuerPriority() {
+        return this.dequeuerPriority;
+    }
 
-	/**
-	 * Initializes the processor to handle events. Starts the enqueuer and
-	 * dequeuer threads.
-	 *
-	 * @throws EventSystemException
-	 *             if there is a problem setting up the processor
-	 */
-	public void initialize() throws EventSystemException {
-		if (enqueuer == null) {
-			throw new EventSystemException(
-					"Event enqueuer is not set, call setEnqueuer() first");
-		}
+    /**
+     * Sets the thread priority of the dequeuer
+     *
+     * @param priority the thread priority to use
+     */
+    public void setDequeuerPriority(int priority) {
+        this.dequeuerPriority = priority;
+    }
 
-		if (dequeuer == null) {
-			throw new EventSystemException(
-					"Event dequeuer is not set call setDequeuer() first");
-		}
+    /**
+     * @return the maximum queue size
+     */
+    public int getQueueSize() {
+        return queueSize;
+    }
 
-		/* create a queue if it doesn't exist */
-		if (queue == null) {
-			queue = new LinkedBlockingQueue<QueueElement>();
-		}
+    /**
+     * Use this to set an upper bound on how big the queue can get. If you
+     * don't set, it will be unbounded and you risk OOME. If you do set you
+     * risk dropping events.
+     *
+     * @param queueSize Sets the maximum size for the internal queue.
+     */
+    public void setQueueSize(int queueSize) {
+        this.queueSize = queueSize;
+    }
 
-		/* make the queue available to the enqueuer and dequeuer */
-		dequeuer.setQueue(queue);
-		enqueuer.setQueue(queue);
+    /**
+     * Initializes the processor to handle events. Starts the enqueuer and
+     * dequeuer threads.
+     *
+     * @throws EventSystemException if there is a problem setting up the processor
+     */
+    public void initialize() throws EventSystemException {
+        if (enqueuer == null) {
+            throw new EventSystemException(
+                    "Event enqueuer is not set, call setEnqueuer() first");
+        }
 
-		try {
-			dequeuer.initialize();
-			dequeuerThread = new Thread(dequeuer, "Dequeueing Thread");
-			dequeuerThread.setPriority(dequeuerPriority);
-			dequeuerThread.start();
+        if (dequeuer == null) {
+            throw new EventSystemException(
+                    "Event dequeuer is not set call setDequeuer() first");
+        }
 
-			enqueuer.initialize();
-			enqueuerThread = new Thread(enqueuer, "Enqueueing Thread");
-			enqueuerThread.setPriority(enqueuerPriority);
-			enqueuerThread.start();
+        /* create a queue if it doesn't exist */
+        if (queue == null) {
+            if (queueSize > 0) {
+                queue = new LinkedBlockingQueue<QueueElement>(queueSize);
+            }
+            else {
+                queue = new LinkedBlockingQueue<QueueElement>();
+            }
+        }
 
-			watcherThread = new Thread(this, "Watcher Thread");
-			watcherThread.setPriority(watcherPriority);
-			watcherThread.start();
-		} catch (Exception ie) {
-			throw new EventSystemException("Unable to start ThreadedProcessor",
-					ie);
-		}
-	}
+        /* make the queue available to the enqueuer and dequeuer */
+        dequeuer.setQueue(queue);
+        enqueuer.setQueue(queue);
 
-	/**
-	 * Shuts down the event listener. Stops the enqueuer and dequeuer threads.
-	 */
-	public synchronized void shutdown() {
-		running = false;
-		dequeuer.shutdown();
-		enqueuer.shutdown();
-	}
+        try {
+            dequeuer.initialize();
+            dequeuerThread = new Thread(dequeuer, "Dequeueing Thread");
+            dequeuerThread.setPriority(dequeuerPriority);
+            dequeuerThread.start();
 
-	/**
-	 * The thread's execution loop. Doesn't do much because the enqueue and
-	 * dequeue threads do the heavy lifting.
-	 */
-	public final void run() {
-		running = true;
-		while (running) {
-			try {
-				Thread.sleep(seconds * 1000L);
+            enqueuer.initialize();
+            enqueuerThread = new Thread(enqueuer, "Enqueueing Thread");
+            enqueuerThread.setPriority(enqueuerPriority);
+            enqueuerThread.start();
+
+            watcherThread = new Thread(this, "Watcher Thread");
+            watcherThread.setPriority(watcherPriority);
+            watcherThread.start();
+        }
+        catch (Exception ie) {
+            throw new EventSystemException("Unable to start ThreadedProcessor",
+                                           ie);
+        }
+    }
+
+    /**
+     * Shuts down the event listener. Stops the enqueuer and dequeuer threads.
+     */
+    public synchronized void shutdown() {
+        running = false;
+        dequeuer.shutdown();
+        enqueuer.shutdown();
+    }
+
+    /**
+     * The thread's execution loop. Doesn't do much because the enqueue and
+     * dequeue threads do the heavy lifting.
+     */
+    public final void run() {
+        running = true;
+        while (running) {
+            try {
+                Thread.sleep(seconds * 1000L);
 			} catch (InterruptedException ie) {
 				log.warn("ThreadedProcessor interrupted", ie);
 			}
