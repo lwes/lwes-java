@@ -481,7 +481,7 @@ public class Event {
             BaseType oldObject = null;
             int newSize = bytesStoreSize + ((attribute.length() + 1) + anObject.bytesStoreSize(encoding));
             if (newSize > MAX_MESSAGE_SIZE) {
-                throw new EventSystemException("Event size limit is " + MAX_MESSAGE_SIZE + " bytes.");
+                throw new EventSizeException("Event size limit is " + MAX_MESSAGE_SIZE + " bytes.");
             }
             if ((oldObject = attributes.remove(attribute)) != null) {
                 bytesStoreSize -= (attribute.length() + 1) + oldObject.bytesStoreSize(encoding);

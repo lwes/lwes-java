@@ -211,11 +211,8 @@ public class EventTest {
                 evt.setInt32("" + i, i);
             }
         }
-        catch (Exception e) {
+        catch (EventSizeException e) {
             exceptionThrown = true;
-            assertEquals("Different exception",
-                         "org.lwes.EventSystemException",
-                         e.getClass().getName());
         }
         assertTrue("Size exception was not thrown", exceptionThrown);
     }
