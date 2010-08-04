@@ -3,18 +3,62 @@ package org.lwes.emitter;
  * @author fmaritato
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
 import org.lwes.db.EventTemplateDB;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 public class MulticastEventEmitterTest {
+
+    /**
+     * This test verifies that if you dont call initialize, but you call
+     * shutdown that you dont get a NPE.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testShutdownBeforeInitialize() throws IOException {
+        MulticastEventEmitter emitter = new MulticastEventEmitter();
+        emitter.setEmitHeartbeat(true);
+        emitter.setFrequency(1000l);
+        emitter.setMulticastAddress(InetAddress.getByName("224.0.0.69"));
+        emitter.setMulticastPort(9191);
+        boolean exceptionThrown = false;
+        try {
+            emitter.shutdown();
+        }
+        catch (IOException e) {
+            assertEquals("Socket wasn't initialized", e.getMessage());
+            exceptionThrown = true;
+        }
+        assertTrue("IOException was not thrown", exceptionThrown);
+    }
+
+    /**
+     * This test makes sure that the shutdown doesn't throw an exception because the
+     * socket is already closed.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testShutdown() throws IOException {
+        MulticastEventEmitter emitter = new MulticastEventEmitter();
+        emitter.setEmitHeartbeat(true);
+        emitter.setFrequency(1000l);
+        emitter.setMulticastAddress(InetAddress.getByName("224.0.0.69"));
+        emitter.setMulticastPort(9191);
+        emitter.initialize();
+        emitter.shutdown();
+    }
 
     @Test
     public void testMulticastEmitter() throws Exception {
