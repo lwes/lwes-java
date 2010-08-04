@@ -4,12 +4,6 @@ package org.lwes;
  */
 
 import org.apache.commons.codec.binary.Base64;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.lwes.db.EventTemplateDB;
@@ -20,6 +14,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 public class EventTest {
 
     private EventTemplateDB eventTemplate;
@@ -29,6 +30,23 @@ public class EventTest {
         eventTemplate = new EventTemplateDB();
         eventTemplate.setESFFile(new File("src/test/java/org/lwes/EventTest.esf"));
         eventTemplate.initialize();
+    }
+
+    @Test
+    public void testOneLineString() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        evt.setString("test", "value");
+        assertEquals("Test{enc = 1; test = value; }", evt.toOneLineString());
+    }
+
+    @Test
+    public void testRemove() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        evt.setString("test", "value");
+        String val = (String) evt.remove("test");
+        assertNotNull(val);
+        assertEquals("value", val);
+        assertFalse(evt.containsKey("test"));
     }
 
     @Test

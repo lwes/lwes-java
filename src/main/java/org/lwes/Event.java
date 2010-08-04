@@ -290,12 +290,18 @@ public class Event {
      * @return true if there is a value, false if not.
      */
     public boolean isSet(String attributeName) {
-        try {
-            return (get(attributeName) != null);
+        return (attributes.containsKey(attributeName));
+    }
+
+    public boolean containsKey(String attributeName) {
+        return attributes.containsKey(attributeName);
+    }
+
+    public Object remove(String attributeName) {
+        if (attributes.containsKey(attributeName)) {
+            return attributes.remove(attributeName).getTypeObject();
         }
-        catch (NoSuchAttributeException e) {
-            return false;
-        }
+        return null;
     }
 
     /**
@@ -417,6 +423,7 @@ public class Event {
 
     /**
      * Accessor that returns the ip addres as an IPAddress object.
+     *
      * @param attributeName name of the attribute to fetch
      * @return IPAddress
      * @throws NoSuchAttributeException
@@ -424,6 +431,7 @@ public class Event {
     public IPAddress getIPAddressObj(String attributeName) throws NoSuchAttributeException {
         return (IPAddress) get(attributeName);
     }
+
     /**
      * Set the object's attribute <tt>attributeName</tt> with the Object given
      *
@@ -949,6 +957,26 @@ public class Event {
         return evt;
     }
 
+    public String toOneLineString() {
+        if (name == null) {
+            return "";
+        }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(name).append("{");
+
+        for(String key : attributes.keySet()) {
+            try {
+                sb.append(key).append(" = ").append(get(key)).append("; ");
+            }
+            catch (NoSuchAttributeException e) {
+                Log.error(e.getMessage(), e);
+            }
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
     /**
      * Returns a String representation of this event
      *
@@ -1056,7 +1084,7 @@ public class Event {
             }
             if (!templ.checkTypeForAttribute(name, key, bt)) {
                 ve.addException(new NoSuchAttributeTypeException("Wrong type '" + bt.getTypeName() +
-                                                       "' for " + name + "." + key));
+                                                                 "' for " + name + "." + key));
             }
         }
         if (ve.hasExceptions()) {
