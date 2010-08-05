@@ -9,6 +9,10 @@ Prerequisites
 How to build
 % mvn clean package
 
+If you want to create the distribution add the following targets:
+
+javadoc:jar assembly:assembly
+
 ***
 To increase the read buffer size on the multicast socket, set the system property
 MulticastReceiveBufferSize. For example,
