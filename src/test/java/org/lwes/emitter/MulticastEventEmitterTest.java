@@ -37,7 +37,7 @@ public class MulticastEventEmitterTest {
             emitter.shutdown();
         }
         catch (IOException e) {
-            assertEquals("Socket wasn't initialized", e.getMessage());
+            assertEquals("Socket wasn't initialized or was closed.", e.getMessage());
             exceptionThrown = true;
         }
         assertTrue("IOException was not thrown", exceptionThrown);
