@@ -264,8 +264,8 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
         if (bytes == null) {
             return;
         }
-        if (socket == null) {
-            throw new IOException("Socket wasn't initialized");
+        if (socket == null || socket.isClosed()) {
+            throw new IOException("Socket wasn't initialized or was closed.");
         }
 
         /* construct a datagram */
