@@ -17,6 +17,10 @@ java -DMulticastReceiveBufferSize=8388608 ...
 
 ***
 0.2.1 -> 0.2.2 Changes
+- If the size of the event is too large an EventSizeException will be thrown
+instead of an EventSystemException.
+- Fixed a bug with the MulticastEventEmitter where it was closing the socket
+before calling super.shutdown which was trying to send a System::Shutdown message.
 - Added the ability to set a maximum capacity on the internal queue used by the
 ThreadedProcessor. If you set the queue size, you can avoid out of memory exceptions,
 but you run the risk of dropping events on the floor (it would depend on how fast
