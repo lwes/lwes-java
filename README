@@ -20,6 +20,13 @@ MulticastReceiveBufferSize. For example,
 java -DMulticastReceiveBufferSize=8388608 ...
 
 ***
+0.2.3
+Allow one to override the size check that is done as part of the Event class. Size
+really only matters if one is intending on emitting the created event not if they
+are reading it from a file. Also allow introspection into Event to get the size in
+bytes.
+
+***
 0.2.1 -> 0.2.2 Changes
 - If the size of the event is too large an EventSizeException will be thrown
 instead of an EventSystemException.
