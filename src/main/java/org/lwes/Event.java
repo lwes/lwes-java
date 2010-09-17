@@ -59,6 +59,8 @@ public class Event {
      */
     private int bytesStoreSize = 0;
 
+    private boolean checkSize = true;
+
     /**
      * Create an event called <tt>eventName</tt>
      *
@@ -101,6 +103,9 @@ public class Event {
     public Event(String eventName, boolean validate, EventTemplateDB eventTemplateDB, short encoding)
             throws EventSystemException {
         setEventTemplateDB(eventTemplateDB);
+        if (eventTemplateDB != null) {
+            checkSize = eventTemplateDB.isCheckSize();
+        }
         validating = validate;
         setEventName(eventName);
         setEncoding(encoding);
@@ -134,6 +139,9 @@ public class Event {
     public Event(byte[] bytes, boolean validate, EventTemplateDB eventTemplateDB)
             throws EventSystemException {
         setEventTemplateDB(eventTemplateDB);
+        if (eventTemplateDB != null) {
+            checkSize = eventTemplateDB.isCheckSize();
+        }
         validating = validate;
         deserialize(bytes);
     }
@@ -480,7 +488,7 @@ public class Event {
         if (anObject.getTypeObject() != null) {
             BaseType oldObject = null;
             int newSize = bytesStoreSize + ((attribute.length() + 1) + anObject.bytesStoreSize(encoding));
-            if (newSize > MAX_MESSAGE_SIZE) {
+            if (checkSize && newSize > MAX_MESSAGE_SIZE) {
                 throw new EventSizeException("Event size limit is " + MAX_MESSAGE_SIZE + " bytes.");
             }
             if ((oldObject = attributes.remove(attribute)) != null) {
@@ -1090,5 +1098,13 @@ public class Event {
         if (ve.hasExceptions()) {
             throw ve;
         }
+    }
+
+    public boolean isCheckSize() {
+        return checkSize;
+    }
+
+    public void setCheckSize(boolean checkSize) {
+        this.checkSize = checkSize;
     }
 }

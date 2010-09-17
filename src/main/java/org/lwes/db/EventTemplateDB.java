@@ -35,6 +35,8 @@ public class EventTemplateDB {
     private File esfFile = null;
     private InputStream esfInputStream = null;
 
+    private boolean checkSize = true;
+
     /**
      * System Attributes
      */
@@ -50,6 +52,14 @@ public class EventTemplateDB {
         knownTypes = new ConcurrentHashMap<String, BaseType>();
         reservedWords = new ConcurrentHashMap<String, BaseType>();
         initializeKnownTypes();
+    }
+
+    public boolean isCheckSize() {
+        return checkSize;
+    }
+
+    public void setCheckSize(boolean checkSize) {
+        this.checkSize = checkSize;
     }
 
     /**
