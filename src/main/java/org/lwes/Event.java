@@ -1107,4 +1107,9 @@ public class Event {
     public void setCheckSize(boolean checkSize) {
         this.checkSize = checkSize;
     }
+
+    public int getBytesStoreSize() {
+        return bytesStoreSize;
+    }
+
 }

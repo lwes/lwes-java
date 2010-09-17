@@ -216,22 +216,23 @@ public class EventTest {
         }
         assertTrue("Size exception was not thrown", exceptionThrown);
 
-
         EventTemplateDB noCheckTempl = new EventTemplateDB();
         noCheckTempl.setESFFile(new File("src/test/java/org/lwes/EventTest.esf"));
         noCheckTempl.initialize();
         noCheckTempl.setCheckSize(false);
-        
+
         Event noCheckEvt = new Event("Test", false, noCheckTempl);
         exceptionThrown = false;
         try {
-            for (int i = 5001; i < 10000; i++) {
+            for (int i = 1; i < 10000; i++) {
                 noCheckEvt.setInt32("" + i, i);
             }
         }
         catch (EventSizeException e) {
             exceptionThrown = true;
         }
+        assertTrue("Event wasn't big enough to test",
+                   noCheckEvt.getBytesStoreSize() > Event.MAX_MESSAGE_SIZE);
         assertFalse("Size exception was thrown", exceptionThrown);
     }
 }
