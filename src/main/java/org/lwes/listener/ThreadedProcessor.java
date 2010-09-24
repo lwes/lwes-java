@@ -1,9 +1,8 @@
 package org.lwes.listener;
 
 import org.lwes.EventSystemException;
+import org.lwes.util.LinkedBlockingQueue;
 import org.lwes.util.Log;
-
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * A threaded, queueing event processor. This class requires setting a class to

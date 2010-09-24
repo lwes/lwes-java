@@ -1,7 +1,8 @@
 package org.lwes.listener;
 
+import org.lwes.util.LinkedBlockingQueue;
+
 import java.io.IOException;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class ThreadedEnqueuer implements Runnable {
 	protected LinkedBlockingQueue<QueueElement> queue = null;

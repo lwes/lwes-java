@@ -1,6 +1,7 @@
 package org.lwes.listener;
 
 import org.lwes.Event;
+import org.lwes.util.LinkedBlockingQueue;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -8,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * An abstract consumer of events.
