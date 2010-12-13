@@ -1,4 +1,9 @@
 ***
+0.2.5
+Changing LICENSE to BSD
+Assigning Copyrights to Yahoo and Frank
+
+***
 0.2.4
 Apparently java.util.concurrent.LinkedBlockingQueue has a memory leak in java 1.6.
 I copied that file to org.lwes.util and fixed the leak. This will be temporary until
