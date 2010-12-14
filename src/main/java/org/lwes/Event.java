@@ -165,7 +165,6 @@ public class Event {
         Map<String, BaseType> m = template.getBaseTypesForEvent(getEventName());
         for (String key : m.keySet()) {
             BaseType b = m.get(key);
-            log.debug("checking for default: " + key + "=" + b.getDefaultValue());
             if (b.getDefaultValue() != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Setting default value: " + key + "=" + b.getDefaultValue());
@@ -375,7 +374,7 @@ public class Event {
     public List getIPV4Array(String attributeName) throws NoSuchAttributeException {
         return getArray(attributeName);
     }
-    
+
     /**
      * Method to check if an attribute is set in the event. This method does not throw
      * NoSuchAttributeException because it shouldn't really care. If it's not there, it's
