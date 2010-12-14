@@ -6,8 +6,11 @@ Prerequisites
 - Maven 2.2.x (http://apache.maven.org/)
 
 ***
-How to build
+How to build:
 % mvn clean package
+
+To create a release:
+% mvn --batch-mode release:prepare release:perform
 
 ***
 To increase the read buffer size on the multicast socket, set the system property
@@ -21,6 +24,30 @@ java -DMulticastReceiveBufferSize=8388608 ...
 - Array support (Java implementation uses List)
 - Required/Optional
 - Size limitations
+
+***
+0.2.5
+Changed license to BSD.
+
+***
+0.2.4
+- There is a memory leak in jdk 1.6.0_20 and earlier in
+java.util.concurrent.LinkedBlockingQueue so I made a copy of that class and 
+fixed the memory leak.
+
+***
+0.2.3
+- Allow one to override the size check that is done as part of the Event class. Size
+really only matters if one is intending on emitting the created event not if they
+are reading it from a file. Also allow introspection into Event to get the size in
+bytes.
+
+***
+0.2.1 -> 0.2.2 Changes
+- Added the ability to set a maximum capacity on the internal queue used by the
+ThreadedProcessor. If you set the queue size, you can avoid out of memory exceptions,
+but you run the risk of dropping events on the floor (it would depend on how fast
+you are processing events and how big your network buffer is).
 
 ***
 0.1.1 -> 0.2.0 Changes
