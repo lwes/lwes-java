@@ -26,6 +26,7 @@ import java.io.File;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -46,6 +47,22 @@ public class EventTest {
         eventTemplate = new EventTemplateDB();
         eventTemplate.setESFFile(new File("src/test/java/org/lwes/EventTest.esf"));
         eventTemplate.initialize();
+    }
+
+    @Test
+    public void testGetAttributeNames() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        evt.setString("str", "string");
+
+        boolean success = false;
+        Enumeration en = evt.getEventAttributeNames();
+        while (en.hasMoreElements()) {
+            String name = (String) en.nextElement();
+            if ("str".equals(name)) {
+                success = true;
+            }
+        }
+        assertTrue(success);
     }
 
     @Test
