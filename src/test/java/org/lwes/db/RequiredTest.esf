@@ -14,3 +14,4 @@ TestEvent
   optional string field2;
   int32 field3;
 }
+
