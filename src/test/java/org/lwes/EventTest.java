@@ -247,4 +247,31 @@ public class EventTest {
                    noCheckEvt.getBytesStoreSize() > Event.MAX_MESSAGE_SIZE);
         assertFalse("Size exception was thrown", exceptionThrown);
     }
+    
+    @Test
+    public void testMaximallyLongEventNames() throws EventSystemException {
+        new Event("       010       020       030       040       050       060       070       080       090       100       110       120    127", false, eventTemplate);
+    }
+    
+    @Test(expected=EventSystemException.class)
+    public void testOverlyLongEventNames() throws EventSystemException {
+        new Event("       010       020       030       040       050       060       070       080       090       100       110       120     128", false, eventTemplate);
+    }
+    
+    @Test
+    public void testMaximallyLongFieldName() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        
+        final String name = "       010       020       030       040       050       060       070       080       090       100       110       120       130       140       150       160       170       180       190       200       210       220       230       240       250  255";
+        evt.setString(name, "irrelevant");
+        
+        evt.deserialize(evt.serialize());
+    }
+    
+    @Test(expected=EventSystemException.class)
+    public void testOverlyLongFieldName() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        final String name = "       010       020       030       040       050       060       070       080       090       100       110       120       130       140       150       160       170       180       190       200       210       220       230       240       250   256";
+        evt.setString(name, "irrelevant");
+    }
 }
