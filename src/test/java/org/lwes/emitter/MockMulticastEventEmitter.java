@@ -24,7 +24,7 @@ import java.util.List;
 
 public class MockMulticastEventEmitter extends MulticastEventEmitter {
 
-    private LinkedList<Event> events = new LinkedList();
+    private LinkedList<Event> events = new LinkedList<Event>();
 
     @Override
     protected void emit(byte[] bytes) throws IOException {
@@ -37,7 +37,7 @@ public class MockMulticastEventEmitter extends MulticastEventEmitter {
     }
 
     public List<Event> getEvents() {
-        List l = new LinkedList();
+        List<Event> l = new LinkedList<Event>();
         l.addAll(events);
         return l;
     }
