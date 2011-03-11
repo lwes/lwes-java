@@ -1,4 +1,9 @@
 ***
+0.2.6
+Fixed a deserialization bug for attribute names longer than 127 bytes.
+Added length checks for names of events (127 bytes) and attributes (255 bytes).
+
+***
 0.2.5
 Changing LICENSE to BSD
 Assigning Copyrights to Yahoo and Frank
