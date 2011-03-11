@@ -28,15 +28,13 @@ import java.util.regex.Pattern;
  */
 public class StringParser {
 
-	public static Object fromStringBYTE(String string)
-			throws EventSystemException {
+	public static Object fromStringBYTE(String string) {
 		Object toReturn = null;
 
 		return toReturn;
 	}
 
-	public static Object fromStringBOOLEAN(String string)
-			throws EventSystemException {
+	public static Object fromStringBOOLEAN(String string) {
 		Log.trace("Parsing boolean");
 		Object toReturn = Boolean.valueOf(string);
 		Log.trace("Got '" + toReturn + "'");
@@ -204,8 +202,7 @@ public class StringParser {
 		return toReturn;
 	}
 
-	public static Object fromStringSTRING(String string)
-			throws EventSystemException {
+	public static Object fromStringSTRING(String string) {
 
 		Log.trace("Parsing string '" + string + "'");
 		return string;

@@ -1,13 +1,12 @@
 package org.lwes.serializer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.lwes.EventSystemException;
 
 public class SerializerTest {
 	@Test
-	public void testSerializeValidUBYTEs() throws EventSystemException {
+	public void testSerializeValidUBYTEs() {
 		for (short x=0; x<256; ++x) {
 			final byte[] bytes = new byte[1];
 			Serializer.serializeUBYTE(x, bytes, 0);

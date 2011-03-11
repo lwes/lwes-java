@@ -31,27 +31,15 @@ public class StringParserTest {
 
     @Test
     public void testFromStringBOOLEAN() {
-        try {
-            Boolean b = (Boolean) StringParser.fromStringBOOLEAN("true");
-            assertNotNull(b);
-            assertTrue(b);
-        }
-        catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
-            fail(e.getMessage());
-        }
+        Boolean b = (Boolean) StringParser.fromStringBOOLEAN("true");
+        assertNotNull(b);
+        assertTrue(b);
     }
 
     @Test
     public void testFromStringBYTE() {
-        try {
-            // hmm this method just returns null....?
-            assertNull(StringParser.fromStringBYTE("1"));
-        }
-        catch (EventSystemException e) {
-            Log.error(e.getMessage(), e);
-            fail(e.getMessage());
-        }
+        // hmm this method just returns null....?
+        assertNull(StringParser.fromStringBYTE("1"));
     }
 
     @Test
