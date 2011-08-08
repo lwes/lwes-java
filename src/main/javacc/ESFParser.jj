@@ -250,7 +250,6 @@ void attribute() :
               aType.equals("byte")    ||
               aType.equals("double")  ||
               aType.equals("float")   ||
-              aType.equals("ipv4")    ||
               aType.equals("boolean")
             )
          )

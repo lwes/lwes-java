@@ -12,6 +12,4 @@ Test
 {
   string field1;
   int16 field2;
-
-  ipv4 userIP;
 }

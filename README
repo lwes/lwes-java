@@ -20,7 +20,8 @@ java -DMulticastReceiveBufferSize=8388608 ...
 
 ***
 1.0.0 Changes
-- New data types: byte, float, double, ipv4
+- ip_addr is now deprecated and should not be used. Use a byte array or a string for ip addresses.
+- New data types: byte, float, double
 - Array support (Java implementation uses List)
 - Required/Optional
 - Size limitations
@@ -32,7 +33,7 @@ Changed license to BSD.
 ***
 0.2.4
 - There is a memory leak in jdk 1.6.0_20 and earlier in
-java.util.concurrent.LinkedBlockingQueue so I made a copy of that class and 
+java.util.concurrent.LinkedBlockingQueue so I made a copy of that class and
 fixed the memory leak.
 
 ***

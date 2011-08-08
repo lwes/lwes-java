@@ -24,7 +24,6 @@ import org.lwes.util.NumberCodec;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -496,6 +495,7 @@ public class Event {
     /**
      * Accessor that returns an <tt>InetAddress</tt>, for attribute <tt>attributeName</tt>
      *
+     * @deprecated
      * @param attributeName the name of the attribute to fetch
      * @return the InetAddress value
      * @throws NoSuchAttributeException if the attribute does not exist in this event
@@ -532,17 +532,6 @@ public class Event {
      */
     public IPAddress getIPAddressObj(String attributeName) throws NoSuchAttributeException {
         return (IPAddress) get(attributeName);
-    }
-
-    /**
-     * Accessor that returns the ip address as an InetAddress.
-     *
-     * @param attributeName name of the attribute in the event.
-     * @return InetAddress
-     * @throws NoSuchAttributeException if the attribute is not set.
-     */
-    public InetAddress getIPV4Address(String attributeName) throws NoSuchAttributeException {
-        return (InetAddress) get(attributeName);
     }
 
     /**
@@ -674,13 +663,6 @@ public class Event {
             throws EventSystemException {
         set(attributeName, new BaseType(TypeID.FLOAT_ARRAY_STRING,
                                         TypeID.FLOAT_ARRAY_TOKEN,
-                                        value));
-    }
-
-    public void setIPV4AddressArray(String attributeName, List value)
-            throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.IPV4_ARRAY_STRING,
-                                        TypeID.IPV4_ARRAY_TOKEN,
                                         value));
     }
 
@@ -858,12 +840,6 @@ public class Event {
         set(attributeName, new BaseType(TypeID.IPADDR_STRING, TypeID.IPADDR_TOKEN, address));
     }
 
-
-    public void setIPV4Address(String attributeName, InetAddress address)
-            throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.IPV4_STRING, TypeID.IPV4_TOKEN, address));
-    }
-
     /**
      * Serializes the Event into a byte array
      *
@@ -967,12 +943,9 @@ public class Event {
                     case TypeID.IPADDR_TOKEN:
                         offset += Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
                         break;
-                    case TypeID.IPV4_TOKEN:
-                        offset += Serializer.serializeIPV4((InetAddress) data, bytes, offset);
-                        break;
                     case TypeID.STRING_ARRAY_TOKEN:
                         offset += Serializer.serializeStringArray
-                                (((List) data), bytes, offset, encoding);
+                            (((List) data), bytes, offset, encoding);
                         break;
                     case TypeID.INT16_ARRAY_TOKEN:
                         offset += Serializer.serializeInt16Array((List) data, bytes, offset);
@@ -1003,9 +976,6 @@ public class Event {
                         break;
                     case TypeID.FLOAT_ARRAY_TOKEN:
                         offset += Serializer.serializeFloatArray((List) data, bytes, offset);
-                        break;
-                    case TypeID.IPV4_ARRAY_TOKEN:
-                        offset += Serializer.serializeIPV4Array((List) data, bytes, offset);
                         break;
                     default:
                         log.warn("Unknown BaseType token: " + typeToken);
@@ -1098,16 +1068,6 @@ public class Event {
                         byte[] inetAddress = Deserializer.deserializeIPADDR(state, bytes);
                         setIPAddress(attribute, inetAddress);
                         break;
-                    case TypeID.IPV4_TOKEN:
-                        InetAddress ipv4 = null;
-                        try {
-                            ipv4 = Deserializer.deserializeIPV4(state, bytes);
-                            setIPV4Address(attribute, ipv4);
-                        }
-                        catch (UnknownHostException e) {
-                            throw new EventSystemException(e);
-                        }
-                        break;
                     case TypeID.STRING_ARRAY_TOKEN:
                         List sArray = Deserializer.deserializeStringArray(state, bytes, encoding);
                         setStringArray(attribute, sArray);
@@ -1151,10 +1111,6 @@ public class Event {
                     case TypeID.FLOAT_ARRAY_TOKEN:
                         List fa = Deserializer.deserializeFloatArray(state, bytes);
                         setFloatArray(attribute, fa);
-                        break;
-                    case TypeID.IPV4_ARRAY_TOKEN:
-                        List ipv4a = Deserializer.deserializeIPV4Array(state, bytes);
-                        setIPV4AddressArray(attribute, ipv4a);
                         break;
                     default:
                         log.warn("Unknown type " + type + " in deserialization");

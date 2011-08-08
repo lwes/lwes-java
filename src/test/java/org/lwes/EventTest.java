@@ -66,22 +66,6 @@ public class EventTest {
     }
 
     @Test
-    public void testIPV4() throws EventSystemException, UnknownHostException {
-        Event evt = new Event("Test", true, eventTemplate);
-        evt.setIPV4Address("userIP", InetAddress.getByName("www.yahoo.com"));
-        InetAddress a = evt.getIPV4Address("userIP");
-        assertNotNull(a);
-
-        byte[] bytes = evt.serialize();
-        Event evt2 = new Event(bytes, true, eventTemplate);
-        assertNotNull(evt2);
-        InetAddress b = evt2.getIPV4Address("userIP");
-        assertNotNull(b);
-        // Can't test the exact hostname b/c you actually get a vip hostname back...
-        assertTrue("Not a yahoo.com address", b.getHostName().endsWith(".yahoo.com"));
-    }
-
-    @Test
     public void testGetInetAddress() throws EventSystemException, UnknownHostException {
         Event evt = new Event("Test", false, eventTemplate);
         evt.setIPAddress("ip", InetAddress.getByName("www.yahoo.com"));

@@ -66,8 +66,6 @@ public class TypeID {
     public final static byte BYTE_TOKEN = (byte) 0x0A;
     public final static byte FLOAT_TOKEN = (byte) 0x0B;
     public final static byte DOUBLE_TOKEN = (byte) 0x0C;
-    public final static byte IPV4_TOKEN = (byte) 0x0D;
-    public final static byte EVENT_TOKEN = (byte) 0x0F;
 
     /**
      * The token used by <tt>string[]</tt> in the Event Serialization Protocol
@@ -116,9 +114,8 @@ public class TypeID {
     public final static byte BYTE_ARRAY_TOKEN = (byte) 0x8A;
 
     public final static byte FLOAT_ARRAY_TOKEN = (byte) 0x8B;
+
     public final static byte DOUBLE_ARRAY_TOKEN = (byte) 0x8C;
-    public final static byte IPV4_ARRAY_TOKEN = (byte) 0x8D;
-    public final static byte EVENT_ARRAY_TOKEN = (byte) 0x8E;
 
     /**
      * The  string used by <tt>uint16</tt> in the Event Serialization Protocol
@@ -160,7 +157,6 @@ public class TypeID {
     public final static String BYTE_STRING = "byte";
     public final static String DOUBLE_STRING = "double";
     public final static String FLOAT_STRING = "float";
-    public final static String IPV4_STRING = "ipv4";
 
     public final static String STRING_ARRAY_STRING = "[Lstring";
     public final static String UINT16_ARRAY_STRING = "[Luint16";
@@ -173,8 +169,7 @@ public class TypeID {
     public final static String BYTE_ARRAY_STRING = "[Lbyte";
     public final static String DOUBLE_ARRAY_STRING = "[Ldouble";
     public final static String FLOAT_ARRAY_STRING = "[Lfloat";
-    public final static String IPV4_ARRAY_STRING = "[Lipv4";
-    
+
     /**
      * This is a regular expression for parsing an integer number from a string
      */
