@@ -20,9 +20,10 @@ java -DMulticastReceiveBufferSize=8388608 ...
 
 ***
 1.0.0 Changes
+- Spec: https://github.com/lwes/lwes-website/blob/master/specs/lwes-v1
 - ip_addr is now deprecated and should not be used. Use a byte array or a string for ip addresses.
 - New data types: byte, float, double
-- Array support (Java implementation uses List)
+- Array support
 - Required/Optional
 - Size limitations
 

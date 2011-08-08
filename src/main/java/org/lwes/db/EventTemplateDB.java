@@ -26,7 +26,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -125,7 +124,7 @@ public class EventTemplateDB {
             }
             else if (getESFFile() != null) {
                 parser = new ESFParser(
-                        new java.io.FileInputStream(getESFFile()));
+                    new java.io.FileInputStream(getESFFile()));
             }
             else {
                 return false;
@@ -368,12 +367,11 @@ public class EventTemplateDB {
         else if (o instanceof float[]) {
             sizeToCheck = ((float[]) o).length;
         }
-        else if (o instanceof List) {
-            List arr = (List) attributeValue.getTypeObject();
-            sizeToCheck = arr.size();
+        else if (o instanceof String[]) {
+            sizeToCheck = ((String[]) o).length;
         }
         else {
-            throw new EventAttributeSizeException("Cannot determine size for "+attributeName);
+            throw new EventAttributeSizeException("Cannot determine size for " + attributeName);
         }
         if (log.isTraceEnabled()) {
             log.trace("sizeToCheck: " + sizeToCheck + " size: " + size);
@@ -601,14 +599,14 @@ public class EventTemplateDB {
             if (EventKey != null) {
                 Map<String, BaseType> event = events.get(EventKey);
                 for (Enumeration<String> att = Collections.enumeration(event.keySet()); att
-                        .hasMoreElements();) {
+                    .hasMoreElements(); ) {
                     String key = att.nextElement();
                     BaseType tv = event.get(key);
                     String type = tv.getTypeName();
                     sb.append("<tr><td></td><td>")
-                            .append(type)
-                            .append("</td><td>")
-                            .append(key).append("</td></tr>\n");
+                        .append(type)
+                        .append("</td><td>")
+                        .append(key).append("</td></tr>\n");
                 }
             }
         }
@@ -657,7 +655,7 @@ public class EventTemplateDB {
                 j = 0;
                 String[] attributeKeys = new String[event.size()];
                 for (Enumeration<String> att = Collections.enumeration(event.keySet());
-                     att.hasMoreElements();) {
+                     att.hasMoreElements(); ) {
                     attributeKeys[j] = att.nextElement();
                     ++j;
                 }

@@ -26,7 +26,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,7 +50,7 @@ public class Event {
     public static final short UTF_8 = 1;
     public static final short DEFAULT_ENCODING = UTF_8;
     public static final CharacterEncoding[] ENCODING_STRINGS = {
-            CharacterEncoding.ISO_8859_1, CharacterEncoding.UTF_8};
+        CharacterEncoding.ISO_8859_1, CharacterEncoding.UTF_8};
 
     /**
      * Event data
@@ -86,7 +85,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
      */
     public Event(String eventName, EventTemplateDB eventTemplateDB)
-            throws EventSystemException {
+        throws EventSystemException {
         this(eventName, true, eventTemplateDB);
     }
 
@@ -101,7 +100,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
      */
     public Event(String eventName, boolean validate, EventTemplateDB eventTemplateDB)
-            throws EventSystemException {
+        throws EventSystemException {
         this(eventName, validate, eventTemplateDB, DEFAULT_ENCODING);
     }
 
@@ -116,7 +115,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
      */
     public Event(String eventName, boolean validate, EventTemplateDB eventTemplateDB, short encoding)
-            throws EventSystemException {
+        throws EventSystemException {
         setEventTemplateDB(eventTemplateDB);
         validating = validate;
         setEventName(eventName);
@@ -134,7 +133,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException
      */
     public Event(byte[] bytes, EventTemplateDB eventTemplateDB)
-            throws EventSystemException {
+        throws EventSystemException {
         this(bytes, true, eventTemplateDB);
     }
 
@@ -150,7 +149,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException
      */
     public Event(byte[] bytes, boolean validate, EventTemplateDB eventTemplateDB)
-            throws EventSystemException {
+        throws EventSystemException {
         setEventTemplateDB(eventTemplateDB);
         validating = validate;
         deserialize(bytes);
@@ -316,62 +315,114 @@ public class Event {
         return null;
     }
 
-    public List getArray(String attributeName) throws NoSuchAttributeException {
+    public short[] getInt16Array(String attributeName) throws NoSuchAttributeException {
         Object o = get(attributeName);
-        if (o != null && o instanceof List) {
-            return (List) o;
+        if (o != null && o instanceof short[]) {
+            return (short[]) o;
         }
         else {
             return null;
         }
     }
 
-    public List getInt16Array(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public int[] getInt32Array(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof int[]) {
+            return (int[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
-    public List getInt32Array(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public long[] getInt64Array(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof long[]) {
+            return (long[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
-    public List getInt64Array(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public int[] getUInt16Array(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof int[]) {
+            return (int[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
-    public List getUInt16Array(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public long[] getUInt32Array(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof long[]) {
+            return (long[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
-    public List getUInt32Array(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public long[] getUInt64Array(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof long[]) {
+            return (long[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
-    public List getUInt64Array(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public String[] getStringArray(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof String[]) {
+            return (String[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
-    public List getStringArray(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public byte[] getByteArray(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof byte[]) {
+            return (byte[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
-    public List getByteArray(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public boolean[] getBooleanArray(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof boolean[]) {
+            return (boolean[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
-    public List getBooleanArray(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public double[] getDoubleArray(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof double[]) {
+            return (double[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
-    public List getDoubleArray(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
-    }
-
-    public List getFloatArray(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
-    }
-
-    public List getIPV4Array(String attributeName) throws NoSuchAttributeException {
-        return getArray(attributeName);
+    public float[] getFloatArray(String attributeName) throws NoSuchAttributeException {
+        Object o = get(attributeName);
+        if (o != null && o instanceof float[]) {
+            return (float[]) o;
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -495,10 +546,10 @@ public class Event {
     /**
      * Accessor that returns an <tt>InetAddress</tt>, for attribute <tt>attributeName</tt>
      *
-     * @deprecated
      * @param attributeName the name of the attribute to fetch
      * @return the InetAddress value
      * @throws NoSuchAttributeException if the attribute does not exist in this event
+     * @deprecated
      */
     public InetAddress getInetAddress(String attributeName) throws NoSuchAttributeException {
         IPAddress a = (IPAddress) get(attributeName);
@@ -543,7 +594,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if there is an attribute with an undefined type
      */
     public void set(String attributeName, Object attributeValue)
-            throws EventSystemException {
+        throws EventSystemException {
         if (isValidating() && getEventTemplateDB() != null) {
             if (getEventTemplateDB().checkForAttribute(getEventName(), attributeName)) {
                 BaseType bt = getEventTemplateDB().getBaseTypeForObjectAttribute(getEventName(),
@@ -565,7 +616,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if there is an attribute with an undefined type
      */
     private void set(String attribute, BaseType anObject)
-            throws EventSystemException {
+        throws EventSystemException {
 
         if (isValidating() && getEventTemplateDB() != null) {
             if (getEventTemplateDB().checkForAttribute(name, attribute)) {
@@ -595,72 +646,72 @@ public class Event {
         }
     }
 
-    public void setInt16Array(String attributeName, List value) throws EventSystemException {
+    public void setInt16Array(String attributeName, short[] value) throws EventSystemException {
         set(attributeName, new BaseType(TypeID.INT16_ARRAY_STRING,
                                         TypeID.INT16_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setInt32Array(String attributeName, List value) throws EventSystemException {
+    public void setInt32Array(String attributeName, int[] value) throws EventSystemException {
         set(attributeName, new BaseType(TypeID.INT32_ARRAY_STRING,
                                         TypeID.INT32_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setInt64Array(String attributeName, List value) throws EventSystemException {
+    public void setInt64Array(String attributeName, long[] value) throws EventSystemException {
         set(attributeName, new BaseType(TypeID.INT64_ARRAY_STRING,
                                         TypeID.INT64_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setUInt16Array(String attributeName, List value) throws EventSystemException {
+    public void setUInt16Array(String attributeName, int[] value) throws EventSystemException {
         set(attributeName, new BaseType(TypeID.UINT16_ARRAY_STRING,
                                         TypeID.UINT16_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setUInt32Array(String attributeName, List value) throws EventSystemException {
+    public void setUInt32Array(String attributeName, long[] value) throws EventSystemException {
         set(attributeName, new BaseType(TypeID.UINT32_ARRAY_STRING,
                                         TypeID.UINT32_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setUInt64Array(String attributeName, List value) throws EventSystemException {
+    public void setUInt64Array(String attributeName, long[] value) throws EventSystemException {
         set(attributeName, new BaseType(TypeID.UINT64_ARRAY_STRING,
                                         TypeID.UINT64_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setStringArray(String attributeName, List value)
-            throws EventSystemException {
+    public void setStringArray(String attributeName, String[] value)
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.STRING_ARRAY_STRING,
                                         TypeID.STRING_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setBooleanArray(String attributeName, List value)
-            throws EventSystemException {
+    public void setBooleanArray(String attributeName, boolean[] value)
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.BOOLEAN_ARRAY_STRING,
                                         TypeID.BOOLEAN_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setByteArray(String attributeName, List value)
-            throws EventSystemException {
+    public void setByteArray(String attributeName, byte[] value)
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.BYTE_ARRAY_STRING,
                                         TypeID.BYTE_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setDoubleArray(String attributeName, List value)
-            throws EventSystemException {
+    public void setDoubleArray(String attributeName, double[] value)
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.DOUBLE_ARRAY_STRING,
                                         TypeID.DOUBLE_ARRAY_TOKEN,
                                         value));
     }
 
-    public void setFloatArray(String attributeName, List value)
-            throws EventSystemException {
+    public void setFloatArray(String attributeName, float[] value)
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.FLOAT_ARRAY_STRING,
                                         TypeID.FLOAT_ARRAY_TOKEN,
                                         value));
@@ -683,7 +734,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException
      */
     public void setBoolean(String attributeName, Boolean aBool)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.BOOLEAN_STRING, TypeID.BOOLEAN_TOKEN, aBool));
     }
 
@@ -698,7 +749,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setUInt16(String attributeName, Integer aNumber)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.UINT16_STRING, TypeID.UINT16_TOKEN, aNumber));
     }
 
@@ -711,7 +762,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setInt16(String attributeName, Short aNumber)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.INT16_STRING, TypeID.INT16_TOKEN, aNumber));
     }
 
@@ -726,7 +777,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setUInt32(String attributeName, Long aNumber)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.UINT32_STRING, TypeID.UINT32_TOKEN, aNumber));
     }
 
@@ -739,7 +790,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setInt32(String attributeName, Integer aNumber)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.INT32_STRING, TypeID.INT32_TOKEN, aNumber));
     }
 
@@ -752,7 +803,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setUInt64(String attributeName, Long aNumber)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName,
             new BaseType(TypeID.UINT64_STRING, TypeID.UINT64_TOKEN, BigInteger.valueOf(aNumber)));
     }
@@ -768,7 +819,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setUInt64(String attributeName, BigInteger aNumber)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.UINT64_STRING, TypeID.UINT64_TOKEN, aNumber));
     }
 
@@ -781,7 +832,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setInt64(String attributeName, Long aNumber)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.INT64_STRING, TypeID.INT64_TOKEN, aNumber));
     }
 
@@ -794,7 +845,7 @@ public class Event {
      * @throws NoSuchAttributeTypeException if the attribute type does not match the EventTemplateDB
      */
     public void setString(String attributeName, String aString)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.STRING_STRING, TypeID.STRING_TOKEN, aString));
     }
 
@@ -808,7 +859,7 @@ public class Event {
      * @deprecated
      */
     public void setIPAddress(String attributeName, byte[] address)
-            throws EventSystemException {
+        throws EventSystemException {
         setIPAddress(attributeName, new IPAddress(address));
     }
 
@@ -822,7 +873,7 @@ public class Event {
      * @deprecated
      */
     public void setIPAddress(String attributeName, InetAddress address)
-            throws EventSystemException {
+        throws EventSystemException {
         setIPAddress(attributeName, new IPAddress(address));
     }
 
@@ -836,7 +887,7 @@ public class Event {
      * @deprecated
      */
     public void setIPAddress(String attributeName, IPAddress address)
-            throws EventSystemException {
+        throws EventSystemException {
         set(attributeName, new BaseType(TypeID.IPADDR_STRING, TypeID.IPADDR_TOKEN, address));
     }
 
@@ -945,37 +996,37 @@ public class Event {
                         break;
                     case TypeID.STRING_ARRAY_TOKEN:
                         offset += Serializer.serializeStringArray
-                            (((List) data), bytes, offset, encoding);
+                            (((String[]) data), bytes, offset, encoding);
                         break;
                     case TypeID.INT16_ARRAY_TOKEN:
-                        offset += Serializer.serializeInt16Array((List) data, bytes, offset);
+                        offset += Serializer.serializeInt16Array((short[]) data, bytes, offset);
                         break;
                     case TypeID.INT32_ARRAY_TOKEN:
-                        offset += Serializer.serializeInt32Array((List) data, bytes, offset);
+                        offset += Serializer.serializeInt32Array((int[]) data, bytes, offset);
                         break;
                     case TypeID.INT64_ARRAY_TOKEN:
-                        offset += Serializer.serializeInt64Array((List) data, bytes, offset);
+                        offset += Serializer.serializeInt64Array((long[]) data, bytes, offset);
                         break;
                     case TypeID.UINT16_ARRAY_TOKEN:
-                        offset += Serializer.serializeUInt16Array((List) data, bytes, offset);
+                        offset += Serializer.serializeUInt16Array((int[]) data, bytes, offset);
                         break;
                     case TypeID.UINT32_ARRAY_TOKEN:
-                        offset += Serializer.serializeUInt32Array((List) data, bytes, offset);
+                        offset += Serializer.serializeUInt32Array((long[]) data, bytes, offset);
                         break;
                     case TypeID.UINT64_ARRAY_TOKEN:
-                        offset += Serializer.serializeUInt64Array((List) data, bytes, offset);
+                        offset += Serializer.serializeUInt64Array((long[]) data, bytes, offset);
                         break;
                     case TypeID.BOOLEAN_ARRAY_TOKEN:
-                        offset += Serializer.serializeBooleanArray((List) data, bytes, offset);
+                        offset += Serializer.serializeBooleanArray((boolean[]) data, bytes, offset);
                         break;
                     case TypeID.BYTE_ARRAY_TOKEN:
-                        offset += Serializer.serializeByteArray((List) data, bytes, offset);
+                        offset += Serializer.serializeByteArray((byte[]) data, bytes, offset);
                         break;
                     case TypeID.DOUBLE_ARRAY_TOKEN:
-                        offset += Serializer.serializeDoubleArray((List) data, bytes, offset);
+                        offset += Serializer.serializeDoubleArray((double[]) data, bytes, offset);
                         break;
                     case TypeID.FLOAT_ARRAY_TOKEN:
-                        offset += Serializer.serializeFloatArray((List) data, bytes, offset);
+                        offset += Serializer.serializeFloatArray((float[]) data, bytes, offset);
                         break;
                     default:
                         log.warn("Unknown BaseType token: " + typeToken);
@@ -996,7 +1047,7 @@ public class Event {
      * @throws EventSystemException
      */
     public void deserialize(byte[] bytes)
-            throws EventSystemException {
+        throws EventSystemException {
         if (bytes == null) {
             return;
         }
@@ -1069,47 +1120,47 @@ public class Event {
                         setIPAddress(attribute, inetAddress);
                         break;
                     case TypeID.STRING_ARRAY_TOKEN:
-                        List sArray = Deserializer.deserializeStringArray(state, bytes, encoding);
+                        String[] sArray = Deserializer.deserializeStringArray(state, bytes, encoding);
                         setStringArray(attribute, sArray);
                         break;
                     case TypeID.INT16_ARRAY_TOKEN:
-                        List as = Deserializer.deserializeInt16Array(state, bytes);
+                        short[] as = Deserializer.deserializeInt16Array(state, bytes);
                         setInt16Array(attribute, as);
                         break;
                     case TypeID.INT32_ARRAY_TOKEN:
-                        List ai = Deserializer.deserializeInt32Array(state, bytes);
+                        int[] ai = Deserializer.deserializeInt32Array(state, bytes);
                         setInt32Array(attribute, ai);
                         break;
                     case TypeID.INT64_ARRAY_TOKEN:
-                        List al = Deserializer.deserializeInt64Array(state, bytes);
+                        long[] al = Deserializer.deserializeInt64Array(state, bytes);
                         setInt64Array(attribute, al);
                         break;
                     case TypeID.UINT16_ARRAY_TOKEN:
-                        List uas = Deserializer.deserializeUInt16Array(state, bytes);
+                        int[] uas = Deserializer.deserializeUInt16Array(state, bytes);
                         setUInt16Array(attribute, uas);
                         break;
                     case TypeID.UINT32_ARRAY_TOKEN:
-                        List uai = Deserializer.deserializeUInt32Array(state, bytes);
+                        long[] uai = Deserializer.deserializeUInt32Array(state, bytes);
                         setUInt32Array(attribute, uai);
                         break;
                     case TypeID.UINT64_ARRAY_TOKEN:
-                        List ual = Deserializer.deserializeUInt64Array(state, bytes);
+                        long[] ual = Deserializer.deserializeUInt64Array(state, bytes);
                         setUInt64Array(attribute, ual);
                         break;
                     case TypeID.BOOLEAN_ARRAY_TOKEN:
-                        List ba = Deserializer.deserializeBooleanArray(state, bytes);
+                        boolean[] ba = Deserializer.deserializeBooleanArray(state, bytes);
                         setBooleanArray(attribute, ba);
                         break;
                     case TypeID.BYTE_ARRAY_TOKEN:
-                        List bar = Deserializer.deserializeByteArray(state, bytes);
+                        byte[] bar = Deserializer.deserializeByteArray(state, bytes);
                         setByteArray(attribute, bar);
                         break;
                     case TypeID.DOUBLE_ARRAY_TOKEN:
-                        List da = Deserializer.deserializeDoubleArray(state, bytes);
+                        double[] da = Deserializer.deserializeDoubleArray(state, bytes);
                         setDoubleArray(attribute, da);
                         break;
                     case TypeID.FLOAT_ARRAY_TOKEN:
-                        List fa = Deserializer.deserializeFloatArray(state, bytes);
+                        float[] fa = Deserializer.deserializeFloatArray(state, bytes);
                         setFloatArray(attribute, fa);
                         break;
                     default:
@@ -1131,7 +1182,7 @@ public class Event {
     public Event copy() throws EventSystemException {
         /* match the type-checking of the original event */
         Event evt = new Event(name, isValidating(), getEventTemplateDB());
-        for (Enumeration<String> e = attributes.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = attributes.keys(); e.hasMoreElements(); ) {
             String key = e.nextElement();
             BaseType value = attributes.get(key);
             evt.set(key, value);
@@ -1157,7 +1208,7 @@ public class Event {
         if (attributes != null) {
             int i = 0;
             String[] keys = new String[attributes.size()];
-            for (Enumeration<String> e = attributes.keys(); e.hasMoreElements();) {
+            for (Enumeration<String> e = attributes.keys(); e.hasMoreElements(); ) {
                 keys[i++] = e.nextElement();
             }
 
@@ -1169,10 +1220,10 @@ public class Event {
                     if (getEventTemplateDB().checkTypeForAttribute(name, keys[i], TypeID.UINT64_STRING)) {
                         try {
                             sb.append("\t")
-                                    .append(keys[i])
-                                    .append(" = ")
-                                    .append(NumberCodec.toHexString(getUInt64(keys[i])))
-                                    .append(";\n");
+                                .append(keys[i])
+                                .append(" = ")
+                                .append(NumberCodec.toHexString(getUInt64(keys[i])))
+                                .append(";\n");
                         }
                         catch (EventSystemException exc) {
                             log.warn("Event.toString : ", exc);

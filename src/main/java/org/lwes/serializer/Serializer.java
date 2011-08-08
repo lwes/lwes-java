@@ -20,7 +20,6 @@ import org.lwes.util.NumberCodec;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.util.List;
 
 /**
  * This contains low level type serialization used by the
@@ -130,7 +129,7 @@ public class Serializer {
     public static int serializeSTRING(String aString, byte[] bytes, int offset,
                                       short encoding) {
         byte[] stringBytes =
-                EncodedString.getBytes(aString, Event.ENCODING_STRINGS[encoding]);
+            EncodedString.getBytes(aString, Event.ENCODING_STRINGS[encoding]);
         int length = stringBytes.length;
         if (length < 65535 && length >= 0) {
             offset += serializeUINT16(length, bytes, offset);
@@ -152,14 +151,14 @@ public class Serializer {
      * @param encoding
      * @return
      */
-    public static int serializeStringArray(List<String> value,
+    public static int serializeStringArray(String[] value,
                                            byte[] bytes,
                                            int offset,
                                            short encoding) {
 
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (String s : value) {
             numbytes = serializeSTRING(s, bytes, offset, encoding);
@@ -168,12 +167,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeInt16Array(List<Short> value,
+    public static int serializeInt16Array(short[] value,
                                           byte[] bytes,
                                           int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (short s : value) {
             numbytes = serializeINT16(s, bytes, offset);
@@ -182,12 +181,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeInt32Array(List<Integer> value,
+    public static int serializeInt32Array(int[] value,
                                           byte[] bytes,
                                           int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (int s : value) {
             numbytes = serializeINT32(s, bytes, offset);
@@ -196,12 +195,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeInt64Array(List<Long> value,
+    public static int serializeInt64Array(long[] value,
                                           byte[] bytes,
                                           int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (long s : value) {
             numbytes = serializeINT64(s, bytes, offset);
@@ -210,12 +209,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeUInt16Array(List<Integer> value,
+    public static int serializeUInt16Array(int[] value,
                                            byte[] bytes,
                                            int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (int s : value) {
             numbytes = serializeUINT16(s, bytes, offset);
@@ -224,12 +223,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeUInt32Array(List<Long> value,
+    public static int serializeUInt32Array(long[] value,
                                            byte[] bytes,
                                            int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (long s : value) {
             numbytes = serializeUINT32(s, bytes, offset);
@@ -238,12 +237,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeUInt64Array(List<Long> value,
+    public static int serializeUInt64Array(long[] value,
                                            byte[] bytes,
                                            int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (long s : value) {
             numbytes = serializeUINT64(s, bytes, offset);
@@ -252,12 +251,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeBooleanArray(List<Boolean> value,
+    public static int serializeBooleanArray(boolean[] value,
                                             byte[] bytes,
                                             int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (boolean s : value) {
             numbytes = serializeBOOLEAN(s, bytes, offset);
@@ -266,12 +265,12 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeByteArray(List<Byte> value,
+    public static int serializeByteArray(byte[] value,
                                          byte[] bytes,
                                          int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (byte s : value) {
             numbytes = serializeBYTE(s, bytes, offset);
@@ -280,10 +279,10 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeDoubleArray(List<Double> value, byte[] bytes, int offset) {
+    public static int serializeDoubleArray(double[] value, byte[] bytes, int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (double s : value) {
             numbytes = serializeDOUBLE(s, bytes, offset);
@@ -292,25 +291,13 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeFloatArray(List<Float> value, byte[] bytes, int offset) {
+    public static int serializeFloatArray(float[] value, byte[] bytes, int offset) {
         int numbytes = 0;
         int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
+        numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (float s : value) {
             numbytes = serializeFLOAT(s, bytes, offset);
-            offset += numbytes;
-        }
-        return (offset - offsetStart);
-    }
-
-    public static int serializeIPV4Array(List<InetAddress> value, byte[] bytes, int offset) {
-        int numbytes = 0;
-        int offsetStart = offset;
-        numbytes = serializeUINT16(value.size(), bytes, offset);
-        offset += numbytes;
-        for (InetAddress s : value) {
-            numbytes = serializeIPV4(s, bytes, offset);
             offset += numbytes;
         }
         return (offset - offsetStart);
@@ -325,7 +312,7 @@ public class Serializer {
                                           int offset,
                                           short encoding) {
         byte[] stringBytes =
-                EncodedString.getBytes(aString, Event.ENCODING_STRINGS[encoding]);
+            EncodedString.getBytes(aString, Event.ENCODING_STRINGS[encoding]);
         int length = stringBytes.length;
         if (length < 255 && length > 0) {
             offset += serializeBYTE((byte) length, bytes, offset);
@@ -345,8 +332,8 @@ public class Serializer {
      * Serialize IPAddress in *reverse* network order. Don't use this.
      *
      * @param anIPAddress the ip address to serialize
-     * @param bytes the byte array to modify
-     * @param offset what index in the array to start at
+     * @param bytes       the byte array to modify
+     * @param offset      what index in the array to start at
      * @return how many bytes were set in the array
      * @deprecated
      */
@@ -363,8 +350,8 @@ public class Serializer {
      * Serializes an ip address in *reverse* network order. Don't use this.
      *
      * @param anIPAddress the ip address to serialize
-     * @param bytes the byte array to modify
-     * @param offset what index in the array to start at
+     * @param bytes       the byte array to modify
+     * @param offset      what index in the array to start at
      * @return how many bytes were set in the array
      * @deprecated
      */
@@ -380,8 +367,8 @@ public class Serializer {
     /**
      * Serialize InetAddress in network order.
      *
-     * @param ip the ip address to serialize
-     * @param bytes the byte array to modify
+     * @param ip     the ip address to serialize
+     * @param bytes  the byte array to modify
      * @param offset what index in the array to start at
      * @return how many bytes were set in the array
      */

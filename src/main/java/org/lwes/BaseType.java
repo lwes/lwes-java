@@ -20,7 +20,6 @@ import org.lwes.util.IPAddress;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.util.List;
 
 /**
  * This class provides a base type for the base types in the event system. acts
@@ -188,41 +187,41 @@ public class BaseType {
                 break;
             case TypeID.STRING_ARRAY_TOKEN:
                 int count = 2; // start with the length of the array
-                List<String> anArray = (List) typeObject;
+                String[] anArray = (String[]) typeObject;
                 for (String s : anArray) {
                     count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
                 }
                 size = count;
                 break;
             case TypeID.INT16_ARRAY_TOKEN:
-                size = ((List) typeObject).size() * 2 + 2;
+                size = ((short[]) typeObject).length * 2 + 2;
                 break;
             case TypeID.INT32_ARRAY_TOKEN:
-                size = ((List) typeObject).size() * 4 + 2;
+                size = ((int[]) typeObject).length * 4 + 2;
                 break;
             case TypeID.INT64_ARRAY_TOKEN:
-                size = ((List) typeObject).size() * 8 + 2;
+                size = ((long[]) typeObject).length * 8 + 2;
                 break;
             case TypeID.UINT16_ARRAY_TOKEN:
-                size = ((List) typeObject).size() * 4 + 2;
+                size = ((int[]) typeObject).length * 4 + 2;
                 break;
             case TypeID.UINT32_ARRAY_TOKEN:
-                size = ((List) typeObject).size() * 8 + 2;
+                size = ((long[]) typeObject).length * 8 + 2;
                 break;
             case TypeID.UINT64_ARRAY_TOKEN:
-                size = ((List) typeObject).size() * 8 + 2;
+                size = ((long[]) typeObject).length * 8 + 2;
                 break;
             case TypeID.BOOLEAN_ARRAY_TOKEN:
-                size = ((List) typeObject).size() + 2;
+                size = ((boolean[]) typeObject).length + 2;
                 break;
             case TypeID.BYTE_ARRAY_TOKEN:
-                size = ((List) typeObject).size() + 2;
+                size = ((byte[]) typeObject).length + 2;
                 break;
             case TypeID.DOUBLE_ARRAY_TOKEN:
-                size = ((List) typeObject).size() * 8 + 2;
+                size = ((double[]) typeObject).length * 8 + 2;
                 break;
             case TypeID.FLOAT_ARRAY_TOKEN:
-                size = ((List) typeObject).size() * 4 + 2;
+                size = ((float[]) typeObject).length * 4 + 2;
                 break;
             default:
                 throw new NoSuchAttributeTypeException("Unknown size of BaseType " + typeName);

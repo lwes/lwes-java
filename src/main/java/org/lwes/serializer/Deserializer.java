@@ -21,8 +21,6 @@ import org.lwes.util.NumberCodec;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This encapuslates the information needed to deserialize the base types
@@ -93,8 +91,8 @@ public class Deserializer {
 
         /* deserialize in net order (i.e. Big Endian) */
         int anUnsignedShort = (int)
-                ((((int) bytes[myState.currentIndex()] << 8) & 0x0000ff00)
-                 | (((int) bytes[myState.currentIndex() + 1] << 0) & 0x000000ff));
+            ((((int) bytes[myState.currentIndex()] << 8) & 0x0000ff00)
+             | (((int) bytes[myState.currentIndex() + 1] << 0) & 0x000000ff));
 
         myState.incr(2);
         return anUnsignedShort;
@@ -129,13 +127,13 @@ public class Deserializer {
      */
     public static long deserializeUINT32(DeserializerState myState, byte[] bytes) {
         long anUnsignedInt =
-                ((long)
-                        ((((long) bytes[myState.currentIndex()] << 24) & 0x00000000ff000000L)
-                         | (((long) bytes[myState.currentIndex() + 1] << 16) & 0x0000000000ff0000L)
-                         | (((long) bytes[myState.currentIndex() + 2] << 8) & 0x000000000000ff00L)
-                         | (((long) bytes[myState.currentIndex() + 3] << 0) & 0x00000000000000ffL)
-                        )
-                );
+            ((long)
+                 ((((long) bytes[myState.currentIndex()] << 24) & 0x00000000ff000000L)
+                  | (((long) bytes[myState.currentIndex() + 1] << 16) & 0x0000000000ff0000L)
+                  | (((long) bytes[myState.currentIndex() + 2] << 8) & 0x000000000000ff00L)
+                  | (((long) bytes[myState.currentIndex() + 3] << 0) & 0x00000000000000ffL)
+                 )
+            );
         myState.incr(4);
         return anUnsignedInt;
     }
@@ -180,13 +178,13 @@ public class Deserializer {
     public static String deserializeUINT64toHexString(DeserializerState myState,
                                                       byte[] bytes) {
         String aString =
-                NumberCodec.byteArrayToHexString(bytes, myState.currentIndex(), 8);
+            NumberCodec.byteArrayToHexString(bytes, myState.currentIndex(), 8);
         myState.incr(8);
         return aString;
     }
 
     public static InetAddress deserializeIPV4(DeserializerState myState, byte[] bytes)
-            throws UnknownHostException {
+        throws UnknownHostException {
         int offset = myState.currentIndex();
         byte[] b = new byte[4];
         b[0] = bytes[offset];
@@ -242,133 +240,118 @@ public class Deserializer {
     public static String deserializeIPADDRtoHexString(DeserializerState myState,
                                                       byte[] bytes) {
         String aString =
-                NumberCodec.byteArrayToHexString(bytes, myState.currentIndex(), 4);
+            NumberCodec.byteArrayToHexString(bytes, myState.currentIndex(), 4);
         myState.incr(4);
         return aString;
     }
 
-    public static List deserializeStringArray(DeserializerState state,
-                                              byte[] bytes,
-                                              short encoding) {
+    public static String[] deserializeStringArray(DeserializerState state,
+                                                  byte[] bytes,
+                                                  short encoding) {
         int length = deserializeUINT16(state, bytes);
-        List<String> rtn = new ArrayList<String>(length);
+        String[] rtn = new String[length];
         for (int i = 0; i < length; i++) {
-            rtn.add(deserializeSTRING(state, bytes, encoding));
+            rtn[i] = deserializeSTRING(state, bytes, encoding);
         }
         return rtn;
     }
 
-    public static List deserializeInt16Array(DeserializerState state,
-                                             byte[] bytes) {
+    public static short[] deserializeInt16Array(DeserializerState state,
+                                                byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        List<Short> rtn = new ArrayList<Short>(length);
+        short[] rtn = new short[length];
         for (int i = 0; i < length; i++) {
-            rtn.add(deserializeINT16(state, bytes));
+            rtn[i] = deserializeINT16(state, bytes);
         }
         return rtn;
     }
 
-    public static List deserializeInt32Array(DeserializerState state,
-                                             byte[] bytes) {
-        int length = deserializeUINT16(state, bytes);
-        List<Integer> rtn = new ArrayList<Integer>(length);
-        for (int i = 0; i < length; i++) {
-            rtn.add(deserializeINT32(state, bytes));
-        }
-        return rtn;
-    }
-
-    public static List deserializeInt64Array(DeserializerState state,
-                                             byte[] bytes) {
-        int length = deserializeUINT16(state, bytes);
-        List<Long> rtn = new ArrayList<Long>(length);
-        for (int i = 0; i < length; i++) {
-            rtn.add(deserializeINT64(state, bytes));
-        }
-        return rtn;
-    }
-
-    public static List deserializeUInt16Array(DeserializerState state,
+    public static int[] deserializeInt32Array(DeserializerState state,
                                               byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        List<Integer> rtn = new ArrayList<Integer>(length);
+        int[] rtn = new int[length];
         for (int i = 0; i < length; i++) {
-            rtn.add(deserializeUINT16(state, bytes));
+            rtn[i] = deserializeINT32(state, bytes);
         }
         return rtn;
     }
 
-    public static List deserializeUInt32Array(DeserializerState state,
-                                              byte[] bytes) {
-        int length = deserializeUINT16(state, bytes);
-        List<Long> rtn = new ArrayList<Long>(length);
-        for (int i = 0; i < length; i++) {
-            rtn.add(deserializeUINT32(state, bytes));
-        }
-        return rtn;
-    }
-
-    public static List deserializeUInt64Array(DeserializerState state,
-                                              byte[] bytes) {
-        int length = deserializeUINT16(state, bytes);
-        List<Long> rtn = new ArrayList<Long>(length);
-        for (int i = 0; i < length; i++) {
-            rtn.add(deserializeUINT64(state, bytes));
-        }
-        return rtn;
-    }
-
-    public static List deserializeBooleanArray(DeserializerState state,
+    public static long[] deserializeInt64Array(DeserializerState state,
                                                byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        List<Boolean> rtn = new ArrayList<Boolean>(length);
+        long[] rtn = new long[length];
         for (int i = 0; i < length; i++) {
-            rtn.add(deserializeBOOLEAN(state, bytes));
+            rtn[i] = deserializeINT64(state, bytes);
         }
         return rtn;
     }
 
-    public static List deserializeByteArray(DeserializerState state,
-                                            byte[] bytes) {
+    public static int[] deserializeUInt16Array(DeserializerState state,
+                                               byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        List<Byte> rtn = new ArrayList<Byte>(length);
+        int[] rtn = new int[length];
         for (int i = 0; i < length; i++) {
-            rtn.add(deserializeBYTE(state, bytes));
+            rtn[i] = deserializeUINT16(state, bytes);
         }
         return rtn;
     }
 
-    public static List deserializeDoubleArray(DeserializerState state,
+    public static long[] deserializeUInt32Array(DeserializerState state,
+                                                byte[] bytes) {
+        int length = deserializeUINT16(state, bytes);
+        long[] rtn = new long[length];
+        for (int i = 0; i < length; i++) {
+            rtn[i] = deserializeUINT32(state, bytes);
+        }
+        return rtn;
+    }
+
+    public static long[] deserializeUInt64Array(DeserializerState state,
+                                                byte[] bytes) {
+        int length = deserializeUINT16(state, bytes);
+        long[] rtn = new long[length];
+        for (int i = 0; i < length; i++) {
+            rtn[i] = deserializeUINT64(state, bytes);
+        }
+        return rtn;
+    }
+
+    public static boolean[] deserializeBooleanArray(DeserializerState state,
+                                                    byte[] bytes) {
+        int length = deserializeUINT16(state, bytes);
+        boolean[] rtn = new boolean[length];
+        for (int i = 0; i < length; i++) {
+            rtn[i] = deserializeBOOLEAN(state, bytes);
+        }
+        return rtn;
+    }
+
+    public static byte[] deserializeByteArray(DeserializerState state,
                                               byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        List<Double> rtn = new ArrayList<Double>(length);
+        byte[] rtn = new byte[length];
         for (int i = 0; i < length; i++) {
-            rtn.add(deserializeDOUBLE(state, bytes));
+            rtn[i] = deserializeBYTE(state, bytes);
         }
         return rtn;
     }
 
-    public static List deserializeFloatArray(DeserializerState state,
-                                             byte[] bytes) {
+    public static double[] deserializeDoubleArray(DeserializerState state,
+                                                  byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        List<Float> rtn = new ArrayList<Float>(length);
+        double[] rtn = new double[length];
         for (int i = 0; i < length; i++) {
-            rtn.add(deserializeFLOAT(state, bytes));
+            rtn[i] = deserializeDOUBLE(state, bytes);
         }
         return rtn;
     }
 
-    public static List deserializeIPV4Array(DeserializerState state,
-                                             byte[] bytes) {
+    public static float[] deserializeFloatArray(DeserializerState state,
+                                                byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        List<InetAddress> rtn = new ArrayList<InetAddress>(length);
+        float[] rtn = new float[length];
         for (int i = 0; i < length; i++) {
-            try {
-                rtn.add(deserializeIPV4(state, bytes));
-            }
-            catch (UnknownHostException e) {
-                log.error(e.getMessage(), e);
-            }
+            rtn[i] = deserializeFLOAT(state, bytes);
         }
         return rtn;
     }
@@ -437,11 +420,11 @@ public class Deserializer {
         try {
             len = (int) deserializeBYTE(myState, bytes);
 
-            if (log.isDebugEnabled()) {
-                log.debug("Datagram Bytes: " +
+            if (log.isTraceEnabled()) {
+                log.trace("Datagram Bytes: " +
                           NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-                log.debug("String Length: " + len);
-                log.debug("State: " + myState);
+                log.trace("String Length: " + len);
+                log.trace("State: " + myState);
             }
 
             aString = EncodedString.bytesToString(bytes, myState.currentIndex(), len,

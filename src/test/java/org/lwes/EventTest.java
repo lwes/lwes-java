@@ -68,9 +68,20 @@ public class EventTest {
     @Test
     public void testGetInetAddress() throws EventSystemException, UnknownHostException {
         Event evt = new Event("Test", false, eventTemplate);
-        evt.setIPAddress("ip", InetAddress.getByName("www.yahoo.com"));
+        evt.setIPAddress("ip", InetAddress.getLocalHost());
         InetAddress a = evt.getInetAddress("ip");
         assertNotNull(a);
+        assertEquals("127.0.0.1", a.getHostAddress());
+    }
+
+    @Test
+    public void testGetInetAddressAsBytes() throws EventSystemException, UnknownHostException {
+        Event evt = new Event("Test", false, eventTemplate);
+        evt.setByteArray("ip", InetAddress.getLocalHost().getAddress());
+        byte[] iparr = evt.getByteArray("ip");
+        InetAddress a = InetAddress.getByAddress(iparr);
+        assertNotNull(a);
+        assertEquals("127.0.0.1", a.getHostAddress());
     }
 
     @Test
