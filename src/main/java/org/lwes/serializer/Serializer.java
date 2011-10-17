@@ -65,6 +65,14 @@ public class Serializer {
         return 1;
     }
 
+    public static int serializeUBYTE(short value, byte[] bytes, int offset) throws IllegalArgumentException {
+        if (value < 0 || value > 255) {
+            throw new IllegalArgumentException("Unsigned byte "+value+" out of range 0..255");
+        }
+        bytes[offset] = (byte) (value&0xff);
+        return 1;
+    }
+
     public static int serializeBOOLEAN(boolean value, byte[] bytes, int offset) {
         bytes[offset] = (byte) (value ? 1 : 0);
         return 1;
@@ -314,8 +322,8 @@ public class Serializer {
         byte[] stringBytes =
             EncodedString.getBytes(aString, Event.ENCODING_STRINGS[encoding]);
         int length = stringBytes.length;
-        if (length < 255 && length > 0) {
-            offset += serializeBYTE((byte) length, bytes, offset);
+        if (0 <= length && length <= 255) {
+            offset += serializeUBYTE((short) length, bytes, offset);
             System.arraycopy(stringBytes, 0, bytes, offset, length);
             return (length + 1);
         }

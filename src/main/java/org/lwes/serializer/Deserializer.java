@@ -49,6 +49,19 @@ public class Deserializer {
     }
 
     /**
+     * Deserialize a byte out of the byte array <tt>bytes</tt> and
+     * interpret as a number in the range 0..255.
+     *
+     * @param myState the DeserializeState object giving the current index
+     *                in the byte array <tt>bytes</tt>
+     * @param bytes   the bytes to deserialize
+     * @return a short containing the unsigned byte value.
+     */
+    public static short deserializeUBYTE(DeserializerState myState, byte[] bytes) {
+      return (short) (deserializeBYTE(myState,bytes) & 0xff);
+    }
+
+    /**
      * Deserialize a boolean value out of the byte array <tt>bytes</tt>
      *
      * @param myState the DeserializeState object giving the current index
@@ -418,7 +431,7 @@ public class Deserializer {
         String aString = null;
         int len = -1;
         try {
-            len = (int) deserializeBYTE(myState, bytes);
+            len = (int) deserializeUBYTE(myState, bytes);
 
             if (log.isTraceEnabled()) {
                 log.trace("Datagram Bytes: " +
