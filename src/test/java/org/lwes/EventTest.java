@@ -50,6 +50,17 @@ public class EventTest {
     }
 
     @Test
+    public void testRemove() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        evt.setString("test", "value");
+        assertTrue(evt.isSet("test"));
+        assertEquals("value", evt.get("test"));
+        evt.setString("test", null);
+        assertFalse(evt.isSet("test"));
+        assertNull(evt.get("test"));
+    }
+
+    @Test
     public void testGetAttributeNames() throws EventSystemException {
         Event evt = new Event("Test", false, eventTemplate);
         evt.setString("str", "string");
@@ -68,20 +79,22 @@ public class EventTest {
     @Test
     public void testGetInetAddress() throws EventSystemException, UnknownHostException {
         Event evt = new Event("Test", false, eventTemplate);
-        evt.setIPAddress("ip", InetAddress.getLocalHost());
+        final InetAddress localhost = InetAddress.getLocalHost();
+        evt.setIPAddress("ip", localhost);
         InetAddress a = evt.getInetAddress("ip");
         assertNotNull(a);
-        assertEquals("127.0.0.1", a.getHostAddress());
+        assertEquals(localhost, a);
     }
 
     @Test
     public void testGetInetAddressAsBytes() throws EventSystemException, UnknownHostException {
         Event evt = new Event("Test", false, eventTemplate);
-        evt.setByteArray("ip", InetAddress.getLocalHost().getAddress());
+        final InetAddress localhost = InetAddress.getLocalHost();
+        evt.setByteArray("ip", localhost.getAddress());
         byte[] iparr = evt.getByteArray("ip");
         InetAddress a = InetAddress.getByAddress(iparr);
         assertNotNull(a);
-        assertEquals("127.0.0.1", a.getHostAddress());
+        assertEquals(localhost, a);
     }
 
     @Test
@@ -238,12 +251,39 @@ public class EventTest {
                 evt.setInt32("" + i, i);
             }
         }
-        catch (Exception e) {
+        catch (EventSystemException e) {
             exceptionThrown = true;
             assertEquals("Different exception",
                          "org.lwes.EventSystemException",
                          e.getClass().getName());
         }
         assertTrue("Size exception was not thrown", exceptionThrown);
+    }
+    
+    @Test
+    public void testMaximallyLongEventNames() throws EventSystemException {
+        new Event("       010       020       030       040       050       060       070       080       090       100       110       120    127", false, eventTemplate);
+    }
+    
+    @Test(expected=EventSystemException.class)
+    public void testOverlyLongEventNames() throws EventSystemException {
+        new Event("       010       020       030       040       050       060       070       080       090       100       110       120     128", false, eventTemplate);
+    }
+    
+    @Test
+    public void testMaximallyLongFieldName() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        
+        final String name = "       010       020       030       040       050       060       070       080       090       100       110       120       130       140       150       160       170       180       190       200       210       220       230       240       250  255";
+        evt.setString(name, "irrelevant");
+        
+        evt.deserialize(evt.serialize());
+    }
+    
+    @Test(expected=EventSystemException.class)
+    public void testOverlyLongFieldName() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        final String name = "       010       020       030       040       050       060       070       080       090       100       110       120       130       140       150       160       170       180       190       200       210       220       230       240       250   256";
+        evt.setString(name, "irrelevant");
     }
 }
