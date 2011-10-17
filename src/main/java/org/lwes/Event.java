@@ -58,7 +58,7 @@ public class Event {
     /**
      * Event data
      */
-    private ConcurrentHashMap<String, BaseType> attributes = new ConcurrentHashMap<String, BaseType>();
+    private final ConcurrentHashMap<String, BaseType> attributes = new ConcurrentHashMap<String, BaseType>();
     private String name = null;
     private EventTemplateDB eventTemplateDB = null;
     private short encoding = DEFAULT_ENCODING;
@@ -190,10 +190,6 @@ public class Event {
      * @return an enumeration of attribute strings
      */
     public Enumeration<String> getEventAttributeNames() {
-        if (attributes == null) {
-            return null;
-        }
-
         return attributes.keys();
     }
 
@@ -203,9 +199,6 @@ public class Event {
      * @return number of attributes in the event
      */
     public int size() {
-        if (attributes == null) {
-            return 0;
-        }
         return attributes.size();
     }
 
@@ -307,10 +300,6 @@ public class Event {
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
     public Object get(String attributeName) throws NoSuchAttributeException {
-        if (attributes == null) {
-            return null;
-        }
-
         if (attributes.containsKey(attributeName)) {
             return attributes.get(attributeName).getTypeObject();
         }
@@ -924,12 +913,8 @@ public class Event {
            */
         byte[] bytes = new byte[this.bytesStoreSize];
         int offset = 0;
-        int attributeCount = 0;
+        int attributeCount = attributes.size();
         short encoding = DEFAULT_ENCODING;
-
-        if (attributes != null) {
-            attributeCount = attributes.size();
-        }
 
         offset += Serializer.serializeEVENTWORD(name, bytes, offset);
         offset += Serializer.serializeUINT16((short) (attributeCount), bytes, offset);
@@ -937,121 +922,119 @@ public class Event {
         /*
            * Set the encoding attributes in the event
            */
-        if (attributes != null) {
-            BaseType encodingBase = attributes.get(ENCODING);
-            if (encodingBase != null) {
-                Object encodingObj = encodingBase.getTypeObject();
-                byte encodingType = encodingBase.getTypeToken();
-                if (encodingObj != null) {
-                    if (encodingType == TypeID.INT16_TOKEN) {
-                        encoding = (Short) encodingObj;
-                        log.trace("Character encoding: " + encoding);
-                        offset += Serializer.serializeATTRIBUTEWORD(ENCODING, bytes, offset);
-                        offset += Serializer.serializeBYTE(encodingType, bytes, offset);
-                        offset += Serializer.serializeUINT16(encoding, bytes, offset);
-                    }
+        BaseType encodingBase = attributes.get(ENCODING);
+        if (encodingBase != null) {
+            Object encodingObj = encodingBase.getTypeObject();
+            byte encodingType = encodingBase.getTypeToken();
+            if (encodingObj != null) {
+                if (encodingType == TypeID.INT16_TOKEN) {
+                    encoding = (Short) encodingObj;
+                    log.trace("Character encoding: " + encoding);
+                    offset += Serializer.serializeATTRIBUTEWORD(ENCODING, bytes, offset);
+                    offset += Serializer.serializeBYTE(encodingType, bytes, offset);
+                    offset += Serializer.serializeUINT16(encoding, bytes, offset);
                 }
             }
-            else {
-                log.warn("Character encoding null in event " + name);
+        }
+        else {
+            log.warn("Character encoding null in event " + name);
+        }
+
+        Enumeration<String> e = attributes.keys();
+        while (e.hasMoreElements()) {
+            String key = e.nextElement();
+            if (key.equals(ENCODING)) {
+                continue;
             }
 
-            Enumeration<String> e = attributes.keys();
-            while (e.hasMoreElements()) {
-                String key = e.nextElement();
-                if (key.equals(ENCODING)) {
-                    continue;
-                }
+            BaseType value = attributes.get(key);
+            Object data = value.getTypeObject();
+            byte typeToken = value.getTypeToken();
 
-                BaseType value = attributes.get(key);
-                Object data = value.getTypeObject();
-                byte typeToken = value.getTypeToken();
+            /* don't try to serialize nulls */
+            if (data == null) {
+                log.warn("Attribute " + key + " was null in event " + name);
+                continue;
+            }
 
-                /* don't try to serialize nulls */
-                if (data == null) {
-                    log.warn("Attribute " + key + " was null in event " + name);
-                    continue;
-                }
+            offset += Serializer.serializeATTRIBUTEWORD(key, bytes, offset);
+            offset += Serializer.serializeBYTE(typeToken, bytes, offset);
 
-                offset += Serializer.serializeATTRIBUTEWORD(key, bytes, offset);
-                offset += Serializer.serializeBYTE(typeToken, bytes, offset);
+            switch (typeToken) {
+                case TypeID.BOOLEAN_TOKEN:
+                    offset += Serializer.serializeBOOLEAN((Boolean) data, bytes, offset);
+                    break;
+                case TypeID.UINT16_TOKEN:
+                    offset += Serializer.serializeUINT16((Integer) data, bytes, offset);
+                    break;
+                case TypeID.INT16_TOKEN:
+                    offset += Serializer.serializeINT16((Short) data, bytes, offset);
+                    break;
+                case TypeID.UINT32_TOKEN:
+                    offset += Serializer.serializeUINT32((Long) data, bytes, offset);
+                    break;
+                case TypeID.INT32_TOKEN:
+                    offset += Serializer.serializeINT32((Integer) data, bytes, offset);
+                    break;
+                case TypeID.UINT64_TOKEN:
+                    offset += Serializer.serializeUINT64((BigInteger) data, bytes, offset);
+                    break;
+                case TypeID.INT64_TOKEN:
+                    offset += Serializer.serializeINT64((Long) data, bytes, offset);
+                    break;
+                case TypeID.STRING_TOKEN:
+                    offset += Serializer.serializeSTRING(((String) data), bytes, offset, encoding);
+                    break;
+                case TypeID.DOUBLE_TOKEN:
+                    offset += Serializer.serializeDOUBLE(((Double) data), bytes, offset);
+                    break;
+                case TypeID.FLOAT_TOKEN:
+                    offset += Serializer.serializeFLOAT(((Float) data), bytes, offset);
+                    break;
+                case TypeID.IPADDR_TOKEN:
+                    offset += Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
+                    break;
+                case TypeID.STRING_ARRAY_TOKEN:
+                    offset += Serializer.serializeStringArray
+                    (((String[]) data), bytes, offset, encoding);
+                    break;
+                case TypeID.INT16_ARRAY_TOKEN:
+                    offset += Serializer.serializeInt16Array((short[]) data, bytes, offset);
+                    break;
+                case TypeID.INT32_ARRAY_TOKEN:
+                    offset += Serializer.serializeInt32Array((int[]) data, bytes, offset);
+                    break;
+                case TypeID.INT64_ARRAY_TOKEN:
+                    offset += Serializer.serializeInt64Array((long[]) data, bytes, offset);
+                    break;
+                case TypeID.UINT16_ARRAY_TOKEN:
+                    offset += Serializer.serializeUInt16Array((int[]) data, bytes, offset);
+                    break;
+                case TypeID.UINT32_ARRAY_TOKEN:
+                    offset += Serializer.serializeUInt32Array((long[]) data, bytes, offset);
+                    break;
+                case TypeID.UINT64_ARRAY_TOKEN:
+                    offset += Serializer.serializeUInt64Array((long[]) data, bytes, offset);
+                    break;
+                case TypeID.BOOLEAN_ARRAY_TOKEN:
+                    offset += Serializer.serializeBooleanArray((boolean[]) data, bytes, offset);
+                    break;
+                case TypeID.BYTE_ARRAY_TOKEN:
+                    offset += Serializer.serializeByteArray((byte[]) data, bytes, offset);
+                    break;
+                case TypeID.DOUBLE_ARRAY_TOKEN:
+                    offset += Serializer.serializeDoubleArray((double[]) data, bytes, offset);
+                    break;
+                case TypeID.FLOAT_ARRAY_TOKEN:
+                    offset += Serializer.serializeFloatArray((float[]) data, bytes, offset);
+                    break;
+                default:
+                    log.warn("Unknown BaseType token: " + typeToken);
+                    break;
+            } // switch(typeToken)
 
-                switch (typeToken) {
-                    case TypeID.BOOLEAN_TOKEN:
-                        offset += Serializer.serializeBOOLEAN((Boolean) data, bytes, offset);
-                        break;
-                    case TypeID.UINT16_TOKEN:
-                        offset += Serializer.serializeUINT16((Integer) data, bytes, offset);
-                        break;
-                    case TypeID.INT16_TOKEN:
-                        offset += Serializer.serializeINT16((Short) data, bytes, offset);
-                        break;
-                    case TypeID.UINT32_TOKEN:
-                        offset += Serializer.serializeUINT32((Long) data, bytes, offset);
-                        break;
-                    case TypeID.INT32_TOKEN:
-                        offset += Serializer.serializeINT32((Integer) data, bytes, offset);
-                        break;
-                    case TypeID.UINT64_TOKEN:
-                        offset += Serializer.serializeUINT64((BigInteger) data, bytes, offset);
-                        break;
-                    case TypeID.INT64_TOKEN:
-                        offset += Serializer.serializeINT64((Long) data, bytes, offset);
-                        break;
-                    case TypeID.STRING_TOKEN:
-                        offset += Serializer.serializeSTRING(((String) data), bytes, offset, encoding);
-                        break;
-                    case TypeID.DOUBLE_TOKEN:
-                        offset += Serializer.serializeDOUBLE(((Double) data), bytes, offset);
-                        break;
-                    case TypeID.FLOAT_TOKEN:
-                        offset += Serializer.serializeFLOAT(((Float) data), bytes, offset);
-                        break;
-                    case TypeID.IPADDR_TOKEN:
-                        offset += Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
-                        break;
-                    case TypeID.STRING_ARRAY_TOKEN:
-                        offset += Serializer.serializeStringArray
-                            (((String[]) data), bytes, offset, encoding);
-                        break;
-                    case TypeID.INT16_ARRAY_TOKEN:
-                        offset += Serializer.serializeInt16Array((short[]) data, bytes, offset);
-                        break;
-                    case TypeID.INT32_ARRAY_TOKEN:
-                        offset += Serializer.serializeInt32Array((int[]) data, bytes, offset);
-                        break;
-                    case TypeID.INT64_ARRAY_TOKEN:
-                        offset += Serializer.serializeInt64Array((long[]) data, bytes, offset);
-                        break;
-                    case TypeID.UINT16_ARRAY_TOKEN:
-                        offset += Serializer.serializeUInt16Array((int[]) data, bytes, offset);
-                        break;
-                    case TypeID.UINT32_ARRAY_TOKEN:
-                        offset += Serializer.serializeUInt32Array((long[]) data, bytes, offset);
-                        break;
-                    case TypeID.UINT64_ARRAY_TOKEN:
-                        offset += Serializer.serializeUInt64Array((long[]) data, bytes, offset);
-                        break;
-                    case TypeID.BOOLEAN_ARRAY_TOKEN:
-                        offset += Serializer.serializeBooleanArray((boolean[]) data, bytes, offset);
-                        break;
-                    case TypeID.BYTE_ARRAY_TOKEN:
-                        offset += Serializer.serializeByteArray((byte[]) data, bytes, offset);
-                        break;
-                    case TypeID.DOUBLE_ARRAY_TOKEN:
-                        offset += Serializer.serializeDoubleArray((double[]) data, bytes, offset);
-                        break;
-                    case TypeID.FLOAT_ARRAY_TOKEN:
-                        offset += Serializer.serializeFloatArray((float[]) data, bytes, offset);
-                        break;
-                    default:
-                        log.warn("Unknown BaseType token: " + typeToken);
-                        break;
-                } // switch(typeToken)
-
-                log.trace("Serialized attribute " + key);
-            } // while(e.hasMoreElements())
-        } // if(attributes != null)
+            log.trace("Serialized attribute " + key);
+        } // while(e.hasMoreElements())
 
         return bytes;
     }
@@ -1221,39 +1204,37 @@ public class Event {
         sb.append(name);
         sb.append("\n{\n");
 
-        if (attributes != null) {
-            int i = 0;
-            String[] keys = new String[attributes.size()];
-            for (Enumeration<String> e = attributes.keys(); e.hasMoreElements(); ) {
-                keys[i++] = e.nextElement();
-            }
+        int i = 0;
+        String[] keys = new String[attributes.size()];
+        for (Enumeration<String> e = attributes.keys(); e.hasMoreElements(); ) {
+            keys[i++] = e.nextElement();
+        }
 
-            Arrays.sort(keys);
+        Arrays.sort(keys);
 
-            for (i = 0; i < attributes.size(); ++i) {
-                BaseType value = attributes.get(keys[i]);
-                if (isValidating() && getEventTemplateDB() != null) {
-                    if (getEventTemplateDB().checkTypeForAttribute(name, keys[i], TypeID.UINT64_STRING)) {
-                        try {
-                            sb.append("\t")
-                                .append(keys[i])
-                                .append(" = ")
-                                .append(NumberCodec.toHexString(getUInt64(keys[i])))
-                                .append(";\n");
-                        }
-                        catch (EventSystemException exc) {
-                            log.warn("Event.toString : ", exc);
-                        }
+        for (i = 0; i < attributes.size(); ++i) {
+            BaseType value = attributes.get(keys[i]);
+            if (isValidating() && getEventTemplateDB() != null) {
+                if (getEventTemplateDB().checkTypeForAttribute(name, keys[i], TypeID.UINT64_STRING)) {
+                    try {
+                        sb.append("\t")
+                        .append(keys[i])
+                        .append(" = ")
+                        .append(NumberCodec.toHexString(getUInt64(keys[i])))
+                        .append(";\n");
                     }
-                    else {
-                        sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
+                    catch (EventSystemException exc) {
+                        log.warn("Event.toString : ", exc);
                     }
                 }
                 else {
                     sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
                 }
-            } // for(i = 0; i < attributes.size() ...
-        } // if(attributes != null)
+            }
+            else {
+                sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
+            }
+        } // for(i = 0; i < attributes.size() ...
 
         sb.append("}");
         return sb.toString();
