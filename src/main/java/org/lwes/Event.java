@@ -19,6 +19,7 @@ import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.CharacterEncoding;
+import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 import org.lwes.util.NumberCodec;
 
@@ -33,7 +34,9 @@ public class Event {
 
     private static transient Log log = LogFactory.getLog(Event.class);
 
-    public static final int MAX_MESSAGE_SIZE = 65507;
+    public static final int MAX_EVENT_NAME_SIZE = 127;
+    public static final int MAX_FIELD_NAME_SIZE = 255;
+    public static final int MAX_MESSAGE_SIZE    = 65507;
 
     /**
      * Reserved metadata keywords
@@ -116,6 +119,7 @@ public class Event {
      */
     public Event(String eventName, boolean validate, EventTemplateDB eventTemplateDB, short encoding)
         throws EventSystemException {
+        checkShortStringLength(eventName, encoding, MAX_EVENT_NAME_SIZE);
         setEventTemplateDB(eventTemplateDB);
         validating = validate;
         setEventName(eventName);
@@ -154,6 +158,14 @@ public class Event {
         validating = validate;
         deserialize(bytes);
         setDefaultValues(eventTemplateDB);
+    }
+
+    private static void checkShortStringLength(String string, short encoding, int maxLength)
+    throws EventSystemException {
+        final int serializedLength = EncodedString.getBytes(string, Event.ENCODING_STRINGS[encoding]).length;
+        if (serializedLength > maxLength) {
+            throw new EventSystemException("String "+string+" was longer than maximum length: "+serializedLength+" > "+maxLength);
+        }
     }
 
     protected void setDefaultValues(EventTemplateDB template) throws EventSystemException {
@@ -618,6 +630,8 @@ public class Event {
     private void set(String attribute, BaseType anObject)
         throws EventSystemException {
 
+        checkShortStringLength(attribute, encoding, MAX_FIELD_NAME_SIZE);
+
         if (isValidating() && getEventTemplateDB() != null) {
             if (getEventTemplateDB().checkForAttribute(name, attribute)) {
                 if (!getEventTemplateDB().checkTypeForAttribute(name, attribute, anObject)) {
@@ -631,14 +645,16 @@ public class Event {
             getEventTemplateDB().checkForSize(name, attribute, anObject);
         }
 
+        // Remove the existing value, and record the reduction in the serialized size.
+        final BaseType oldObject = attributes.remove(attribute);
+        if (oldObject != null) {
+            bytesStoreSize -= (attribute.length() + 1) + oldObject.bytesStoreSize(encoding);
+        }
+        
         if (anObject.getTypeObject() != null) {
-            BaseType oldObject = null;
             int newSize = bytesStoreSize + ((attribute.length() + 1) + anObject.bytesStoreSize(encoding));
             if (newSize > MAX_MESSAGE_SIZE) {
                 throw new EventSystemException("Event size limit is " + MAX_MESSAGE_SIZE + " bytes.");
-            }
-            if ((oldObject = attributes.remove(attribute)) != null) {
-                bytesStoreSize -= (attribute.length() + 1) + oldObject.bytesStoreSize(encoding);
             }
 
             bytesStoreSize += (attribute.length() + 1) + anObject.bytesStoreSize(encoding);
