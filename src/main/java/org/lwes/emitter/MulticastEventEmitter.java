@@ -212,8 +212,12 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
      * Shuts down the emitter.
      */
     public void shutdown() throws IOException {
-        socket.close();
+        // FM: close the socket AFTER calling super shutdown since
+        // that is trying to send a shutdown message.
         super.shutdown();
+        if (socket != null) {
+            socket.close();
+        }
     }
 
     /**
@@ -274,6 +278,9 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
         /* don't bother with empty arrays */
         if (bytes == null) {
             return;
+        }
+        if (socket == null || socket.isClosed()) {
+            throw new IOException("Socket wasn't initialized or was closed.");
         }
 
         /* construct a datagram */
