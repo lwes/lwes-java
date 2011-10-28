@@ -15,19 +15,15 @@ package org.lwes;
  * @author fmaritato
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
 
 public class EventFactoryTest {
-
-    private static transient Log log = LogFactory.getLog(EventFactoryTest.class);
 
     @Test
     public void testEventFactoryInitializeFile() throws EventSystemException {

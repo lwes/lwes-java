@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 public class CharacterEncodingTest {
 
     @Test
+    @SuppressWarnings("null")
     public void testCharEncodeInstance() {
         CharacterEncoding utf8 = null;
         try {

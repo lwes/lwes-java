@@ -155,6 +155,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 	/**
 	 * Default initialize() method. Should be overridden by classes extending
 	 * ThreadedEnqueuer.
+     * @throws IOException only to allow potential subclasses to throw it. 
 	 */
 	public void initialize() throws IOException {
 		idleProcessors = Collections.synchronizedList(new LinkedList<ThreadedEventDispatcher>());

@@ -169,6 +169,9 @@ public class UnicastEventEmitter implements EventEmitter {
 		}
 	}
 
+	/**
+     * @throws IOException only to allow potential subclasses to throw it. 
+     */
 	public void shutdown() throws IOException {
 		socket.close();
 	}

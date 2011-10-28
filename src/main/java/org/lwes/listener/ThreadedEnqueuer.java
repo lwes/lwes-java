@@ -43,6 +43,7 @@ public abstract class ThreadedEnqueuer implements Runnable {
 
 	/**
 	 * Default initialize() method.  Should be overridden by classes extending ThreadedEnqueuer.
+     * @throws IOException only to allow potential subclasses to throw it. 
 	 */
 	public void initialize() throws IOException {
 	}

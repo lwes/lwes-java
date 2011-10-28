@@ -15,12 +15,12 @@ package org.lwes;
  * @author fmaritato
  */
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Test;
-import org.lwes.db.EventTemplateDB;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -29,16 +29,12 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.apache.commons.codec.binary.Base64;
+import org.junit.Before;
+import org.junit.Test;
+import org.lwes.db.EventTemplateDB;
 
 public class EventTest {
-
-    private static transient final Log log = LogFactory.getLog(EventTest.class);
 
     private EventTemplateDB eventTemplate;
 
@@ -260,11 +256,13 @@ public class EventTest {
         assertTrue("Size exception was not thrown", exceptionThrown);
     }
     
+    @SuppressWarnings("unused")
     @Test
     public void testMaximallyLongEventNames() throws EventSystemException {
         new Event("       010       020       030       040       050       060       070       080       090       100       110       120    127", false, eventTemplate);
     }
     
+    @SuppressWarnings("unused")
     @Test(expected=EventSystemException.class)
     public void testOverlyLongEventNames() throws EventSystemException {
         new Event("       010       020       030       040       050       060       070       080       090       100       110       120     128", false, eventTemplate);

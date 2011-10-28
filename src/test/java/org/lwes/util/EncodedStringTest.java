@@ -15,17 +15,13 @@ package org.lwes.util;
  * @author fmaritato
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class EncodedStringTest {
+import org.junit.Test;
 
-    private static transient Log log = LogFactory.getLog(EncodedStringTest.class);
+public class EncodedStringTest {
 
     @Test
     public void testByteConstructor() {
