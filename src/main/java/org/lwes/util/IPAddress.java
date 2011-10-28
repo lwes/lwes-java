@@ -129,10 +129,10 @@ public class IPAddress implements Serializable {
      * @return an integer representing the IPAddress in network order
      */
     public int toInt() {
-        return (int) ((inet_addr[0] << 24)
-                      | (inet_addr[1] << 16)
-                      | (inet_addr[2] << 8)
-                      | (inet_addr[3] << 0));
+        return ((inet_addr[0] << 24)
+                | (inet_addr[1] << 16)
+                | (inet_addr[2] << 8)
+                | (inet_addr[3] << 0));
     }
 
     /**
@@ -142,10 +142,10 @@ public class IPAddress implements Serializable {
      * @return a string representation of an IPAddress.
      */
     public String toString() {
-        return (((int) (inet_addr[0]) & 0xff)
-                + "." + ((int) (inet_addr[1]) & 0xff)
-                + "." + ((int) (inet_addr[2]) & 0xff)
-                + "." + ((int) (inet_addr[3]) & 0xff));
+        return (((inet_addr[0]) & 0xff)
+                + "." + ((inet_addr[1]) & 0xff)
+                + "." + ((inet_addr[2]) & 0xff)
+                + "." + ((inet_addr[3]) & 0xff));
     }
 
     /**

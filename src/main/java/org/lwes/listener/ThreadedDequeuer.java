@@ -93,7 +93,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 	 */
 	public EventHandler getHandler(String name) {
 		if(handlers == null || name == null) return null;
-		return (EventHandler) handlers.get(name);
+		return handlers.get(name);
 	}
 
 	/**
@@ -186,7 +186,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 
 		Iterator<String> iterator = handlers.keySet().iterator();
 		while(iterator.hasNext()) {
-			EventHandler handler = (EventHandler) handlers.get(iterator.next());
+			EventHandler handler = handlers.get(iterator.next());
 			ThreadedEventDispatcher d = getIdleProcessor();
 			d.setTask(handler, event);
 		}
@@ -204,7 +204,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 				} catch(InterruptedException ie) {}
 			}
 
-			return (ThreadedEventDispatcher) idleProcessors.remove(0);
+			return idleProcessors.remove(0);
 		}
 	}
 

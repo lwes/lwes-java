@@ -103,9 +103,9 @@ public class Deserializer {
     public static int deserializeUINT16(DeserializerState myState, byte[] bytes) {
 
         /* deserialize in net order (i.e. Big Endian) */
-        int anUnsignedShort = (int)
-            ((((int) bytes[myState.currentIndex()] << 8) & 0x0000ff00)
-             | (((int) bytes[myState.currentIndex() + 1] << 0) & 0x000000ff));
+        int anUnsignedShort =
+            (((bytes[myState.currentIndex()] << 8) & 0x0000ff00)
+           | (bytes[myState.currentIndex() + 1] & 0x000000ff));
 
         myState.incr(2);
         return anUnsignedShort;
@@ -140,13 +140,10 @@ public class Deserializer {
      */
     public static long deserializeUINT32(DeserializerState myState, byte[] bytes) {
         long anUnsignedInt =
-            ((long)
-                 ((((long) bytes[myState.currentIndex()] << 24) & 0x00000000ff000000L)
-                  | (((long) bytes[myState.currentIndex() + 1] << 16) & 0x0000000000ff0000L)
-                  | (((long) bytes[myState.currentIndex() + 2] << 8) & 0x000000000000ff00L)
-                  | (((long) bytes[myState.currentIndex() + 3] << 0) & 0x00000000000000ffL)
-                 )
-            );
+            ((((long) bytes[myState.currentIndex()] << 24) & 0x00000000ff000000L)
+            |(((long) bytes[myState.currentIndex() + 1] << 16) & 0x0000000000ff0000L)
+            |(((long) bytes[myState.currentIndex() + 2] << 8) & 0x000000000000ff00L)
+            |(bytes[myState.currentIndex() + 3] & 0x00000000000000ffL));
         myState.incr(4);
         return anUnsignedInt;
     }
@@ -431,7 +428,7 @@ public class Deserializer {
         String aString = null;
         int len = -1;
         try {
-            len = (int) deserializeUBYTE(myState, bytes);
+            len = deserializeUBYTE(myState, bytes);
 
             if (log.isTraceEnabled()) {
                 log.trace("Datagram Bytes: " +

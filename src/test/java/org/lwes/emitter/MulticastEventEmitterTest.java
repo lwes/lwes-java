@@ -60,10 +60,10 @@ public class MulticastEventEmitterTest {
                              "System::Shutdown", e.getEventName());
                 Long l = e.getInt64("count");
                 assertNotNull(l);
-                assertEquals("Shutdown count was incorrect", (long) 0, l.longValue());
+                assertEquals("Shutdown count was incorrect", 0L, l.longValue());
                 l = e.getInt64("total");
                 assertNotNull(l);
-                assertEquals("Shutdown total was incorrect", (long) 6, l.longValue());
+                assertEquals("Shutdown total was incorrect", 6L, l.longValue());
             }
             else if ("System::Heartbeat".equals(e.getEventName())) {
                 if (e.getInt64("seq") == 1l) {
