@@ -15,19 +15,18 @@ package org.lwes.emitter;
  * @author fmaritato
  */
 
-import org.lwes.Event;
-import org.lwes.EventSystemException;
-
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.lwes.Event;
+import org.lwes.EventSystemException;
+
 public class MockMulticastEventEmitter extends MulticastEventEmitter {
 
-    private LinkedList<Event> events = new LinkedList();
+    private LinkedList<Event> events = new LinkedList<Event>();
 
     @Override
-    protected void emit(byte[] bytes) throws IOException {
+    protected void emit(byte[] bytes) {
         try {
             events.add(getFactory().createEvent(bytes, false));
         }
@@ -37,7 +36,7 @@ public class MockMulticastEventEmitter extends MulticastEventEmitter {
     }
 
     public List<Event> getEvents() {
-        List l = new LinkedList();
+        List<Event> l = new LinkedList<Event>();
         l.addAll(events);
         return l;
     }

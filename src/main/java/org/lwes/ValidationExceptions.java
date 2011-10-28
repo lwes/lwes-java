@@ -39,7 +39,7 @@ public class ValidationExceptions extends EventSystemException {
         allExceptions.add(e);
     }
     public List<EventSystemException> getAllExceptions() {
-        return new ArrayList(allExceptions);
+        return new ArrayList<EventSystemException>(allExceptions);
     }
     public boolean hasExceptions() {
         return allExceptions.size() > 0;

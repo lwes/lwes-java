@@ -66,9 +66,9 @@ public class EventTest {
         evt.setString("str", "string");
 
         boolean success = false;
-        Enumeration en = evt.getEventAttributeNames();
+        Enumeration<String> en = evt.getEventAttributeNames();
         while (en.hasMoreElements()) {
-            String name = (String) en.nextElement();
+            String name = en.nextElement();
             if ("str".equals(name)) {
                 success = true;
             }
