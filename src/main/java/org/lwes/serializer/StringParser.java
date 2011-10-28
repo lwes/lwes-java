@@ -31,6 +31,8 @@ public class StringParser {
 
     private static transient Log log = LogFactory.getLog(StringParser.class);
 
+    /** This method was probably never used, as it always returns null. */
+    @Deprecated
 	public static Object fromStringBYTE(String string)
 			throws EventSystemException {
 		Object toReturn = null;
@@ -41,7 +43,14 @@ public class StringParser {
 	public static Object fromStringBOOLEAN(String string)
 			throws EventSystemException {
 		log.trace("Parsing boolean");
-		Object toReturn = Boolean.valueOf(string);
+		final Boolean toReturn;
+		if (string.equalsIgnoreCase("true")) {
+		    toReturn = Boolean.TRUE;
+		} else if (string.equalsIgnoreCase("false")) {
+		    toReturn = Boolean.FALSE;
+		} else {
+		    throw new EventSystemException("Unable to parse '"+string+"' as a boolean value.");
+		}
 		log.trace("Got '" + toReturn + "'");
 		return toReturn;
 	}
@@ -207,9 +216,7 @@ public class StringParser {
 		return toReturn;
 	}
 
-	public static Object fromStringSTRING(String string)
-			throws EventSystemException {
-
+	public static Object fromStringSTRING(String string) {
 		log.trace("Parsing string '" + string + "'");
 		return string;
 	}
