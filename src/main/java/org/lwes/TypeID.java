@@ -68,19 +68,19 @@ public class TypeID {
     public final static byte DOUBLE_TOKEN = (byte) 0x0C;
 
     /**
-     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     * The token used by <tt>uint16[]</tt> in the Event Serialization Protocol
      */
     public final static byte UINT16_ARRAY_TOKEN = (byte) 0x81;
     /**
-     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     * The token used by <tt>int16[]</tt> in the Event Serialization Protocol
      */
     public final static byte INT16_ARRAY_TOKEN = (byte) 0x82;
     /**
-     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     * The token used by <tt>uint32[]</tt> in the Event Serialization Protocol
      */
     public final static byte UINT32_ARRAY_TOKEN = (byte) 0x83;
     /**
-     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     * The token used by <tt>int32[]</tt> in the Event Serialization Protocol
      */
     public final static byte INT32_ARRAY_TOKEN = (byte) 0x84;
 
@@ -90,26 +90,26 @@ public class TypeID {
     public final static byte STRING_ARRAY_TOKEN = (byte) 0x85;
 
     /**
-     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     * The token used by <tt>ip_addr[]</tt> in the Event Serialization Protocol
      */
     public final static byte IP_ADDR_ARRAY_TOKEN = (byte) 0x86;
 
     /**
-     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     * The token used by <tt>int64[]</tt> in the Event Serialization Protocol
      */
     public final static byte INT64_ARRAY_TOKEN = (byte) 0x87;
 
     /**
-     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     * The token used by <tt>uint64[]</tt> in the Event Serialization Protocol
      */
     public final static byte UINT64_ARRAY_TOKEN = (byte) 0x88;
 
     /**
-     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     * The token used by <tt>boolean[]</tt> in the Event Serialization Protocol
      */
     public final static byte BOOLEAN_ARRAY_TOKEN = (byte) 0x89;
     /**
-     * The token used by <tt>string[]</tt> in the Event Serialization Protocol
+     * The token used by <tt>byte[]</tt> in the Event Serialization Protocol
      */
     public final static byte BYTE_ARRAY_TOKEN = (byte) 0x8A;
 
@@ -180,15 +180,15 @@ public class TypeID {
      */
     public final static String UNSIGNED_INTEGER_REGEX = "\\d+(?=\\s|$)";
     /**
-     * This is a regular expression for matching a hexidecimal short from a string
+     * This is a regular expression for matching a hexadecimal short from a string
      */
     public final static String HEX_SHORT_REGEX = "0x[0-9a-fA-F]{1,4}(?=\\s|$)";
     /**
-     * This is a regular expression for matching a hexidecimal int from a string
+     * This is a regular expression for matching a hexadecimal int from a string
      */
     public final static String HEX_INT_REGEX = "0x[0-9a-fA-F]{5,8}(?=\\s|$)";
     /**
-     * This is a regular expression for matching a hexidecimal long from a string
+     * This is a regular expression for matching a hexadecimal long from a string
      */
     public final static String HEX_LONG_REGEX = "0x[0-9a-fA-F]{9,16}(?=\\s|$)";
     /**
