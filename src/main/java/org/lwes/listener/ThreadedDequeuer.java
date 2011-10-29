@@ -72,7 +72,7 @@ public abstract class ThreadedDequeuer implements Runnable {
 	 * Gets the maximum number of threads allowed in the system
 	 * @return the number of threads
 	 */
-	public int getMaxThreads() {
+	public synchronized int getMaxThreads() {
 		return this.maxThreads;
 	}
 
