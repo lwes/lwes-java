@@ -24,7 +24,6 @@ package org.lwes.db;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-@SuppressWarnings("all")
 public class ESFParser
 {
 
