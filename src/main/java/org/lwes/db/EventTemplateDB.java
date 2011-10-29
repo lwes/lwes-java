@@ -22,6 +22,7 @@ import org.lwes.util.IPAddress;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
@@ -321,6 +322,11 @@ public class EventTemplateDB {
         return knownTypes.containsKey(aTypeName);
     }
 
+    /**
+     * This checks an attribute against a limit on the number of elements in an
+     * array, and does not check the number of serialized bytes required to
+     * store the value.
+     */
     public void checkForSize(String eventName,
                              String attributeName,
                              BaseType attributeValue) throws EventAttributeSizeException {
@@ -334,50 +340,22 @@ public class EventTemplateDB {
 
         Map<String, BaseType> evtMap = events.get(eventName);
         if (evtMap == null) {
-            log.error("event definition did not exist");
+            log.error("event definition did not exist for event " + eventName);
             return;
         }
         BaseType attrBaseType = evtMap.get(attributeName);
         if (attrBaseType == null) {
-            log.error("attribute definition did not exist");
+            log.error("attribute definition did not exist for attribute " + eventName + "." + attributeName);
             return;
         }
 
-        int sizeToCheck = 0;
-        int size = attrBaseType.getSizeRestriction();
-        Object o = attributeValue.getTypeObject();
-        if (o instanceof short[]) {
-            sizeToCheck = ((short[]) o).length;
-        }
-        else if (o instanceof int[]) {
-            sizeToCheck = ((int[]) o).length;
-        }
-        else if (o instanceof long[]) {
-            sizeToCheck = ((long[]) o).length;
-        }
-        else if (o instanceof boolean[]) {
-            sizeToCheck = ((boolean[]) o).length;
-        }
-        else if (o instanceof byte[]) {
-            sizeToCheck = ((byte[]) o).length;
-        }
-        else if (o instanceof double[]) {
-            sizeToCheck = ((double[]) o).length;
-        }
-        else if (o instanceof float[]) {
-            sizeToCheck = ((float[]) o).length;
-        }
-        else if (o instanceof String[]) {
-            sizeToCheck = ((String[]) o).length;
-        }
-        else {
-            throw new EventAttributeSizeException("Cannot determine size for " + attributeName);
-        }
+        final int maximumAllowedSize = attrBaseType.getSizeRestriction();
+        final int observedSize       = Array.getLength(attributeValue.getTypeObject());
         if (log.isTraceEnabled()) {
-            log.trace("sizeToCheck: " + sizeToCheck + " size: " + size);
+            log.trace("sizeToCheck: " + observedSize + " size: " + maximumAllowedSize);
         }
-        if (size > 0 && sizeToCheck > size) {
-            throw new EventAttributeSizeException(attributeName, sizeToCheck, size);
+        if (maximumAllowedSize > 0 && observedSize > maximumAllowedSize) {
+            throw new EventAttributeSizeException(attributeName, observedSize, maximumAllowedSize);
         }
     }
 
