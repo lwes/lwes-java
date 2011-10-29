@@ -27,7 +27,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Event {
@@ -172,14 +172,14 @@ public class Event {
         if (template == null) {
             return;
         }
-        Map<String, BaseType> m = template.getBaseTypesForEvent(getEventName());
-        for (String key : m.keySet()) {
-            BaseType b = m.get(key);
-            if (b.getDefaultValue() != null) {
+        for (Entry<String,BaseType> entry : template.getBaseTypesForEvent(getEventName()).entrySet()) {
+            final String   key = entry.getKey();
+            final BaseType bt  = entry.getValue();
+            if (bt.getDefaultValue() != null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Setting default value: " + key + "=" + b.getDefaultValue());
+                    log.debug("Setting default value: " + key + "=" + bt.getDefaultValue());
                 }
-                set(key, b.getDefaultValue());
+                set(key, bt.getDefaultValue());
             }
         }
     }
@@ -1313,10 +1313,9 @@ public class Event {
                                                                  "' for " + name + "." + key));
             }
         }
-        Map<String, BaseType> map = templ.getEvents().get(name);
-        for (String key : map.keySet()) {
-            BaseType bt = map.get(key);
-            if (bt.isRequired()) {
+        for (Entry<String,BaseType> entry : templ.getEvents().get(name).entrySet()) {
+            final String   key = entry.getKey();
+            if (entry.getValue().isRequired()) {
                 if (!attributes.containsKey(key)) {
                     ve.addException(new AttributeRequiredException(key));
                 }
