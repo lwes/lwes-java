@@ -900,8 +900,9 @@ public class Event {
      * Serializes the Event into a byte array
      *
      * @return the serialized byte array
+     * @throws EventSystemException if there is a bug in predicting the serialized size
      */
-    public byte[] serialize() {
+    public byte[] serialize() throws EventSystemException {
         /*
            * Serialization uses the following protocol
            * EVENTWORD,<number of elements>,ATTRIBUTEWORD,TYPETOKEN,
@@ -1035,6 +1036,10 @@ public class Event {
 
             log.trace("Serialized attribute " + key);
         } // while(e.hasMoreElements())
+        
+        if (bytesStoreSize != offset) {
+        	throw new EventSystemException("Expected to write "+bytesStoreSize+" bytes, but actually wrote "+offset);
+        }
 
         return bytes;
     }

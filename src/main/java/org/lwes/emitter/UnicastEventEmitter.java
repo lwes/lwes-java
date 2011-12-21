@@ -206,8 +206,9 @@ public class UnicastEventEmitter implements EventEmitter {
 	 *
 	 * @param event the event to emit
 	 * @exception IOException throws an IOException is there is a network error.
+     * @throws EventSystemException if unable to serialize the event
 	 */
-	public void emit(Event event) throws IOException {
+	public void emit(Event event) throws IOException, EventSystemException {
 		byte[] msg = event.serialize();
 
 		synchronized(lock) {

@@ -203,10 +203,10 @@ public class BaseType {
                 size = ((long[]) typeObject).length * 8 + 2;
                 break;
             case TypeID.UINT16_ARRAY_TOKEN:
-                size = ((int[]) typeObject).length * 4 + 2;
+                size = ((int[]) typeObject).length * 2 + 2;
                 break;
             case TypeID.UINT32_ARRAY_TOKEN:
-                size = ((long[]) typeObject).length * 8 + 2;
+                size = ((long[]) typeObject).length * 4 + 2;
                 break;
             case TypeID.UINT64_ARRAY_TOKEN:
                 size = ((long[]) typeObject).length * 8 + 2;

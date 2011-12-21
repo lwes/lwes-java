@@ -88,6 +88,7 @@ public interface EventEmitter {
 	 * 
 	 * @param  event  the event being emitted
 	 * @throws IOException if an I/O error occurs
+	 * @throws EventSystemException if unable to serialize the event
 	 */	
-	public void emit(Event event) throws IOException;
+	public void emit(Event event) throws IOException, EventSystemException;
 }
