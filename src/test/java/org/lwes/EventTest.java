@@ -26,13 +26,17 @@ import java.io.File;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.lwes.db.EventTemplateDB;
+import org.lwes.util.IPAddress;
 
 public class EventTest {
 
@@ -100,6 +104,14 @@ public class EventTest {
 
         evt.setInt32("set", 32);
         assertTrue(evt.isSet("set"));
+    }
+
+    @Test
+    public void testToString() throws EventSystemException {
+        Event evt = new Event("Test", false, eventTemplate);
+        evt.setInt32("set", 32);
+        assertEquals("Test { \tenc = 1; \tset = 32; }", evt.toOneLineString());
+        assertEquals("Test\n{\n\tenc = 1;\n\tset = 32;\n}", evt.toString());
     }
 
     @Test
@@ -283,5 +295,51 @@ public class EventTest {
         Event evt = new Event("Test", false, eventTemplate);
         final String name = "       010       020       030       040       050       060       070       080       090       100       110       120       130       140       150       160       170       180       190       200       210       220       230       240       250   256";
         evt.setString(name, "irrelevant");
+    }
+    
+    @Test
+    public void testAllFieldTypes() throws EventSystemException {
+        Event evt = new Event("Everything", false, eventTemplate);
+        evt.setUInt16("field1", 1);
+        evt.setInt16("field2", (short) 2);
+        evt.setUInt32("field3", 3L);
+        evt.setInt32("field4", 4);
+        evt.setString("field5", "five");
+        evt.setIPAddress("field6", new IPAddress("6.6.6.6"));
+        evt.setInt64("field7", 7L);
+        evt.setUInt64("field8", BigInteger.valueOf(8));
+        evt.setBoolean("field9", true);
+        evt.setByte("field10", (byte) 10);
+        evt.setFloat("field11", (float) 11);
+        evt.setDouble("field12", 12.);
+        evt.setUInt16Array("field13", new int[] { 13 });
+        evt.setInt16Array("field14", new short[] { 14 });
+        evt.setUInt32Array("field15", new long[] { 15 });
+        evt.setInt32Array("field16", new int[] { 16 });
+        evt.setStringArray("field17", new String[] { "seventeen" });
+        evt.setIPAddressArray("field18", new IPAddress[] { new IPAddress("18.18.18.18") });
+        evt.setInt64Array("field19", new long[] { 19L });
+        evt.setUInt64Array("field20", new BigInteger[] { BigInteger.valueOf(20) });
+        evt.setBooleanArray("field21", new boolean[] { false });
+        evt.setByteArray("field22", new byte[] { 22 });
+        evt.setFloatArray("field23", new float[] { (float) 23 });
+        evt.setDoubleArray("field24", new double[] { 24. });
+        evt.validate();
+        
+        Event evt2 = new Event("Everything", true, eventTemplate);
+        for (int i=1; i<=24; ++i) {
+            final String field = "field" + i, wrongField = "field" + (i==24 ? 1 : (i+1));
+            final Object value = evt.get(field);
+            try {
+                evt2.set(wrongField, value);
+                fail("Failed to detect a problem when storing a "+value.getClass().getName()+" as a "+evt.getType(field));
+            } catch(NoSuchAttributeTypeException nsate) { }
+        }
+    }
+    
+    @Test
+    public void testMetaFields() {
+        assertEquals(new TreeSet<String>(Arrays.asList("SenderIP,SenderPort,ReceiptTime,enc,SiteID".split(","))),
+                new TreeSet<String>(eventTemplate.getMetaFields().keySet()));
     }
 }

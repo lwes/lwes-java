@@ -13,3 +13,31 @@ Test
   string field1;
   int16 field2;
 }
+
+Everything
+{
+  uint16  field1;
+  int16   field2;
+  uint32  field3;
+  int32   field4;
+  string  field5;
+  ip_addr field6;
+  int64   field7;
+  uint64  field8;
+  boolean field9;
+  byte    field10;
+  float   field11;
+  double  field12;
+  uint16  field13[2];
+  int16   field14[2];
+  uint32  field15[2];
+  int32   field16[2];
+  string  field17[2];
+  ip_addr field18[2];
+  int64   field19[2];
+  uint64  field20[2];
+  boolean field21[2];
+  byte    field22[2];
+  float   field23[2];
+  double  field24[2];
+}

@@ -18,8 +18,10 @@ package org.lwes.db;
 import org.junit.Test;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
+import org.lwes.util.IPAddress;
 
 import java.io.File;
+import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,17 +42,22 @@ public class DefaultValueTest {
 
         Event evt = new Event("DefaultValueEvent", true, template);
 
-
-        // numeric values
-        assertNotNull("anInt not set", evt.get("anInt"));
-        assertEquals("anInt value wrong", 5, evt.get("anInt"));
-
-        assertNotNull("pi not set", evt.get("pi"));
-        assertEquals("pi value wrong", 3.141594, evt.get("pi"));
-
-        // booleans
-        assertNotNull("aBool not set", evt.get("aBool"));
         assertEquals("aBool value wrong", true, evt.get("aBool"));
+        assertEquals("aBoolOpt value wrong", false, evt.get("aBoolOpt"));
+        assertEquals("anInt value wrong", 5, evt.get("anInt"));
+        assertEquals("anIntOpt value wrong", 6, evt.get("anIntOpt"));
+        assertEquals("aLong value wrong", 5000000000L, evt.get("aLong"));
+        assertEquals("pi value wrong", 3.141594, evt.get("pi"));
+        assertEquals("piOpt value wrong", -3.141594, evt.get("piOpt"));
+        assertEquals("ip value wrong", new IPAddress("255.255.255.255"), evt.get("ip"));
+        assertEquals("aByte value wrong", (byte) -128, evt.get("aByte"));
+        assertEquals("aDouble value wrong", 6.8, evt.get("aDouble"));
+        assertEquals("anInt16 value wrong", (short)32767, evt.get("anInt16"));
+        assertEquals("anInt32 value wrong", -2147483648, evt.get("anInt32"));
+        assertEquals("aUInt16 value wrong", 65535, evt.get("aUInt16"));
+        assertEquals("aUInt32 value wrong", 4294967295L, evt.get("aUInt32"));
+        assertEquals("aUInt64 value wrong", new BigInteger("18446744073709551615"), evt.get("aUInt64"));
+        assertEquals("aSmallUInt64 value wrong", BigInteger.valueOf(1), evt.get("aSmallUInt64"));
 
         // Strings
         assertNotNull("version not set", evt.get("version"));

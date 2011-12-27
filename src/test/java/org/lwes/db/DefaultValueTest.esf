@@ -1,5 +1,6 @@
 MetaEventInfo
 {
+            float    aFloat   = 1.3;
   ip_addr SenderIP;    # IP address of Sender
   uint16  SenderPort;  # IP port of Sender
   int64   ReceiptTime; # time this event was received, in millis since epoch
@@ -17,6 +18,16 @@ DefaultValueEvent
             boolean  aBoolOpt = false;    # boolean default value
    required int32    anInt    = 5;
             int32    anIntOpt = 6;
-   required double    pi       = 3.141594; # numeric default value
-            double    piOpt    = 3.141594; # numeric default value
+   required int64    aLong    = 5000000000;
+   required double   pi       =  3.141594; # numeric default value
+            double   piOpt    = -3.141594; # numeric default value
+            ip_addr  ip       = 255.255.255.255;
+            byte     aByte    = -128;
+            double   aDouble  = 6.8;
+            int16    anInt16  = 32767;
+            int32    anInt32  = -2147483648;
+            uint16   aUInt16  = 65535;
+            uint32   aUInt32  = 4294967295;
+            uint64   aUInt64  = 18446744073709551615;
+            uint64   aSmallUInt64  = 1;
 }

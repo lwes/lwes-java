@@ -35,8 +35,6 @@ import org.lwes.util.IPAddress;
  */
 public class BaseType {
 
-    private static transient Log log = LogFactory.getLog(BaseType.class);
-
     /**
      * The FieldType of this field, which provides both ESF name and
      * serialization token.
@@ -288,35 +286,8 @@ public class BaseType {
                 + type.name);
     }
 
-    public static BaseType baseTypeFromObject(Object value) {
-        if (value instanceof String) {
-            return new BaseType(FieldType.STRING, value);
-        }
-        if (value instanceof Short) {
-            return new BaseType(FieldType.INT16, value);
-        }
-        if (value instanceof Integer) {
-            return new BaseType(FieldType.INT32, value);
-        }
-        if (value instanceof Long) {
-            return new BaseType(FieldType.INT64, value);
-        }
-        if (value instanceof InetAddress || value instanceof IPAddress) {
-            return new BaseType(FieldType.IPADDR, value);
-        }
-        if (value instanceof BigInteger) {
-            return new BaseType(FieldType.UINT64, value);
-        }
-        else {
-            log.warn("unaccounted for object class: " + value.getClass().getName());
-            return null;
-        }
-    }
-
     public BaseType cloneBaseType() {
-        BaseType newBaseType = new BaseType(getTypeName(), getTypeToken(),
-                                            getTypeObject());
-        return newBaseType;
+        return new BaseType(type, typeObject, required, sizeRestriction, defaultValue);
     }
 
     public String toString() {

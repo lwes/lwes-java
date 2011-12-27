@@ -21,10 +21,13 @@ PARSER_BEGIN(ESFParser)
 
 package org.lwes.db;
 
+import java.math.BigInteger;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.lwes.FieldType;
+import org.lwes.util.IPAddress;
 
 public class ESFParser
 {
@@ -83,9 +86,11 @@ TOKEN :
   | < FALSE: "false" >
   | < LBRACKET: "[" >
   | < RBRACKET: "]" >
-  | < INTEGER_LITERAL: ["1"-"9"] (["0"-"9"])* >
+  | < BIG_INTEGER_LITERAL: ["1"-"9"]["0"-"9"]["0"-"9"]["0"-"9"]["0"-"9"]["0"-"9"]["0"-"9"]["0"-"9"]["0"-"9"]["0"-"9"] (["0"-"9"])* >
+  | < INTEGER_LITERAL: ("-")? ["1"-"9"] (["0"-"9"])* >
+  | < IPADDR_LITERAL:  (["0"-"9"])+ "." (["0"-"9"])+ "." (["0"-"9"])+ "." (["0"-"9"])+ >
   | < STRING_LITERAL: "\""(<ID>)"\"" >
-  | < DOUBLE_LITERAL: (["0"-"9"])+ "." (["0"-"9"])* >
+  | < DOUBLE_LITERAL: ("-")? (["0"-"9"])+ "." (["0"-"9"])* >
   | < ID: ["a"-"z","A"-"Z","_",":","0"-"9","."] (["a"-"z","A"-"Z","_",":","0"-"9","."])* >
 
 }
@@ -177,6 +182,28 @@ int integerLiteral() :
   }
 }
 
+BigInteger bigIntegerLiteral() :
+{
+    Token t;
+}
+{
+  t = <BIG_INTEGER_LITERAL>
+  {
+    return new BigInteger(t.image);
+  }
+}
+
+IPAddress ipaddrLiteral() :
+{
+    Token t;
+}
+{
+  t = <IPADDR_LITERAL>
+  {
+    return new IPAddress(t.image);
+  }
+}
+
 double doubleLiteral() :
 {
     Token t;
@@ -201,6 +228,10 @@ Object defaultValue() :
     {
       return obj;
     }
+    | obj = bigIntegerLiteral()
+    {
+      return obj;
+    }
     | obj = doubleLiteral()
     {
       return obj;
@@ -210,6 +241,10 @@ Object defaultValue() :
       return obj;
     }
     | obj = stringLiteral()
+    {
+      return obj;
+    }
+    | obj = ipaddrLiteral()
     {
       return obj;
     }

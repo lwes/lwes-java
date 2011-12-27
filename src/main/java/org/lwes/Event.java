@@ -54,6 +54,8 @@ public class Event {
     public static final short DEFAULT_ENCODING = UTF_8;
     public static final CharacterEncoding[] ENCODING_STRINGS = {
         CharacterEncoding.ISO_8859_1, CharacterEncoding.UTF_8};
+    
+    private static final BigInteger UINT64_MASK = new BigInteger("10000000000000000",16);
 
     /**
      * Event data
@@ -600,6 +602,9 @@ public class Event {
             if (getEventTemplateDB().checkForAttribute(getEventName(), attributeName)) {
                 BaseType bt = getEventTemplateDB().getBaseTypeForObjectAttribute(getEventName(),
                                                                                  attributeName, attributeValue);
+                if (! bt.getType().isCompatibleWith(attributeValue)) {
+                    throw new NoSuchAttributeTypeException("Wrong type '" + attributeValue.getClass().getName() + "' for " + name + "." + attributeName);
+                }
                 set(attributeName, bt);
             }
         }
@@ -672,6 +677,12 @@ public class Event {
     }
 
     public void setUInt64Array(String attributeName, long[] value) throws EventSystemException {
+        final BigInteger[] value2 = new BigInteger[value.length];
+        for (int i=0; i<value.length; ++i) value2[i] = BigInteger.valueOf(value[i]).and(UINT64_MASK);
+        set(attributeName, new BaseType(FieldType.UINT64_ARRAY, value));
+    }
+
+    public void setUInt64Array(String attributeName, BigInteger[] value) throws EventSystemException {
         set(attributeName, new BaseType(FieldType.UINT64_ARRAY, value));
     }
 
@@ -1205,24 +1216,12 @@ public class Event {
                 continue;
             }
 
-            BaseType expected = templ.getBaseTypeForObjectAttribute(name, key, value);
-            BaseType bt = BaseType.baseTypeFromObject(value);
-
-            /**
-             * There are no unsigned values in java so they are kind of a special case
-             * in that i can't guess which one the person meant. This small hack treats
-             * similar types the same way.
-             */
-            if ((expected.getType() == FieldType.UINT16 && bt.getType() == FieldType.INT32) ||
-                (expected.getType() == FieldType.UINT32 && bt.getType() == FieldType.INT64) ||
-                (expected.getType() == FieldType.UINT64 && bt.getType() == FieldType.INT64)) {
-                bt = expected;
-            }
-            if (!templ.checkTypeForAttribute(name, key, bt)) {
-                ve.addException(new NoSuchAttributeTypeException("Wrong type '" + bt.getType() +
-                                                                 "' for " + name + "." + key));
+            final BaseType expected = templ.getBaseTypeForObjectAttribute(name, key, value);
+            if (! expected.getType().isCompatibleWith(value)) {
+                ve.addException(new NoSuchAttributeTypeException("Wrong type '" + value.getClass().getName() + "' for " + name + "." + key));
             }
         }
+        
         for (Entry<String,BaseType> entry : templ.getEvents().get(name).entrySet()) {
             final String   key = entry.getKey();
             if (entry.getValue().isRequired()) {
@@ -1235,6 +1234,11 @@ public class Event {
         if (ve.hasExceptions()) {
             throw ve;
         }
+    }
+
+    public FieldType getType(String field) {
+        final BaseType bt = attributes.get(field);
+        return bt==null ? null : bt.getType();
     }
 
 }

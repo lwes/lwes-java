@@ -67,7 +67,9 @@ public class EventTemplateDB {
         events = new ConcurrentHashMap<String, Map<String, BaseType>>();
         knownTypes = new ConcurrentHashMap<FieldType, BaseType>();
         reservedWords = new ConcurrentHashMap<String, BaseType>();
-        initializeKnownTypes();
+        for (FieldType type : FieldType.values()) {
+            knownTypes.put(type, new BaseType(type, type.getDefaultValue()));
+        }
     }
 
     /**
@@ -198,6 +200,7 @@ public class EventTemplateDB {
         return true;
     }
 
+    @Deprecated
     public synchronized boolean addEventAttribute(String anEventName,
                                                   String anAttributeName,
                                                   String anAttributeType) {
@@ -208,6 +211,7 @@ public class EventTemplateDB {
                                  false);
     }
 
+    @Deprecated
     public synchronized boolean addEventAttribute(String anEventName,
                                                   String anAttributeName,
                                                   String anAttributeType,
@@ -245,7 +249,7 @@ public class EventTemplateDB {
                     bt.setRequired(required);
                     bt.setSizeRestriction(size);
                     if (defaultValue != null) {
-                        bt.setDefaultValue(defaultValue);
+                        bt.setDefaultValue(canonicalizeDefaultValue(anEventName, anAttributeName, anAttributeType, defaultValue));
                     }
                     reservedWords.put(anAttributeName, bt);
                     return true;
@@ -253,7 +257,7 @@ public class EventTemplateDB {
                 else {
                     if (log.isInfoEnabled()) {
                         log.info("Meta keyword " + anEventName + "." + anAttributeName +
-                                 "has unknown type " + anAttributeType + ", skipping");
+                                 " has unknown type " + anAttributeType + ", skipping");
                     }
                     return false;
                 }
@@ -274,7 +278,7 @@ public class EventTemplateDB {
                     bt.setRequired(required);
                     bt.setSizeRestriction(size);
                     if (defaultValue != null) {
-                        bt.setDefaultValue(defaultValue);
+                        bt.setDefaultValue(canonicalizeDefaultValue(anEventName, anAttributeName, bt.getType(), defaultValue));
                     }
                     evtHash.put(anAttributeName, bt);
                     return true;
@@ -298,6 +302,82 @@ public class EventTemplateDB {
             log.error("Error adding attribute " + anAttributeName + " to " + anEventName, e);
             return false;
         }
+    }
+
+    /**
+     * This method checks the type and range of a default value (from the ESF).
+     * It returns the desired form, if allowed.
+     * 
+     * @param type     which controls the desired object type of the value
+     * @param esfValue which should be converted to fit 'type'
+     * @return a value suitable for storing in a BaseType of this 'type'
+     * @throws EventSystemException if the value is not acceptable for the type.
+     */
+    private Object canonicalizeDefaultValue(String eventName, String attributeName, FieldType type, Object esfValue) throws EventSystemException {
+        try {
+            switch(type) {
+                case BOOLEAN:
+                    return (Boolean) esfValue;
+                case BYTE:
+                    checkRange(eventName, attributeName, esfValue, Byte.MIN_VALUE, Byte.MAX_VALUE);
+                    return ((Number) esfValue).byteValue();
+                case INT16:
+                    checkRange(eventName, attributeName, esfValue, Short.MIN_VALUE, Short.MAX_VALUE);
+                    return ((Number) esfValue).shortValue();
+                case INT32:
+                    checkRange(eventName, attributeName, esfValue, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                    return ((Number) esfValue).intValue();
+                case UINT16:
+                    checkRange(eventName, attributeName, esfValue, 0, 0x10000);
+                    return ((Number) esfValue).intValue()  & 0xffff;
+                case UINT32:
+                    checkRange(eventName, attributeName, esfValue, 0, 0x100000000L);
+                    return ((Number) esfValue).longValue() & 0xffffffff;
+                case FLOAT:   return ((Number) esfValue).floatValue();
+                case DOUBLE:  return ((Number) esfValue).doubleValue();
+                case STRING:  return ((String) esfValue);
+                case INT64:   {
+                    if (esfValue instanceof Long) return esfValue;
+                    final BigInteger bi = (BigInteger) esfValue;
+                    if (bi.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0 ||
+                        bi.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
+                        throw new EventSystemException(String.format(
+                                "Field %s.%s value %s outside allowed range [%d,%d]",
+                                eventName, attributeName, esfValue, Long.MIN_VALUE, Long.MAX_VALUE));
+                    }
+                    return bi.longValue();
+                }
+                case UINT64: {
+                    if (esfValue instanceof BigInteger) return esfValue;
+                    return BigInteger.valueOf(((Number) esfValue).longValue());
+                }
+                case IPADDR:  return ((IPAddress) esfValue);
+                case BOOLEAN_ARRAY:
+                case BYTE_ARRAY:
+                case DOUBLE_ARRAY:
+                case FLOAT_ARRAY:
+                case INT16_ARRAY:
+                case INT32_ARRAY:
+                case INT64_ARRAY:
+                case IP_ADDR_ARRAY:
+                case STRING_ARRAY:
+                case UINT16_ARRAY:
+                case UINT32_ARRAY:
+                case UINT64_ARRAY:
+                    throw new EventSystemException("Unsupported default value type " + type);
+            }
+            throw new EventSystemException("Unrecognized type " + type + " for value " + esfValue);
+        } catch(ClassCastException e) {
+            throw new EventSystemException("Type "+type+" had an inappropriate default value "+esfValue);
+        }
+    }
+
+    private void checkRange(String eventName, String attributeName, Object value, long min, long max) throws EventSystemException {
+        final Number number = (Number) value;
+        if (min <= number.longValue() && number.longValue() <= max) return;
+        throw new EventSystemException(String.format(
+                "Field %s.%s value %d outside allowed range [%d,%d]",
+                eventName, attributeName, value, min, max));
     }
 
     /** @use {@link #addEventAttribute(String, String, FieldType, Integer, boolean, Object)} */
@@ -343,12 +423,7 @@ public class EventTemplateDB {
                              String attributeName,
                              BaseType attributeValue) throws EventAttributeSizeException {
 
-        if (!attributeValue.getType().isArray()) {
-            if (log.isDebugEnabled()) {
-                log.debug("value for attribute " + attributeName + " is not an array.");
-            }
-            return;
-        }
+        if (!attributeValue.getType().isArray()) return;
 
         Map<String, BaseType> evtMap = events.get(eventName);
         if (evtMap == null) {
@@ -671,35 +746,6 @@ public class EventTemplateDB {
 
     public String toStringOneLine() {
         return toString().replace("\n", " ");
-    }
-
-    /**
-     * Creates a map of known types
-     */
-    private void initializeKnownTypes() {
-        /* initialize the list of known types */
-        knownTypes.put(FieldType.UINT16, new BaseType(FieldType.UINT16, 0));
-        knownTypes.put(FieldType.INT16, new BaseType(FieldType.INT16, (short) 0));
-        knownTypes.put(FieldType.UINT32, new BaseType(FieldType.UINT32, (long) 0));
-        knownTypes.put(FieldType.INT32, new BaseType(FieldType.INT32, 0));
-        knownTypes.put(FieldType.STRING, new BaseType(FieldType.STRING, ""));
-        knownTypes.put(FieldType.IPADDR, new BaseType(FieldType.IPADDR, new IPAddress()));
-        knownTypes.put(FieldType.INT64, new BaseType(FieldType.INT64, (long) 0));
-        knownTypes.put(FieldType.UINT64, new BaseType(FieldType.UINT64, BigInteger.ZERO));
-        knownTypes.put(FieldType.BOOLEAN, new BaseType(FieldType.BOOLEAN, true));
-        knownTypes.put(FieldType.STRING_ARRAY, new BaseType(FieldType.STRING_ARRAY));
-        knownTypes.put(FieldType.INT16_ARRAY, new BaseType(FieldType.INT16_ARRAY));
-        knownTypes.put(FieldType.INT32_ARRAY, new BaseType(FieldType.INT32_ARRAY));
-        knownTypes.put(FieldType.INT64_ARRAY, new BaseType(FieldType.INT64_ARRAY));
-        knownTypes.put(FieldType.UINT16_ARRAY, new BaseType(FieldType.UINT16_ARRAY));
-        knownTypes.put(FieldType.UINT32_ARRAY, new BaseType(FieldType.UINT32_ARRAY));
-        knownTypes.put(FieldType.UINT64_ARRAY, new BaseType(FieldType.UINT64_ARRAY));
-        knownTypes.put(FieldType.BOOLEAN_ARRAY, new BaseType(FieldType.BOOLEAN_ARRAY));
-        knownTypes.put(FieldType.BYTE_ARRAY, new BaseType(FieldType.BYTE_ARRAY));
-        knownTypes.put(FieldType.DOUBLE_ARRAY, new BaseType(FieldType.DOUBLE_ARRAY));
-        knownTypes.put(FieldType.FLOAT_ARRAY, new BaseType(FieldType.FLOAT_ARRAY));
-        knownTypes.put(FieldType.DOUBLE, new BaseType(FieldType.DOUBLE));
-        knownTypes.put(FieldType.FLOAT, new BaseType(FieldType.FLOAT));
     }
 
     public Map<String, BaseType> getMetaFields() {
