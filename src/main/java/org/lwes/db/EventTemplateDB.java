@@ -12,14 +12,6 @@
 
 package org.lwes.db;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.lwes.BaseType;
-import org.lwes.EventAttributeSizeException;
-import org.lwes.EventSystemException;
-import org.lwes.TypeID;
-import org.lwes.util.IPAddress;
-
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -30,6 +22,14 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.lwes.BaseType;
+import org.lwes.EventAttributeSizeException;
+import org.lwes.EventSystemException;
+import org.lwes.FieldType;
+import org.lwes.util.IPAddress;
 
 /**
  * Provides type checking for the event system. Also provides a place for
@@ -57,7 +57,7 @@ public class EventTemplateDB {
      * System Attributes
      */
     private Map<String, Map<String, BaseType>> events = null;
-    private Map<String, BaseType> knownTypes = null;
+    private Map<FieldType, BaseType> knownTypes = null;
     private Map<String, BaseType> reservedWords = null;
 
     /**
@@ -65,7 +65,7 @@ public class EventTemplateDB {
      */
     public EventTemplateDB() {
         events = new ConcurrentHashMap<String, Map<String, BaseType>>();
-        knownTypes = new ConcurrentHashMap<String, BaseType>();
+        knownTypes = new ConcurrentHashMap<FieldType, BaseType>();
         reservedWords = new ConcurrentHashMap<String, BaseType>();
         initializeKnownTypes();
     }
@@ -229,7 +229,7 @@ public class EventTemplateDB {
      */
     public synchronized boolean addEventAttribute(String anEventName,
                                                   String anAttributeName,
-                                                  String anAttributeType,
+                                                  FieldType anAttributeType,
                                                   Integer size,
                                                   boolean required,
                                                   Object defaultValue) {
@@ -300,6 +300,17 @@ public class EventTemplateDB {
         }
     }
 
+    /** @use {@link #addEventAttribute(String, String, FieldType, Integer, boolean, Object)} */
+    @Deprecated
+    public boolean addEventAttribute(String anEventName,
+            String anAttributeName,
+            String anAttributeType,
+            Integer size,
+            boolean required,
+            Object defaultValue) {
+        return addEventAttribute(anEventName, anAttributeName, FieldType.byName(anAttributeType), size, required, defaultValue);
+    }
+    
     /**
      * Returns an enumeration of all defined events
      *
@@ -315,11 +326,12 @@ public class EventTemplateDB {
      * @param aTypeName a type name according to the ESF Specification
      * @return true if the type exists in the DB, false otherwise
      */
+    public boolean checkForType(FieldType type) {
+        return type==null ? false : knownTypes.containsKey(type);
+    }
+    
     public boolean checkForType(String aTypeName) {
-        if (aTypeName == null) {
-            return false;
-        }
-        return knownTypes.containsKey(aTypeName);
+        return checkForType(FieldType.byName(aTypeName));
     }
 
     /**
@@ -331,7 +343,7 @@ public class EventTemplateDB {
                              String attributeName,
                              BaseType attributeValue) throws EventAttributeSizeException {
 
-        if (!attributeValue.getTypeName().startsWith("[L")) {
+        if (!attributeValue.getType().isArray()) {
             if (log.isDebugEnabled()) {
                 log.debug("value for attribute " + attributeName + " is not an array.");
             }
@@ -440,28 +452,35 @@ public class EventTemplateDB {
      *         EventTemplateDB, false otherwise.
      */
     public boolean checkTypeForAttribute(String anEventName,
-                                         String anAttributeName, String anAttributeType) {
+                                         String anAttributeName, FieldType anAttributeType) {
         if (anEventName == null || anAttributeName == null || anAttributeType == null) {
             return false;
         }
 
         if (checkForAttribute(anEventName, anAttributeName)) {
             Map<String, BaseType> evtHash = events.get(anEventName);
-            String storedTypeName = evtHash.get(anAttributeName).getTypeName();
+            FieldType storedType = evtHash.get(anAttributeName).getType();
             if (log.isDebugEnabled()) {
                 log.debug("attr: " +
                           anAttributeName +
                           " stored: " +
-                          storedTypeName +
+                          storedType +
                           " passed in: " +
                           anAttributeType);
             }
-            if (anAttributeType.equals(storedTypeName)) {
+            if (anAttributeType == storedType) {
                 return true;
             }
         }
 
         return false;
+    }
+    
+    /** @use {@link #checkTypeForAttribute(String, String, FieldType)} */
+    @Deprecated
+    public boolean checkTypeForAttribute(String anEventName,
+            String anAttributeName, String anAttributeType) {
+        return checkTypeForAttribute(anEventName, anAttributeName, FieldType.byName(anAttributeType));
     }
 
     /**
@@ -568,8 +587,8 @@ public class EventTemplateDB {
         sb.append("<tr><th>" + META_EVENT_INFO
                   + "</th><th>Type</th><th>Name</th></tr>\n");
         for (String key : reservedWords.keySet()) {
-            BaseType tv = reservedWords.get(key);
-            String type = tv.getTypeName();
+            BaseType  tv   = reservedWords.get(key);
+            FieldType type = tv.getType();
             sb.append("<tr><td></td><td>").append(type).append("</td><td>").append(key).append("</td></tr>\n");
         }
         for (String EventKey : events.keySet()) {
@@ -580,7 +599,7 @@ public class EventTemplateDB {
                     .hasMoreElements(); ) {
                     String key = att.nextElement();
                     BaseType tv = event.get(key);
-                    String type = tv.getTypeName();
+                    FieldType type = tv.getType();
                     sb.append("<tr><td></td><td>")
                         .append(type)
                         .append("</td><td>")
@@ -612,8 +631,8 @@ public class EventTemplateDB {
         Arrays.sort(reservedKeys);
 
         for (i = 0; i < reservedKeys.length; ++i) {
-            BaseType tv = reservedWords.get(reservedKeys[i]);
-            String type = tv.getTypeName();
+            BaseType  tv   = reservedWords.get(reservedKeys[i]);
+            FieldType type = tv.getType();
             sb.append("\t").append(type).append(" ").append(reservedKeys[i]).append(";\n");
         }
         sb.append("}\n");
@@ -641,7 +660,7 @@ public class EventTemplateDB {
 
                 for (j = 0; j < attributeKeys.length; ++j) {
                     BaseType tv = event.get(attributeKeys[j]);
-                    String type = tv.getTypeName();
+                    FieldType type = tv.getType();
                     sb.append("\t").append(type).append(" ").append(attributeKeys[j]).append(";\n");
                 }
             }
@@ -659,63 +678,28 @@ public class EventTemplateDB {
      */
     private void initializeKnownTypes() {
         /* initialize the list of known types */
-        knownTypes.put(TypeID.UINT16_STRING, new BaseType(TypeID.UINT16_STRING,
-                                                          TypeID.UINT16_TOKEN, 0));
-        knownTypes.put(TypeID.INT16_STRING, new BaseType(TypeID.INT16_STRING,
-                                                         TypeID.INT16_TOKEN, (short) 0));
-        knownTypes.put(TypeID.UINT32_STRING, new BaseType(TypeID.UINT32_STRING,
-                                                          TypeID.UINT32_TOKEN, (long) 0));
-        knownTypes.put(TypeID.INT32_STRING, new BaseType(TypeID.INT32_STRING,
-                                                         TypeID.INT32_TOKEN, 0));
-        knownTypes.put(TypeID.STRING_STRING, new BaseType(TypeID.STRING_STRING,
-                                                          TypeID.STRING_TOKEN, ""));
-        knownTypes.put(TypeID.IPADDR_STRING, new BaseType(TypeID.IPADDR_STRING,
-                                                          TypeID.IPADDR_TOKEN, new IPAddress()));
-        knownTypes.put(TypeID.INT64_STRING, new BaseType(TypeID.INT64_STRING,
-                                                         TypeID.INT64_TOKEN, (long) 0));
-        knownTypes.put(TypeID.UINT64_STRING, new BaseType(TypeID.UINT64_STRING,
-                                                          TypeID.UINT64_TOKEN, BigInteger.ZERO));
-        knownTypes.put(TypeID.BOOLEAN_STRING, new BaseType(TypeID.BOOLEAN_STRING,
-                                                           TypeID.BOOLEAN_TOKEN, true));
-        knownTypes.put(TypeID.STRING_ARRAY_STRING,
-                       new BaseType(TypeID.STRING_ARRAY_STRING,
-                                    TypeID.STRING_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.INT16_ARRAY_STRING,
-                       new BaseType(TypeID.INT16_ARRAY_STRING,
-                                    TypeID.INT16_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.INT32_ARRAY_STRING,
-                       new BaseType(TypeID.INT32_ARRAY_STRING,
-                                    TypeID.INT32_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.INT64_ARRAY_STRING,
-                       new BaseType(TypeID.INT64_ARRAY_STRING,
-                                    TypeID.INT64_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.UINT16_ARRAY_STRING,
-                       new BaseType(TypeID.UINT16_ARRAY_STRING,
-                                    TypeID.UINT16_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.UINT32_ARRAY_STRING,
-                       new BaseType(TypeID.UINT32_ARRAY_STRING,
-                                    TypeID.UINT32_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.UINT64_ARRAY_STRING,
-                       new BaseType(TypeID.UINT64_ARRAY_STRING,
-                                    TypeID.UINT64_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.BOOLEAN_ARRAY_STRING,
-                       new BaseType(TypeID.BOOLEAN_ARRAY_STRING,
-                                    TypeID.BOOLEAN_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.BYTE_ARRAY_STRING,
-                       new BaseType(TypeID.BYTE_ARRAY_STRING,
-                                    TypeID.BYTE_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.DOUBLE_ARRAY_STRING,
-                       new BaseType(TypeID.DOUBLE_ARRAY_STRING,
-                                    TypeID.DOUBLE_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.FLOAT_ARRAY_STRING,
-                       new BaseType(TypeID.FLOAT_ARRAY_STRING,
-                                    TypeID.FLOAT_ARRAY_TOKEN, null));
-        knownTypes.put(TypeID.DOUBLE_STRING,
-                       new BaseType(TypeID.DOUBLE_STRING,
-                                    TypeID.DOUBLE_TOKEN, null));
-        knownTypes.put(TypeID.FLOAT_STRING,
-                       new BaseType(TypeID.FLOAT_STRING,
-                                    TypeID.FLOAT_TOKEN, null));
+        knownTypes.put(FieldType.UINT16, new BaseType(FieldType.UINT16, 0));
+        knownTypes.put(FieldType.INT16, new BaseType(FieldType.INT16, (short) 0));
+        knownTypes.put(FieldType.UINT32, new BaseType(FieldType.UINT32, (long) 0));
+        knownTypes.put(FieldType.INT32, new BaseType(FieldType.INT32, 0));
+        knownTypes.put(FieldType.STRING, new BaseType(FieldType.STRING, ""));
+        knownTypes.put(FieldType.IPADDR, new BaseType(FieldType.IPADDR, new IPAddress()));
+        knownTypes.put(FieldType.INT64, new BaseType(FieldType.INT64, (long) 0));
+        knownTypes.put(FieldType.UINT64, new BaseType(FieldType.UINT64, BigInteger.ZERO));
+        knownTypes.put(FieldType.BOOLEAN, new BaseType(FieldType.BOOLEAN, true));
+        knownTypes.put(FieldType.STRING_ARRAY, new BaseType(FieldType.STRING_ARRAY));
+        knownTypes.put(FieldType.INT16_ARRAY, new BaseType(FieldType.INT16_ARRAY));
+        knownTypes.put(FieldType.INT32_ARRAY, new BaseType(FieldType.INT32_ARRAY));
+        knownTypes.put(FieldType.INT64_ARRAY, new BaseType(FieldType.INT64_ARRAY));
+        knownTypes.put(FieldType.UINT16_ARRAY, new BaseType(FieldType.UINT16_ARRAY));
+        knownTypes.put(FieldType.UINT32_ARRAY, new BaseType(FieldType.UINT32_ARRAY));
+        knownTypes.put(FieldType.UINT64_ARRAY, new BaseType(FieldType.UINT64_ARRAY));
+        knownTypes.put(FieldType.BOOLEAN_ARRAY, new BaseType(FieldType.BOOLEAN_ARRAY));
+        knownTypes.put(FieldType.BYTE_ARRAY, new BaseType(FieldType.BYTE_ARRAY));
+        knownTypes.put(FieldType.DOUBLE_ARRAY, new BaseType(FieldType.DOUBLE_ARRAY));
+        knownTypes.put(FieldType.FLOAT_ARRAY, new BaseType(FieldType.FLOAT_ARRAY));
+        knownTypes.put(FieldType.DOUBLE, new BaseType(FieldType.DOUBLE));
+        knownTypes.put(FieldType.FLOAT, new BaseType(FieldType.FLOAT));
     }
 
     public Map<String, BaseType> getMetaFields() {

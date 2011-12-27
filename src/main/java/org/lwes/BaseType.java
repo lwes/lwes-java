@@ -12,14 +12,15 @@
 
 package org.lwes;
 
+import java.lang.reflect.Array;
+import java.math.BigInteger;
+import java.net.InetAddress;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.lwes.serializer.StringParser;
 import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
-
-import java.math.BigInteger;
-import java.net.InetAddress;
 
 /**
  * This class provides a base type for the base types in the event system. acts
@@ -37,19 +38,15 @@ public class BaseType {
     private static transient Log log = LogFactory.getLog(BaseType.class);
 
     /**
-     * The name of this type used in the ESF file
+     * The FieldType of this field, which provides both ESF name and
+     * serialization token.
      */
-    String typeName = null;
-
-    /**
-     * The type token used during serialization
-     */
-    byte typeToken = TypeID.UNDEFINED_TOKEN;
+    private FieldType type = null;
 
     /**
      * The object stored in this type
      */
-    Object typeObject = null;
+    private Object typeObject = null;
 
     /**
      * Is this guy required
@@ -69,14 +66,17 @@ public class BaseType {
     public BaseType() {
     }
 
+    @Deprecated
     public BaseType(String typeName, byte typeToken) {
         this(typeName, typeToken, null, false, -1);
     }
 
+    @Deprecated
     public BaseType(String typeName, byte typeToken, Object typeObject) {
         this(typeName, typeToken, typeObject, false, -1);
     }
 
+    @Deprecated
     public BaseType(String typeName,
                     byte typeToken,
                     Object typeObject,
@@ -85,6 +85,7 @@ public class BaseType {
         this(typeName, typeToken, typeObject, required, sizeRestriction, null);
     }
 
+    @Deprecated
     public BaseType(String typeName,
                     byte typeToken,
                     Object typeObject,
@@ -93,9 +94,38 @@ public class BaseType {
                     Object defaultValue) {
         this.required = required;
         this.sizeRestriction = sizeRestriction;
-        this.typeName = typeName;
         this.typeObject = typeObject;
-        this.typeToken = typeToken;
+        this.type = FieldType.byToken(typeToken);
+        this.defaultValue = defaultValue;
+        if (! typeName.equals(type.name)) {
+            throw new IllegalStateException("Inconsistent type name and token: "+typeName+" vs. "+type.name);
+        }
+    }
+
+    public BaseType(FieldType type) {
+        this(type, null, false, -1);
+    }
+
+    public BaseType(FieldType type, Object typeObject) {
+        this(type, typeObject, false, -1);
+    }
+
+    public BaseType(FieldType type,
+                    Object typeObject,
+                    boolean required,
+                    int sizeRestriction) {
+        this(type, typeObject, required, sizeRestriction, null);
+    }
+
+    public BaseType(FieldType type,
+                    Object typeObject,
+                    boolean required,
+                    int sizeRestriction,
+                    Object defaultValue) {
+        this.required = required;
+        this.sizeRestriction = sizeRestriction;
+        this.type = type;
+        this.typeObject = typeObject;
         this.defaultValue = defaultValue;
     }
 
@@ -106,21 +136,36 @@ public class BaseType {
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
     }
+    
+    public FieldType getType() {
+        return type;
+    }
 
+    public void setType(FieldType type) {
+        this.type = type;
+    }
+
+    /** @use {@link setType(FieldType)} */
+    @Deprecated
     public void setTypeName(String typeName) {
-        this.typeName = typeName;
+        this.type = FieldType.byName(typeName);
     }
 
+    /** @use {@link getType(FieldType).name} */
+    @Deprecated
     public String getTypeName() {
-        return typeName;
+        return type.name;
     }
 
+    /** @use {@link setType(FieldType)} */
+    @Deprecated
     public void setTypeToken(byte typeToken) {
-        this.typeToken = typeToken;
+        this.type = FieldType.byToken(typeToken);
     }
 
+    /** @use {@link getType(FieldType).token} */
     public byte getTypeToken() {
-        return typeToken;
+        return type.token;
     }
 
     public void setTypeObject(Object typeObject) {
@@ -148,85 +193,50 @@ public class BaseType {
     }
 
     public int getByteSize(short encoding) throws NoSuchAttributeTypeException {
-        int size;
-        switch (typeToken) {
-            case TypeID.UINT16_TOKEN:
-                size = 2;
-                break;
-            case TypeID.INT16_TOKEN:
-                size = 2;
-                break;
-            case TypeID.UINT32_TOKEN:
-                size = 4;
-                break;
-            case TypeID.INT32_TOKEN:
-                size = 4;
-                break;
-            case TypeID.INT64_TOKEN:
-                size = 8;
-                break;
-            case TypeID.UINT64_TOKEN:
-                size = 8;
-                break;
-            case TypeID.FLOAT_TOKEN:
-                size = 4;
-                break;
-            case TypeID.DOUBLE_TOKEN:
-                size = 8;
-                break;
-            case TypeID.STRING_TOKEN:
-                String aString = (String) typeObject;
+        switch (type) {
+            case BOOLEAN:
+            case BYTE:
+                return 1;
+            case UINT16:
+            case INT16:
+                return 2;
+            case UINT32:
+            case INT32:
+            case FLOAT:
+            case IPADDR:
+                return 4;
+            case INT64:
+            case UINT64:
+            case DOUBLE:
+                return 8;
+            case STRING:
                 /* add size of string plus two bytes for the length */
-                size = EncodedString.getBytes(aString, Event.ENCODING_STRINGS[encoding]).length + 2;
-                break;
-            case TypeID.IPADDR_TOKEN:
-                size = 4;
-                break;
-            case TypeID.BOOLEAN_TOKEN:
-                size = 1;
-                break;
-            case TypeID.STRING_ARRAY_TOKEN:
+                return EncodedString.getBytes((String) typeObject, Event.ENCODING_STRINGS[encoding]).length + 2;
+            case STRING_ARRAY: {
                 int count = 2; // start with the length of the array
                 String[] anArray = (String[]) typeObject;
                 for (String s : anArray) {
                     count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
                 }
-                size = count;
-                break;
-            case TypeID.INT16_ARRAY_TOKEN:
-                size = ((short[]) typeObject).length * 2 + 2;
-                break;
-            case TypeID.INT32_ARRAY_TOKEN:
-                size = ((int[]) typeObject).length * 4 + 2;
-                break;
-            case TypeID.INT64_ARRAY_TOKEN:
-                size = ((long[]) typeObject).length * 8 + 2;
-                break;
-            case TypeID.UINT16_ARRAY_TOKEN:
-                size = ((int[]) typeObject).length * 2 + 2;
-                break;
-            case TypeID.UINT32_ARRAY_TOKEN:
-                size = ((long[]) typeObject).length * 4 + 2;
-                break;
-            case TypeID.UINT64_ARRAY_TOKEN:
-                size = ((long[]) typeObject).length * 8 + 2;
-                break;
-            case TypeID.BOOLEAN_ARRAY_TOKEN:
-                size = ((boolean[]) typeObject).length + 2;
-                break;
-            case TypeID.BYTE_ARRAY_TOKEN:
-                size = ((byte[]) typeObject).length + 2;
-                break;
-            case TypeID.DOUBLE_ARRAY_TOKEN:
-                size = ((double[]) typeObject).length * 8 + 2;
-                break;
-            case TypeID.FLOAT_ARRAY_TOKEN:
-                size = ((float[]) typeObject).length * 4 + 2;
-                break;
-            default:
-                throw new NoSuchAttributeTypeException("Unknown size of BaseType " + typeName);
+                return count;
+            }
+            case BOOLEAN_ARRAY:
+            case BYTE_ARRAY:
+                return Array.getLength(typeObject) + 2;
+            case INT16_ARRAY:
+            case UINT16_ARRAY:
+                return Array.getLength(typeObject) * 2 + 2;
+            case INT32_ARRAY:
+            case UINT32_ARRAY:
+            case FLOAT_ARRAY:
+            case IP_ADDR_ARRAY:
+                return Array.getLength(typeObject) * 4 + 2;
+            case INT64_ARRAY:
+            case UINT64_ARRAY:
+            case DOUBLE_ARRAY:
+                return Array.getLength(typeObject) * 8 + 2;
         }
-        return size;
+        throw new NoSuchAttributeTypeException("Unknown size of BaseType " + type.name);
     }
 
     public int bytesStoreSize(short encoding) throws NoSuchAttributeTypeException {
@@ -235,60 +245,67 @@ public class BaseType {
     }
 
     public Object parseFromString(String string) throws EventSystemException {
-        Object toReturn = null;
-        switch (typeToken) {
-            case TypeID.UINT16_TOKEN:
-                toReturn = StringParser.fromStringUINT16(string);
-                break;
-            case TypeID.INT16_TOKEN:
-                toReturn = StringParser.fromStringINT16(string);
-                break;
-            case TypeID.UINT32_TOKEN:
-                toReturn = StringParser.fromStringUINT32(string);
-                break;
-            case TypeID.INT32_TOKEN:
-                toReturn = StringParser.fromStringINT32(string);
-                break;
-            case TypeID.INT64_TOKEN:
-                toReturn = StringParser.fromStringINT64(string);
-                break;
-            case TypeID.UINT64_TOKEN:
-                toReturn = StringParser.fromStringUINT64(string);
-                break;
-            case TypeID.STRING_TOKEN:
-                toReturn = StringParser.fromStringSTRING(string);
-                break;
-            case TypeID.IPADDR_TOKEN:
-                toReturn = StringParser.fromStringIPADDR(string);
-                break;
-            case TypeID.BOOLEAN_TOKEN:
-                toReturn = StringParser.fromStringBOOLEAN(string);
-                break;
-            default:
-                throw new NoSuchAttributeTypeException("Unknown size of BaseType "
-                                                       + typeName);
+        switch (type) {
+            case UINT16:
+                return StringParser.fromStringUINT16(string);
+            case INT16:
+                return StringParser.fromStringINT16(string);
+            case UINT32:
+                return StringParser.fromStringUINT32(string);
+            case INT32:
+                return StringParser.fromStringINT32(string);
+            case INT64:
+                return StringParser.fromStringINT64(string);
+            case UINT64:
+                return StringParser.fromStringUINT64(string);
+            case STRING:
+                return StringParser.fromStringSTRING(string);
+            case IPADDR:
+                return StringParser.fromStringIPADDR(string);
+            case BOOLEAN:
+                return StringParser.fromStringBOOLEAN(string);
+            case BYTE:
+                return StringParser.fromStringBYTE(string);
+            case DOUBLE:
+                return StringParser.fromStringDOUBLE(string);
+            case FLOAT:
+                return StringParser.fromStringFLOAT(string);
+            case BOOLEAN_ARRAY:
+            case INT16_ARRAY:
+            case INT32_ARRAY:
+            case INT64_ARRAY:
+            case FLOAT_ARRAY:
+            case DOUBLE_ARRAY:
+            case IP_ADDR_ARRAY:
+            case STRING_ARRAY:
+            case UINT16_ARRAY:
+            case UINT32_ARRAY:
+            case UINT64_ARRAY:
+            case BYTE_ARRAY:
+                throw new UnsupportedOperationException("Not yet implemented");
         }
-        return toReturn;
+        throw new NoSuchAttributeTypeException("Unknown size of BaseType "
+                + type.name);
     }
 
     public static BaseType baseTypeFromObject(Object value) {
         if (value instanceof String) {
-            return new BaseType(TypeID.STRING_STRING, TypeID.STRING_TOKEN, value);
+            return new BaseType(FieldType.STRING, value);
         }
         if (value instanceof Short) {
-            return new BaseType(TypeID.INT16_STRING, TypeID.INT16_TOKEN, value);
+            return new BaseType(FieldType.INT16, value);
         }
         if (value instanceof Integer) {
-            return new BaseType(TypeID.INT32_STRING, TypeID.INT32_TOKEN, value);
+            return new BaseType(FieldType.INT32, value);
         }
         if (value instanceof Long) {
-            return new BaseType(TypeID.INT64_STRING, TypeID.INT64_TOKEN, value);
+            return new BaseType(FieldType.INT64, value);
         }
         if (value instanceof InetAddress || value instanceof IPAddress) {
-            return new BaseType(TypeID.IPADDR_STRING, TypeID.IPADDR_TOKEN, value);
+            return new BaseType(FieldType.IPADDR, value);
         }
         if (value instanceof BigInteger) {
-            return new BaseType(TypeID.UINT64_STRING, TypeID.UINT64_TOKEN, value);
+            return new BaseType(FieldType.UINT64, value);
         }
         else {
             log.warn("unaccounted for object class: " + value.getClass().getName());

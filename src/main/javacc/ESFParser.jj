@@ -24,6 +24,8 @@ package org.lwes.db;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.lwes.FieldType;
+
 public class ESFParser
 {
 
@@ -229,7 +231,7 @@ boolean required() :
 
 void attribute() :
 {
-  String aType;
+  FieldType aType;
   String anAttribute;
   int anArraySize = 0;
   boolean required = false;
@@ -239,24 +241,6 @@ void attribute() :
   (((required = required()) (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";"))
 |
   (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";")  ) {
-      if ( !( aType.equals("uint16")  ||
-              aType.equals("int16")   ||
-              aType.equals("uint32")  ||
-              aType.equals("int32")   ||
-              aType.equals("string")  ||
-              aType.equals("ip_addr") ||
-              aType.equals("int64")   ||
-              aType.equals("uint64")  ||
-              aType.equals("byte")    ||
-              aType.equals("double")  ||
-              aType.equals("float")   ||
-              aType.equals("boolean")
-            )
-         )
-       {
-         throw new ParseException("No such type '"+aType+"'");
-       }
-
       String evt = getCurrentEvent();
       if ( evt == null ) throw new ParseException("Bad Event");
 
@@ -267,7 +251,7 @@ void attribute() :
       }
 
       if (anArraySize > 0) {
-        aType = "[L"+aType;
+        aType = aType.getArrayType();
       }
 
       if ( !getEventTemplateDB().addEventAttribute(evt,
@@ -283,14 +267,14 @@ void attribute() :
    }
 }
 
-String type() :
+FieldType type() :
 {
   Token t;
 }
 {
   t=<ID>
   {
-    return t.image;
+    return FieldType.byName(t.image);
   }
 }
 

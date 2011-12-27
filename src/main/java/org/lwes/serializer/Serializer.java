@@ -13,6 +13,7 @@
 package org.lwes.serializer;
 
 import org.lwes.Event;
+import org.lwes.FieldType;
 import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 import org.lwes.util.NumberCodec;
@@ -170,6 +171,20 @@ public class Serializer {
         offset += numbytes;
         for (String s : value) {
             numbytes = serializeSTRING(s, bytes, offset, encoding);
+            offset += numbytes;
+        }
+        return (offset - offsetStart);
+    }
+
+    public static int serializeIPADDRArray(IPAddress[] value,
+                                           byte[] bytes,
+                                           int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+        numbytes = serializeUINT16(value.length, bytes, offset);
+        offset += numbytes;
+        for (IPAddress s : value) {
+            numbytes = serializeIPADDR(s, bytes, offset);
             offset += numbytes;
         }
         return (offset - offsetStart);
@@ -387,5 +402,62 @@ public class Serializer {
         bytes[offset + 2] = inetaddr[2];
         bytes[offset + 3] = inetaddr[3];
         return (4);
+    }
+
+    public static int serializeValue(FieldType type, Object data,
+            short encoding, byte[] bytes, final int offset) {
+        switch (type) {
+            case BYTE:
+                return Serializer.serializeBYTE((Byte) data, bytes, offset);
+            case BOOLEAN:
+                return Serializer.serializeBOOLEAN((Boolean) data, bytes, offset);
+            case UINT16:
+                return Serializer.serializeUINT16((Integer) data, bytes, offset);
+            case INT16:
+                return Serializer.serializeINT16((Short) data, bytes, offset);
+            case UINT32:
+                return Serializer.serializeUINT32((Long) data, bytes, offset);
+            case INT32:
+                return Serializer.serializeINT32((Integer) data, bytes, offset);
+            case UINT64:
+                return Serializer.serializeUINT64((BigInteger) data, bytes, offset);
+            case INT64:
+                return Serializer.serializeINT64((Long) data, bytes, offset);
+            case STRING:
+                return Serializer.serializeSTRING(((String) data), bytes, offset, encoding);
+            case DOUBLE:
+                return Serializer.serializeDOUBLE(((Double) data), bytes, offset);
+            case FLOAT:
+                return Serializer.serializeFLOAT(((Float) data), bytes, offset);
+            case IPADDR:
+                return Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
+            case STRING_ARRAY:
+                return Serializer.serializeStringArray
+                (((String[]) data), bytes, offset, encoding);
+            case INT16_ARRAY:
+                return Serializer.serializeInt16Array((short[]) data, bytes, offset);
+            case INT32_ARRAY:
+                return Serializer.serializeInt32Array((int[]) data, bytes, offset);
+            case INT64_ARRAY:
+                return Serializer.serializeInt64Array((long[]) data, bytes, offset);
+            case UINT16_ARRAY:
+                return Serializer.serializeUInt16Array((int[]) data, bytes, offset);
+            case UINT32_ARRAY:
+                return Serializer.serializeUInt32Array((long[]) data, bytes, offset);
+            case UINT64_ARRAY:
+                return Serializer.serializeUInt64Array((long[]) data, bytes, offset);
+            case BOOLEAN_ARRAY:
+                return Serializer.serializeBooleanArray((boolean[]) data, bytes, offset);
+            case BYTE_ARRAY:
+                return Serializer.serializeByteArray((byte[]) data, bytes, offset);
+            case DOUBLE_ARRAY:
+                return Serializer.serializeDoubleArray((double[]) data, bytes, offset);
+            case FLOAT_ARRAY:
+                return Serializer.serializeFloatArray((float[]) data, bytes, offset);
+            case IP_ADDR_ARRAY:
+                return Serializer.serializeIPADDRArray((IPAddress[]) data, bytes, offset);
+        } // switch(type)
+        
+        throw new IllegalArgumentException("Unknown BaseType token: " + type);
     }
 }

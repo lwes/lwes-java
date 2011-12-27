@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.lwes.Event;
 import org.lwes.util.EncodedString;
+import org.lwes.util.IPAddress;
 import org.lwes.util.NumberCodec;
 
 import java.net.Inet4Address;
@@ -262,6 +263,16 @@ public class Deserializer {
         String[] rtn = new String[length];
         for (int i = 0; i < length; i++) {
             rtn[i] = deserializeSTRING(state, bytes, encoding);
+        }
+        return rtn;
+    }
+
+    public static IPAddress[] deserializeIPADDRArray(DeserializerState state,
+                                                     byte[] bytes) {
+        int length = deserializeUINT16(state, bytes);
+        IPAddress[] rtn = new IPAddress[length];
+        for (int i = 0; i < length; i++) {
+            rtn[i] = new IPAddress(deserializeIPADDR(state, bytes));
         }
         return rtn;
     }

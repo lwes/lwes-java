@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.lwes.BaseType;
+import org.lwes.FieldType;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,20 +57,20 @@ public class EventTemplateDBTest {
 
         BaseType bt = template.getBaseTypeForObjectAttribute(TEST_EVENT, "field2", 100l);
         assertNotNull(bt);
-        assertEquals("Wrong BaseType returned", "int64", bt.getTypeName());
+        assertEquals("Wrong BaseType returned", FieldType.INT64, bt.getType());
 
         assertTrue("Wrong type for attribute field2",
                    template.checkTypeForAttribute(TEST_EVENT, "field2", bt));
 
         assertFalse("template allowed string for a numeric type",
-                    template.checkTypeForAttribute(TEST_EVENT, "field2", "wrong"));
+                    template.checkTypeForAttribute(TEST_EVENT, "field2", FieldType.STRING));
 
         Map<String, BaseType> bts = template.getBaseTypesForEvent(TEST_EVENT);
         assertNotNull(bts);
         assertEquals("Number of types in the map is wrong", 7, bts.size());
         BaseType field2BT = bts.get("field2");
         assertNotNull(field2BT);
-        assertEquals("int64", field2BT.getTypeName());
+        assertEquals(FieldType.INT64, field2BT.getType());
 
         Object obj = template.parseAttribute(TEST_EVENT, "field2", "100");
         assertNotNull(obj);

@@ -45,15 +45,9 @@ public class StringParserTest {
     }
 
     @Test
-    public void testFromStringBYTE() {
-        try {
-            // hmm this method just returns null....?
-            assertNull(StringParser.fromStringBYTE("1"));
-        }
-        catch (EventSystemException e) {
-            log.error(e.getMessage(), e);
-            fail(e.getMessage());
-        }
+    public void testFromStringBYTE() throws EventSystemException {
+        assertEquals((byte) -128, StringParser.fromStringBYTE("-128"));
+        assertEquals((byte) 127, StringParser.fromStringBYTE("127"));
     }
 
     @Test

@@ -624,7 +624,7 @@ public class Event {
         if (isValidating() && getEventTemplateDB() != null) {
             if (getEventTemplateDB().checkForAttribute(name, attribute)) {
                 if (!getEventTemplateDB().checkTypeForAttribute(name, attribute, anObject)) {
-                    throw new NoSuchAttributeTypeException("Wrong type '" + anObject.getTypeName() +
+                    throw new NoSuchAttributeTypeException("Wrong type '" + anObject.getType() +
                                                            "' for " + name + "." + attribute);
                 }
             }
@@ -652,84 +652,72 @@ public class Event {
     }
 
     public void setInt16Array(String attributeName, short[] value) throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.INT16_ARRAY_STRING,
-                                        TypeID.INT16_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.INT16_ARRAY, value));
     }
 
     public void setInt32Array(String attributeName, int[] value) throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.INT32_ARRAY_STRING,
-                                        TypeID.INT32_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.INT32_ARRAY, value));
     }
 
     public void setInt64Array(String attributeName, long[] value) throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.INT64_ARRAY_STRING,
-                                        TypeID.INT64_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.INT64_ARRAY, value));
     }
 
     public void setUInt16Array(String attributeName, int[] value) throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.UINT16_ARRAY_STRING,
-                                        TypeID.UINT16_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.UINT16_ARRAY, value));
     }
 
     public void setUInt32Array(String attributeName, long[] value) throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.UINT32_ARRAY_STRING,
-                                        TypeID.UINT32_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.UINT32_ARRAY, value));
     }
 
     public void setUInt64Array(String attributeName, long[] value) throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.UINT64_ARRAY_STRING,
-                                        TypeID.UINT64_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.UINT64_ARRAY, value));
     }
 
     public void setStringArray(String attributeName, String[] value)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.STRING_ARRAY_STRING,
-                                        TypeID.STRING_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.STRING_ARRAY, value));
+    }
+
+    public void setIPAddressArray(String attributeName, IPAddress[] value)
+            throws EventSystemException {
+        set(attributeName, new BaseType(FieldType.IP_ADDR_ARRAY, value));
     }
 
     public void setBooleanArray(String attributeName, boolean[] value)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.BOOLEAN_ARRAY_STRING,
-                                        TypeID.BOOLEAN_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.BOOLEAN_ARRAY, value));
     }
 
     public void setByteArray(String attributeName, byte[] value)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.BYTE_ARRAY_STRING,
-                                        TypeID.BYTE_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.BYTE_ARRAY, value));
     }
 
     public void setDoubleArray(String attributeName, double[] value)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.DOUBLE_ARRAY_STRING,
-                                        TypeID.DOUBLE_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.DOUBLE_ARRAY, value));
     }
 
     public void setFloatArray(String attributeName, float[] value)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.FLOAT_ARRAY_STRING,
-                                        TypeID.FLOAT_ARRAY_TOKEN,
-                                        value));
+        set(attributeName, new BaseType(FieldType.FLOAT_ARRAY, value));
     }
 
     public void setDouble(String attributeName, Double value) throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.DOUBLE_STRING, TypeID.DOUBLE_TOKEN, value));
+        set(attributeName, new BaseType(FieldType.DOUBLE, value));
     }
 
     public void setFloat(String attributeName, Float value) throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.FLOAT_STRING, TypeID.FLOAT_TOKEN, value));
+        set(attributeName, new BaseType(FieldType.FLOAT, value));
     }
 
+    public void setByte(String attributeName, Byte value)
+            throws EventSystemException {
+        set(attributeName, new BaseType(FieldType.BYTE, value));
+    }
+    
     /**
      * Sets the given attribute with a <tt>Boolean</tt> value given by <tt>aBool</tt>.
      *
@@ -740,7 +728,7 @@ public class Event {
      */
     public void setBoolean(String attributeName, Boolean aBool)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.BOOLEAN_STRING, TypeID.BOOLEAN_TOKEN, aBool));
+        set(attributeName, new BaseType(FieldType.BOOLEAN, aBool));
     }
 
     /**
@@ -755,7 +743,7 @@ public class Event {
      */
     public void setUInt16(String attributeName, Integer aNumber)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.UINT16_STRING, TypeID.UINT16_TOKEN, aNumber));
+        set(attributeName, new BaseType(FieldType.UINT16, aNumber));
     }
 
     /**
@@ -768,7 +756,7 @@ public class Event {
      */
     public void setInt16(String attributeName, Short aNumber)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.INT16_STRING, TypeID.INT16_TOKEN, aNumber));
+        set(attributeName, new BaseType(FieldType.INT16, aNumber));
     }
 
     /**
@@ -783,7 +771,7 @@ public class Event {
      */
     public void setUInt32(String attributeName, Long aNumber)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.UINT32_STRING, TypeID.UINT32_TOKEN, aNumber));
+        set(attributeName, new BaseType(FieldType.UINT32, aNumber));
     }
 
     /**
@@ -796,7 +784,7 @@ public class Event {
      */
     public void setInt32(String attributeName, Integer aNumber)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.INT32_STRING, TypeID.INT32_TOKEN, aNumber));
+        set(attributeName, new BaseType(FieldType.INT32, aNumber));
     }
 
     /**
@@ -810,7 +798,7 @@ public class Event {
     public void setUInt64(String attributeName, Long aNumber)
         throws EventSystemException {
         set(attributeName,
-            new BaseType(TypeID.UINT64_STRING, TypeID.UINT64_TOKEN, BigInteger.valueOf(aNumber)));
+            new BaseType(FieldType.UINT64, BigInteger.valueOf(aNumber)));
     }
 
     /**
@@ -825,7 +813,7 @@ public class Event {
      */
     public void setUInt64(String attributeName, BigInteger aNumber)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.UINT64_STRING, TypeID.UINT64_TOKEN, aNumber));
+        set(attributeName, new BaseType(FieldType.UINT64, aNumber));
     }
 
     /**
@@ -838,7 +826,7 @@ public class Event {
      */
     public void setInt64(String attributeName, Long aNumber)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.INT64_STRING, TypeID.INT64_TOKEN, aNumber));
+        set(attributeName, new BaseType(FieldType.INT64, aNumber));
     }
 
     /**
@@ -851,7 +839,7 @@ public class Event {
      */
     public void setString(String attributeName, String aString)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.STRING_STRING, TypeID.STRING_TOKEN, aString));
+        set(attributeName, new BaseType(FieldType.STRING, aString));
     }
 
     /**
@@ -893,7 +881,7 @@ public class Event {
      */
     public void setIPAddress(String attributeName, IPAddress address)
         throws EventSystemException {
-        set(attributeName, new BaseType(TypeID.IPADDR_STRING, TypeID.IPADDR_TOKEN, address));
+        set(attributeName, new BaseType(FieldType.IPADDR, address));
     }
 
     /**
@@ -926,13 +914,13 @@ public class Event {
         BaseType encodingBase = attributes.get(ENCODING);
         if (encodingBase != null) {
             Object encodingObj = encodingBase.getTypeObject();
-            byte encodingType = encodingBase.getTypeToken();
+            FieldType encodingType = encodingBase.getType();
             if (encodingObj != null) {
-                if (encodingType == TypeID.INT16_TOKEN) {
+                if (encodingType == FieldType.INT16) {
                     encoding = (Short) encodingObj;
                     log.trace("Character encoding: " + encoding);
                     offset += Serializer.serializeATTRIBUTEWORD(ENCODING, bytes, offset);
-                    offset += Serializer.serializeBYTE(encodingType, bytes, offset);
+                    offset += Serializer.serializeBYTE(encodingType.token, bytes, offset);
                     offset += Serializer.serializeUINT16(encoding, bytes, offset);
                 }
             }
@@ -950,7 +938,7 @@ public class Event {
 
             BaseType value = attributes.get(key);
             Object data = value.getTypeObject();
-            byte typeToken = value.getTypeToken();
+            FieldType type = value.getType();
 
             /* don't try to serialize nulls */
             if (data == null) {
@@ -959,80 +947,8 @@ public class Event {
             }
 
             offset += Serializer.serializeATTRIBUTEWORD(key, bytes, offset);
-            offset += Serializer.serializeBYTE(typeToken, bytes, offset);
-
-            switch (typeToken) {
-                case TypeID.BOOLEAN_TOKEN:
-                    offset += Serializer.serializeBOOLEAN((Boolean) data, bytes, offset);
-                    break;
-                case TypeID.UINT16_TOKEN:
-                    offset += Serializer.serializeUINT16((Integer) data, bytes, offset);
-                    break;
-                case TypeID.INT16_TOKEN:
-                    offset += Serializer.serializeINT16((Short) data, bytes, offset);
-                    break;
-                case TypeID.UINT32_TOKEN:
-                    offset += Serializer.serializeUINT32((Long) data, bytes, offset);
-                    break;
-                case TypeID.INT32_TOKEN:
-                    offset += Serializer.serializeINT32((Integer) data, bytes, offset);
-                    break;
-                case TypeID.UINT64_TOKEN:
-                    offset += Serializer.serializeUINT64((BigInteger) data, bytes, offset);
-                    break;
-                case TypeID.INT64_TOKEN:
-                    offset += Serializer.serializeINT64((Long) data, bytes, offset);
-                    break;
-                case TypeID.STRING_TOKEN:
-                    offset += Serializer.serializeSTRING(((String) data), bytes, offset, encoding);
-                    break;
-                case TypeID.DOUBLE_TOKEN:
-                    offset += Serializer.serializeDOUBLE(((Double) data), bytes, offset);
-                    break;
-                case TypeID.FLOAT_TOKEN:
-                    offset += Serializer.serializeFLOAT(((Float) data), bytes, offset);
-                    break;
-                case TypeID.IPADDR_TOKEN:
-                    offset += Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
-                    break;
-                case TypeID.STRING_ARRAY_TOKEN:
-                    offset += Serializer.serializeStringArray
-                    (((String[]) data), bytes, offset, encoding);
-                    break;
-                case TypeID.INT16_ARRAY_TOKEN:
-                    offset += Serializer.serializeInt16Array((short[]) data, bytes, offset);
-                    break;
-                case TypeID.INT32_ARRAY_TOKEN:
-                    offset += Serializer.serializeInt32Array((int[]) data, bytes, offset);
-                    break;
-                case TypeID.INT64_ARRAY_TOKEN:
-                    offset += Serializer.serializeInt64Array((long[]) data, bytes, offset);
-                    break;
-                case TypeID.UINT16_ARRAY_TOKEN:
-                    offset += Serializer.serializeUInt16Array((int[]) data, bytes, offset);
-                    break;
-                case TypeID.UINT32_ARRAY_TOKEN:
-                    offset += Serializer.serializeUInt32Array((long[]) data, bytes, offset);
-                    break;
-                case TypeID.UINT64_ARRAY_TOKEN:
-                    offset += Serializer.serializeUInt64Array((long[]) data, bytes, offset);
-                    break;
-                case TypeID.BOOLEAN_ARRAY_TOKEN:
-                    offset += Serializer.serializeBooleanArray((boolean[]) data, bytes, offset);
-                    break;
-                case TypeID.BYTE_ARRAY_TOKEN:
-                    offset += Serializer.serializeByteArray((byte[]) data, bytes, offset);
-                    break;
-                case TypeID.DOUBLE_ARRAY_TOKEN:
-                    offset += Serializer.serializeDoubleArray((double[]) data, bytes, offset);
-                    break;
-                case TypeID.FLOAT_ARRAY_TOKEN:
-                    offset += Serializer.serializeFloatArray((float[]) data, bytes, offset);
-                    break;
-                default:
-                    log.warn("Unknown BaseType token: " + typeToken);
-                    break;
-            } // switch(typeToken)
+            offset += Serializer.serializeBYTE(type.token, bytes, offset);
+            offset += Serializer.serializeValue(type, data, encoding, bytes, offset);
 
             log.trace("Serialized attribute " + key);
         } // while(e.hasMoreElements())
@@ -1069,15 +985,15 @@ public class Event {
         for (int i = 0; i < num; ++i) {
             String attribute = Deserializer.deserializeATTRIBUTEWORD(state, bytes);
 
-            byte type = Deserializer.deserializeBYTE(state, bytes);
+            final FieldType type = FieldType.byToken(Deserializer.deserializeBYTE(state, bytes));
             if (log.isTraceEnabled()) {
                 log.trace("Attribute: " + attribute);
-                log.trace("Type: " + TypeID.byteIDToString(type));
+                log.trace("Type: " + type);
                 log.trace("State: " + state);
             }
             if (attribute != null) {
                 if (i == 0 && attribute.equals(ENCODING)) {
-                    if (type == TypeID.INT16_TOKEN) {
+                    if (type == FieldType.INT16) {
                         setEncoding(Deserializer.deserializeINT16(state, bytes));
                         continue;
                     }
@@ -1087,85 +1003,77 @@ public class Event {
                 }
 
                 switch (type) {
-                    case TypeID.BOOLEAN_TOKEN:
-                        boolean aBool = Deserializer.deserializeBOOLEAN(state, bytes);
-                        setBoolean(attribute, aBool);
+                    case BOOLEAN:
+                        setBoolean(attribute, Deserializer.deserializeBOOLEAN(state, bytes));
                         break;
-                    case TypeID.UINT16_TOKEN:
-                        int uShort = Deserializer.deserializeUINT16(state, bytes);
-                        setUInt16(attribute, uShort);
+                    case BYTE:
+                        setByte(attribute, Deserializer.deserializeBYTE(state, bytes));
                         break;
-                    case TypeID.INT16_TOKEN:
-                        short aShort = Deserializer.deserializeINT16(state, bytes);
-                        setInt16(attribute, aShort);
+                    case UINT16:
+                        setUInt16(attribute, Deserializer.deserializeUINT16(state, bytes));
                         break;
-                    case TypeID.UINT32_TOKEN:
-                        long uInt = Deserializer.deserializeUINT32(state, bytes);
-                        setUInt32(attribute, uInt);
+                    case INT16:
+                        setInt16(attribute, Deserializer.deserializeINT16(state, bytes));
                         break;
-                    case TypeID.INT32_TOKEN:
-                        int aInt = Deserializer.deserializeINT32(state, bytes);
-                        setInt32(attribute, aInt);
+                    case UINT32:
+                        setUInt32(attribute, Deserializer.deserializeUINT32(state, bytes));
                         break;
-                    case TypeID.UINT64_TOKEN:
-                        long uLong = Deserializer.deserializeUINT64(state, bytes);
-                        setUInt64(attribute, BigInteger.valueOf(uLong));
+                    case INT32:
+                        setInt32(attribute, Deserializer.deserializeINT32(state, bytes));
                         break;
-                    case TypeID.INT64_TOKEN:
-                        long aLong = Deserializer.deserializeINT64(state, bytes);
-                        setInt64(attribute, aLong);
+                    case FLOAT:
+                        setFloat(attribute, Deserializer.deserializeFLOAT(state, bytes));
                         break;
-                    case TypeID.STRING_TOKEN:
-                        String s = Deserializer.deserializeSTRING(state, bytes, encoding);
-                        setString(attribute, s);
+                    case UINT64:
+                        setUInt64(attribute, BigInteger.valueOf(Deserializer.deserializeUINT64(state, bytes)));
                         break;
-                    case TypeID.IPADDR_TOKEN:
-                        byte[] inetAddress = Deserializer.deserializeIPADDR(state, bytes);
-                        setIPAddress(attribute, inetAddress);
+                    case INT64:
+                        setInt64(attribute, Deserializer.deserializeINT64(state, bytes));
                         break;
-                    case TypeID.STRING_ARRAY_TOKEN:
-                        String[] sArray = Deserializer.deserializeStringArray(state, bytes, encoding);
-                        setStringArray(attribute, sArray);
+                    case DOUBLE:
+                        setDouble(attribute, Deserializer.deserializeDOUBLE(state, bytes));
                         break;
-                    case TypeID.INT16_ARRAY_TOKEN:
-                        short[] as = Deserializer.deserializeInt16Array(state, bytes);
-                        setInt16Array(attribute, as);
+                    case STRING:
+                        setString(attribute, Deserializer.deserializeSTRING(state, bytes, encoding));
                         break;
-                    case TypeID.INT32_ARRAY_TOKEN:
-                        int[] ai = Deserializer.deserializeInt32Array(state, bytes);
-                        setInt32Array(attribute, ai);
+                    case IPADDR:
+                        setIPAddress(attribute, Deserializer.deserializeIPADDR(state, bytes));
                         break;
-                    case TypeID.INT64_ARRAY_TOKEN:
-                        long[] al = Deserializer.deserializeInt64Array(state, bytes);
-                        setInt64Array(attribute, al);
+                    case STRING_ARRAY:
+                        setStringArray(attribute, Deserializer.deserializeStringArray(state, bytes, encoding));
                         break;
-                    case TypeID.UINT16_ARRAY_TOKEN:
-                        int[] uas = Deserializer.deserializeUInt16Array(state, bytes);
-                        setUInt16Array(attribute, uas);
+                    case INT16_ARRAY:
+                        setInt16Array(attribute, Deserializer.deserializeInt16Array(state, bytes));
                         break;
-                    case TypeID.UINT32_ARRAY_TOKEN:
-                        long[] uai = Deserializer.deserializeUInt32Array(state, bytes);
-                        setUInt32Array(attribute, uai);
+                    case INT32_ARRAY:
+                        setInt32Array(attribute, Deserializer.deserializeInt32Array(state, bytes));
                         break;
-                    case TypeID.UINT64_ARRAY_TOKEN:
-                        long[] ual = Deserializer.deserializeUInt64Array(state, bytes);
-                        setUInt64Array(attribute, ual);
+                    case INT64_ARRAY:
+                        setInt64Array(attribute, Deserializer.deserializeInt64Array(state, bytes));
                         break;
-                    case TypeID.BOOLEAN_ARRAY_TOKEN:
-                        boolean[] ba = Deserializer.deserializeBooleanArray(state, bytes);
-                        setBooleanArray(attribute, ba);
+                    case UINT16_ARRAY:
+                        setUInt16Array(attribute, Deserializer.deserializeUInt16Array(state, bytes));
                         break;
-                    case TypeID.BYTE_ARRAY_TOKEN:
-                        byte[] bar = Deserializer.deserializeByteArray(state, bytes);
-                        setByteArray(attribute, bar);
+                    case UINT32_ARRAY:
+                        setUInt32Array(attribute, Deserializer.deserializeUInt32Array(state, bytes));
                         break;
-                    case TypeID.DOUBLE_ARRAY_TOKEN:
-                        double[] da = Deserializer.deserializeDoubleArray(state, bytes);
-                        setDoubleArray(attribute, da);
+                    case UINT64_ARRAY:
+                        setUInt64Array(attribute, Deserializer.deserializeUInt64Array(state, bytes));
                         break;
-                    case TypeID.FLOAT_ARRAY_TOKEN:
-                        float[] fa = Deserializer.deserializeFloatArray(state, bytes);
-                        setFloatArray(attribute, fa);
+                    case BOOLEAN_ARRAY:
+                        setBooleanArray(attribute, Deserializer.deserializeBooleanArray(state, bytes));
+                        break;
+                    case BYTE_ARRAY:
+                        setByteArray(attribute, Deserializer.deserializeByteArray(state, bytes));
+                        break;
+                    case DOUBLE_ARRAY:
+                        setDoubleArray(attribute, Deserializer.deserializeDoubleArray(state, bytes));
+                        break;
+                    case FLOAT_ARRAY:
+                        setFloatArray(attribute, Deserializer.deserializeFloatArray(state, bytes));
+                        break;
+                    case IP_ADDR_ARRAY:
+                        setIPAddressArray(attribute, Deserializer.deserializeIPADDRArray(state, bytes));
                         break;
                     default:
                         log.warn("Unknown type " + type + " in deserialization");
@@ -1220,7 +1128,7 @@ public class Event {
         for (i = 0; i < attributes.size(); ++i) {
             BaseType value = attributes.get(keys[i]);
             if (isValidating() && getEventTemplateDB() != null) {
-                if (getEventTemplateDB().checkTypeForAttribute(name, keys[i], TypeID.UINT64_STRING)) {
+                if (getEventTemplateDB().checkTypeForAttribute(name, keys[i], FieldType.UINT64)) {
                     try {
                         sb.append("\t")
                         .append(keys[i])
@@ -1305,16 +1213,13 @@ public class Event {
              * in that i can't guess which one the person meant. This small hack treats
              * similar types the same way.
              */
-            if ((expected.getTypeToken() == TypeID.UINT16_TOKEN &&
-                 bt.getTypeToken() == TypeID.INT32_TOKEN) ||
-                (expected.getTypeToken() == TypeID.UINT32_TOKEN &&
-                 bt.getTypeToken() == TypeID.INT64_TOKEN) ||
-                (expected.getTypeToken() == TypeID.UINT64_TOKEN &&
-                 bt.getTypeToken() == TypeID.INT64_TOKEN)) {
+            if ((expected.getType() == FieldType.UINT16 && bt.getType() == FieldType.INT32) ||
+                (expected.getType() == FieldType.UINT32 && bt.getType() == FieldType.INT64) ||
+                (expected.getType() == FieldType.UINT64 && bt.getType() == FieldType.INT64)) {
                 bt = expected;
             }
             if (!templ.checkTypeForAttribute(name, key, bt)) {
-                ve.addException(new NoSuchAttributeTypeException("Wrong type '" + bt.getTypeName() +
+                ve.addException(new NoSuchAttributeTypeException("Wrong type '" + bt.getType() +
                                                                  "' for " + name + "." + key));
             }
         }
