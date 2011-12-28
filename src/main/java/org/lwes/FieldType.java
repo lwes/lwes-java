@@ -1,7 +1,6 @@
 package org.lwes;
 
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 

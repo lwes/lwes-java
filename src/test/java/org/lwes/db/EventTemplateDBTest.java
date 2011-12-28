@@ -20,6 +20,7 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.lwes.BaseType;
 import org.lwes.FieldType;
+import org.lwes.NoSuchAttributeTypeException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +38,7 @@ public class EventTemplateDBTest {
     private static final String TEST_EVENT = "TestEvent";
 
     @Test
-    public void testTemplateFromFile() {
+    public void testTemplateFromFile() throws NoSuchAttributeTypeException {
         EventTemplateDB template = new EventTemplateDB();
         template.setESFFile(new File(ESF));
         assertTrue("Template did not initialize", template.initialize());

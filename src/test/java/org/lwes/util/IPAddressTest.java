@@ -18,6 +18,7 @@ package org.lwes.util;
 import org.junit.Test;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
+import org.lwes.MapEvent;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -75,7 +76,7 @@ public class IPAddressTest {
 
     @Test
     public void testGetSet() throws EventSystemException, UnknownHostException {
-        Event e = new Event("TestEvent", null);
+        Event e = new MapEvent("TestEvent", null);
         IPAddress ip = new IPAddress("127.0.0.1");
         e.setIPAddress("ipaddr", ip);
         assertEquals("Type fail",

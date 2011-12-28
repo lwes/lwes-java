@@ -35,18 +35,15 @@ public class StringParser {
             "\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b";
     private static transient Log log = LogFactory.getLog(StringParser.class);
 
-    public static byte fromStringBYTE(String string)
-            throws EventSystemException {
+    public static byte fromStringBYTE(String string) {
         return Byte.parseByte(string);
     }
 
-    public static float fromStringFLOAT(String string)
-            throws EventSystemException {
+    public static float fromStringFLOAT(String string) {
         return Float.parseFloat(string);
     }
 
-    public static double fromStringDOUBLE(String string)
-            throws EventSystemException {
+    public static double fromStringDOUBLE(String string) {
         return Double.parseDouble(string);
     }
 

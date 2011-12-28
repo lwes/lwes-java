@@ -29,6 +29,7 @@ import org.lwes.BaseType;
 import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 import org.lwes.FieldType;
+import org.lwes.NoSuchAttributeTypeException;
 import org.lwes.util.IPAddress;
 
 /**
@@ -313,6 +314,7 @@ public class EventTemplateDB {
      * @return a value suitable for storing in a BaseType of this 'type'
      * @throws EventSystemException if the value is not acceptable for the type.
      */
+    @SuppressWarnings("cast")
     private Object canonicalizeDefaultValue(String eventName, String attributeName, FieldType type, Object esfValue) throws EventSystemException {
         try {
             switch(type) {
@@ -567,10 +569,11 @@ public class EventTemplateDB {
      * @param attributeName  the name of an attribute of <tt>eventName</tt>
      * @param attributeValue the value of the attribute
      * @return the <tt>BaseType</tt> representation of <tt>attributeValue</tt>
+     * @throws NoSuchAttributeTypeException if the type and value are not compatible
      */
     public BaseType getBaseTypeForObjectAttribute(String eventName,
                                                   String attributeName,
-                                                  Object attributeValue) {
+                                                  Object attributeValue) throws NoSuchAttributeTypeException {
         if (eventName == null || attributeName == null || attributeValue == null) {
             return null;
         }

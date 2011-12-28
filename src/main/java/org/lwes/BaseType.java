@@ -13,14 +13,9 @@
 package org.lwes;
 
 import java.lang.reflect.Array;
-import java.math.BigInteger;
-import java.net.InetAddress;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.lwes.serializer.StringParser;
 import org.lwes.util.EncodedString;
-import org.lwes.util.IPAddress;
 
 /**
  * This class provides a base type for the base types in the event system. acts
@@ -166,7 +161,10 @@ public class BaseType {
         return type.token;
     }
 
-    public void setTypeObject(Object typeObject) {
+    public void setTypeObject(Object typeObject) throws NoSuchAttributeTypeException {
+        if (! type.isCompatibleWith(typeObject)) {
+            throw new NoSuchAttributeTypeException("Wrong type '" + typeObject.getClass().getName());
+        }
         this.typeObject = typeObject;
     }
 

@@ -18,6 +18,7 @@ package org.lwes.db;
 import org.junit.Test;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
+import org.lwes.MapEvent;
 import org.lwes.util.IPAddress;
 
 import java.io.File;
@@ -40,7 +41,7 @@ public class DefaultValueTest {
 
         assertTrue(template.checkForEvent("DefaultValueEvent"));
 
-        Event evt = new Event("DefaultValueEvent", true, template);
+        Event evt = new MapEvent("DefaultValueEvent", true, template);
 
         assertEquals("aBool value wrong", true, evt.get("aBool"));
         assertEquals("aBoolOpt value wrong", false, evt.get("aBoolOpt"));
