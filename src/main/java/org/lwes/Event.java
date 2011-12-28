@@ -42,6 +42,8 @@ public interface Event {
     
     // SETTERS
     
+    void clear(String key) throws EventSystemException;
+    
     void set(String key, FieldType type, Object value) throws EventSystemException;
 
     void setInt16Array(String attributeName, short[] value) throws EventSystemException;
@@ -71,26 +73,35 @@ public interface Event {
     void setFloatArray(String attributeName, float[] value) throws EventSystemException;
 
     void setDouble(String attributeName, Double value) throws EventSystemException;
+    void setDouble(String attributeName, double value) throws EventSystemException;
 
     void setFloat(String attributeName, Float value) throws EventSystemException;
+    void setFloat(String attributeName, float value) throws EventSystemException;
 
     void setByte(String attributeName, Byte value) throws EventSystemException;
+    void setByte(String attributeName, byte value) throws EventSystemException;
 
     void setBoolean(String attributeName, Boolean aBool) throws EventSystemException;
+    void setBoolean(String attributeName, boolean aBool) throws EventSystemException;
 
     void setUInt16(String attributeName, Integer aNumber) throws EventSystemException;
+    void setUInt16(String attributeName, int aNumber) throws EventSystemException;
 
     void setInt16(String attributeName, Short aNumber) throws EventSystemException;
+    void setInt16(String attributeName, short aNumber) throws EventSystemException;
 
     void setUInt32(String attributeName, Long aNumber) throws EventSystemException;
+    void setUInt32(String attributeName, long aNumber) throws EventSystemException;
 
     void setInt32(String attributeName, Integer aNumber) throws EventSystemException;
-
-    void setUInt64(String attributeName, Long aNumber) throws EventSystemException;
+    void setInt32(String attributeName, int aNumber) throws EventSystemException;
 
     void setUInt64(String attributeName, BigInteger aNumber) throws EventSystemException;
+    void setUInt64(String attributeName, Long aNumber) throws EventSystemException;
+    void setUInt64(String attributeName, long aNumber) throws EventSystemException;
 
     void setInt64(String attributeName, Long aNumber) throws EventSystemException;
+    void setInt64(String attributeName, long aNumber) throws EventSystemException;
 
     void setString(String attributeName, String aString) throws EventSystemException;
 
@@ -99,6 +110,8 @@ public interface Event {
     void setIPAddress(String attributeName, InetAddress address) throws EventSystemException;
 
     void setIPAddress(String attributeName, IPAddress address) throws EventSystemException;
+    
+    void setEncoding(short encoding) throws EventSystemException;
 
     // GETTERS
 
@@ -110,6 +123,8 @@ public interface Event {
     
     boolean isSet(String attributeName);
     
+    FieldType getType(String attributeName);
+
     Object get(String attributeName) throws NoSuchAttributeException;
 
     short[] getInt16Array(String attributeName) throws NoSuchAttributeException;
@@ -162,13 +177,13 @@ public interface Event {
 
     IPAddress getIPAddressObj(String attributeName) throws NoSuchAttributeException;
     
-    String toOneLineString();
+    short getEncoding() throws EventSystemException;
     
     // SERIALIZATION
     
-    byte[] serialize() throws EventSystemException;
+    byte[] serialize();
 
-    int serialize(byte[] bytes, int offset) throws EventSystemException;
+    int serialize(byte[] bytes, int offset);
     
     void deserialize(byte[] bytes) throws EventSystemException;
     
@@ -179,4 +194,6 @@ public interface Event {
     // MISCELLANEOUS
     
     Event copy() throws EventSystemException;
+    
+    String toOneLineString();
 }

@@ -21,15 +21,21 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.lwes.AttributeRequiredException;
 import org.lwes.BaseType;
+import org.lwes.Event;
 import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 import org.lwes.FieldType;
+import org.lwes.NoSuchAttributeException;
 import org.lwes.NoSuchAttributeTypeException;
+import org.lwes.NoSuchEventException;
+import org.lwes.ValidationExceptions;
 import org.lwes.util.IPAddress;
 
 /**
@@ -761,5 +767,54 @@ public class EventTemplateDB {
         Map<String, Map<String, BaseType>> cp = new TreeMap<String, Map<String, BaseType>>();
         cp.putAll(events);
         return cp;
+    }
+
+    /**
+     * This method can be used to validate an event after it has been created.
+     *
+     * @throws ValidationExceptions A list of validation errors
+     */
+    public void validate(Event event) throws ValidationExceptions {
+        final String name = event.getEventName();
+        ValidationExceptions ve = new ValidationExceptions(name);
+
+        if (!checkForEvent(name)) {
+            ve.addException(new NoSuchEventException("Event " + name + " does not exist in event definition"));
+            throw ve;
+        }
+        for (String key : event.getEventAttributes()) {
+            if (!checkForAttribute(name, key)) {
+                ve.addException(new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name));
+                continue;
+            }
+            Object value;
+            try {
+                value = event.get(key);
+            }
+            catch (NoSuchAttributeException e) {
+                ve.addException(e);
+                continue;
+            }
+
+            try {
+                getBaseTypeForObjectAttribute(name, key, value);
+            } catch(NoSuchAttributeTypeException e) {
+                ve.addException(e);
+                continue;
+            }
+        }
+        
+        for (Entry<String,BaseType> entry : getEvents().get(name).entrySet()) {
+            final String   key = entry.getKey();
+            if (entry.getValue().isRequired()) {
+                if (!event.isSet(key)) {
+                    ve.addException(new AttributeRequiredException(key));
+                }
+            }
+        }
+
+        if (ve.hasExceptions()) {
+            throw ve;
+        }
     }
 }

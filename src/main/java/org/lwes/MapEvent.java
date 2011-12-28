@@ -282,6 +282,13 @@ public class MapEvent extends DefaultEvent {
 
         return null;
     }
+    
+    public void clear(String attributeName) throws NoSuchAttributeTypeException {
+        final BaseType bt = attributes.remove(attributeName);
+        if (bt!=null) {
+            bytesStoreSize -= bt.bytesStoreSize(encoding);
+        }
+    }
 
     /**
      * Set the object's attribute <tt>attributeName</tt> with the Object given
@@ -354,7 +361,7 @@ public class MapEvent extends DefaultEvent {
      * @return the serialized byte array
      * @throws EventSystemException if there is a bug in predicting the serialized size
      */
-    public int serialize(byte[] bytes, int offset) throws EventSystemException {
+    public int serialize(byte[] bytes, int offset) {
         /*
            * Serialization uses the following protocol
            * EVENTWORD,<number of elements>,ATTRIBUTEWORD,TYPETOKEN,
@@ -418,7 +425,7 @@ public class MapEvent extends DefaultEvent {
         
         final int bytesWritten = pos - offset;
         if (bytesStoreSize != bytesWritten) {
-            throw new EventSystemException("Expected to write "+bytesStoreSize+" bytes, but actually wrote "+bytesWritten);
+            throw new IllegalStateException("Expected to write "+bytesStoreSize+" bytes, but actually wrote "+bytesWritten);
         }
 
         return bytesWritten;
@@ -642,53 +649,18 @@ public class MapEvent extends DefaultEvent {
      * This method can be used to validate an event after it has been created.
      *
      * @throws ValidationExceptions A list of validation errors
+     * @use {@link EventTemplateDB#validate(Event)}
      */
+    @Deprecated
     public void validate() throws ValidationExceptions {
-        ValidationExceptions ve = new ValidationExceptions(name);
-
         EventTemplateDB templ = getEventTemplateDB();
         if (templ == null) {
+            ValidationExceptions ve = new ValidationExceptions(name);
             ve.addException(new EventSystemException("No template defined."));
             throw ve;
         }
-        if (!templ.checkForEvent(name)) {
-            ve.addException(new NoSuchEventException("Event " + name + " does not exist in event definition"));
-            throw ve;
-        }
-        for (String key : attributes.keySet()) {
-            if (!templ.checkForAttribute(name, key)) {
-                ve.addException(new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name));
-                continue;
-            }
-            Object value;
-            try {
-                value = get(key);
-            }
-            catch (NoSuchAttributeException e) {
-                ve.addException(e);
-                continue;
-            }
-
-            try {
-                templ.getBaseTypeForObjectAttribute(name, key, value);
-            } catch(NoSuchAttributeTypeException e) {
-                ve.addException(e);
-                continue;
-            }
-        }
         
-        for (Entry<String,BaseType> entry : templ.getEvents().get(name).entrySet()) {
-            final String   key = entry.getKey();
-            if (entry.getValue().isRequired()) {
-                if (!attributes.containsKey(key)) {
-                    ve.addException(new AttributeRequiredException(key));
-                }
-            }
-        }
-
-        if (ve.hasExceptions()) {
-            throw ve;
-        }
+        templ.validate(this);
     }
 
     public FieldType getType(String field) {
