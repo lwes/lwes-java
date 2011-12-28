@@ -175,4 +175,8 @@ public interface Event {
     void deserialize(byte[] bytes, int offset) throws EventSystemException;
 
     int getBytesSize();
+    
+    // MISCELLANEOUS
+    
+    Event copy() throws EventSystemException;
 }
