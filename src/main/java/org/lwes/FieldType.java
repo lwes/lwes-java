@@ -116,6 +116,25 @@ public enum FieldType {
         }
         throw new IllegalStateException("Unsupported type: "+this);
     }
+    
+    public boolean isConstantSize() {
+        switch (this) {
+            case BOOLEAN:
+            case BYTE:
+            case DOUBLE:
+            case FLOAT:
+            case INT16:
+            case INT32:
+            case INT64:
+            case IPADDR:
+            case UINT16:
+            case UINT32:
+            case UINT64:
+                return true;
+            default:
+                return false;
+      }
+    }
 
     public boolean isCompatibleWith(Object value) {
         if (value == null) return true;

@@ -117,6 +117,8 @@ public interface Event {
 
     String getEventName();
     
+    int getNumEventAttributes();
+    
     Enumeration<String> getEventAttributeNames();
     
     Iterable<String> getEventAttributes();
@@ -187,7 +189,7 @@ public interface Event {
     
     void deserialize(byte[] bytes) throws EventSystemException;
     
-    void deserialize(byte[] bytes, int offset) throws EventSystemException;
+    void deserialize(byte[] bytes, int offset, int length) throws EventSystemException;
 
     int getBytesSize();
     

@@ -42,6 +42,13 @@ public class MapEvent extends DefaultEvent {
     private int bytesStoreSize = 0;
 
     /**
+     * Create an event called <tt>eventName</tt> with no validation
+     */
+    public MapEvent(String eventName) throws EventSystemException {
+        this(eventName, false, null);
+    }
+
+    /**
      * Create an event called <tt>eventName</tt>
      *
      * @param eventName       the name of the event
@@ -145,6 +152,10 @@ public class MapEvent extends DefaultEvent {
                 set(key, bt.getDefaultValue());
             }
         }
+    }
+
+    public int getNumEventAttributes() {
+      return attributes.size();
     }
 
     /**
@@ -437,7 +448,7 @@ public class MapEvent extends DefaultEvent {
      * @param bytes the byte array containing a serialized Event
      * @throws EventSystemException
      */
-    public void deserialize(byte[] bytes, int offset)
+    public void deserialize(byte[] bytes, int offset, int length)
         throws EventSystemException {
         if (bytes == null) {
             return;
@@ -454,6 +465,8 @@ public class MapEvent extends DefaultEvent {
             log.trace("Event name = " + getEventName());
             log.trace("Number of attribute: " + num);
         }
+        attributes.clear();
+        bytesStoreSize = state.currentIndex() - offset;
         for (int i = 0; i < num; ++i) {
             String attribute = Deserializer.deserializeATTRIBUTEWORD(state, bytes);
 
@@ -551,8 +564,14 @@ public class MapEvent extends DefaultEvent {
                         log.warn("Unknown type " + type + " in deserialization");
                 }
             }
+            if (bytesStoreSize != state.currentIndex()-offset) {
+              throw new EventSystemException("Deserializing "+type+" field "+attribute+" resulted in incorrect cache of serialized size");
+            }
         } // for (int i =0 ...
 
+        if (bytesStoreSize != length) {
+            throw new EventSystemException("Expected to deserialize " + length + " bytes, but actually read " + bytesStoreSize);
+        }
     }
 
     /**
@@ -622,10 +641,6 @@ public class MapEvent extends DefaultEvent {
 
         sb.append("}");
         return sb.toString();
-    }
-
-    public String toOneLineString() {
-        return toString().replaceAll("\n", " ");
     }
 
     @Override

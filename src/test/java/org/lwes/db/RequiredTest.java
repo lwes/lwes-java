@@ -58,7 +58,7 @@ public class RequiredTest {
         // Verify that an exception is thrown when a required field is not present.
         MapEvent evt = new MapEvent("TestEvent", true, template);
         try {
-            evt.validate();
+            template.validate(evt);
         }
         catch (ValidationExceptions e) {
             if (log.isDebugEnabled()) {
@@ -80,7 +80,7 @@ public class RequiredTest {
             log.debug(evt.toString());
         }
         try {
-            evt.validate();
+            template.validate(evt);
         }
         catch (EventSystemException e) {
             if (log.isDebugEnabled()) {

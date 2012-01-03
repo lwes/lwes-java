@@ -126,10 +126,10 @@ public class EventTest {
 
     @Test
     public void testUnsignedTypesValidate() throws EventSystemException {
-        MapEvent evt = new MapEvent("Test", false, eventTemplate);
+        MapEvent evt = new MapEvent("Test");
         try {
             evt.setUInt16("SiteID", 0);
-            evt.validate();
+            eventTemplate.validate(evt);
         }
         catch (EventSystemException e) {
             fail(e.getMessage());
@@ -139,9 +139,9 @@ public class EventTest {
     @Test
     public void testValidateEventName() throws EventSystemException {
         boolean exceptionThrown = false;
-        MapEvent evt = new MapEvent("Test2", false, eventTemplate);
+        MapEvent evt = new MapEvent("Test2");
         try {
-            evt.validate();
+            eventTemplate.validate(evt);
         }
         catch (ValidationExceptions e) {
             exceptionThrown = true;
@@ -151,10 +151,10 @@ public class EventTest {
 
     @Test
     public void testValidateField() throws EventSystemException {
-        MapEvent evt = new MapEvent("Test", false, eventTemplate);
+        MapEvent evt = new MapEvent("Test");
         try {
             evt.setString("field1", "avalue");
-            evt.validate();
+            eventTemplate.validate(evt);
         }
         catch (EventSystemException e) {
             fail(e.getMessage());
@@ -163,10 +163,10 @@ public class EventTest {
 
     @Test
     public void testValidateBadTypeField() throws EventSystemException {
-        MapEvent evt = new MapEvent("Test", false, eventTemplate);
+        MapEvent evt = new MapEvent("Test");
         try {
             evt.setInt16("field1", (short) 15);
-            evt.validate();
+            eventTemplate.validate(evt);
         }
         catch (ValidationExceptions e) {
             List<EventSystemException> exc = e.getAllExceptions();
@@ -179,10 +179,10 @@ public class EventTest {
 
     @Test
     public void testValidateBadField() throws EventSystemException {
-        MapEvent evt = new MapEvent("Test", false, eventTemplate);
+        MapEvent evt = new MapEvent("Test");
         try {
             evt.setInt16("field3", (short) 15);
-            evt.validate();
+            eventTemplate.validate(evt);
         }
         catch (ValidationExceptions e) {
             List<EventSystemException> exc = e.getAllExceptions();
@@ -298,7 +298,7 @@ public class EventTest {
     
     @Test
     public void testAllFieldTypes() throws EventSystemException {
-        MapEvent evt = new MapEvent("Everything", false, eventTemplate);
+        MapEvent evt = new MapEvent("Everything");
         evt.setUInt16("field1", 1);
         evt.setInt16("field2", (short) 2);
         evt.setUInt32("field3", 3L);
@@ -309,7 +309,7 @@ public class EventTest {
         evt.setUInt64("field8", BigInteger.valueOf(8));
         evt.setBoolean("field9", true);
         evt.setByte("field10", (byte) 10);
-        evt.setFloat("field11", (float) 11);
+        evt.setFloat("field11", 11F);
         evt.setDouble("field12", 12.);
         evt.setUInt16Array("field13", new int[] { 13 });
         evt.setInt16Array("field14", new short[] { 14 });
@@ -323,7 +323,7 @@ public class EventTest {
         evt.setByteArray("field22", new byte[] { 22 });
         evt.setFloatArray("field23", new float[] { 23F });
         evt.setDoubleArray("field24", new double[] { 24. });
-        evt.validate();
+        eventTemplate.validate(evt);
         
         Event evt2 = new MapEvent("Everything", true, eventTemplate);
         for (int i=1; i<=24; ++i) {

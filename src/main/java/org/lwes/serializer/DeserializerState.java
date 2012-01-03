@@ -71,5 +71,9 @@ public class DeserializerState
 	{
 		return "DeserializeState = "+index;
 	} 
+	
+	public void set(int index) {
+	    this.index = index;
+	}
 }
 

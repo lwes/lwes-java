@@ -290,6 +290,10 @@ public abstract class DefaultEvent implements Event {
     }
 
     public final void deserialize(byte[] bytes) throws EventSystemException {
-        deserialize(bytes,0);
+        deserialize(bytes, 0, bytes.length);
+    }
+
+    public String toOneLineString() {
+        return toString().replaceAll("\n", " ");
     }
 }
