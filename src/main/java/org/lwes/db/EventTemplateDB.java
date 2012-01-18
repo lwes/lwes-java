@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -775,6 +776,17 @@ public class EventTemplateDB {
      * @throws ValidationExceptions A list of validation errors
      */
     public void validate(Event event) throws ValidationExceptions {
+      validate(event,null);
+    }
+
+    /**
+     * This method can be used to validate an event after it has been created.
+     *
+     * @param event the event to validate
+     * @param excludedFields a pattern to determine which fields to ignore when validating
+     * @throws ValidationExceptions A list of validation errors
+     */
+    public void validate(Event event, Pattern excludedFields) throws ValidationExceptions {
         final String name = event.getEventName();
         ValidationExceptions ve = new ValidationExceptions(name);
 
@@ -783,6 +795,8 @@ public class EventTemplateDB {
             throw ve;
         }
         for (String key : event.getEventAttributes()) {
+            if (excludedFields != null && excludedFields.matcher(key).matches()) continue;
+            
             if (!checkForAttribute(name, key)) {
                 ve.addException(new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name));
                 continue;
@@ -806,6 +820,7 @@ public class EventTemplateDB {
         
         for (Entry<String,BaseType> entry : getEvents().get(name).entrySet()) {
             final String   key = entry.getKey();
+            if (excludedFields != null && excludedFields.matcher(key).matches()) continue;
             if (entry.getValue().isRequired()) {
                 if (!event.isSet(key)) {
                     ve.addException(new AttributeRequiredException(key));
