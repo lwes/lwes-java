@@ -296,4 +296,14 @@ public abstract class DefaultEvent implements Event {
     public String toOneLineString() {
         return toString().replaceAll("\n", " ");
     }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Event ? toString().equals(o.toString()) : false;
+    }
 }

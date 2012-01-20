@@ -15,6 +15,7 @@ package org.lwes;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Enumeration;
+import java.util.SortedSet;
 
 import org.lwes.util.CharacterEncoding;
 import org.lwes.util.IPAddress;
@@ -121,7 +122,7 @@ public interface Event {
     
     Enumeration<String> getEventAttributeNames();
     
-    Iterable<String> getEventAttributes();
+    SortedSet<String> getEventAttributes();
     
     boolean isSet(String attributeName);
     

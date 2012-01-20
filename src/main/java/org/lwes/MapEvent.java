@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -167,8 +169,8 @@ public class MapEvent extends DefaultEvent {
         return attributes.keys();
     }
     
-    public Iterable<String> getEventAttributes() {
-        return attributes.keySet();
+    public SortedSet<String> getEventAttributes() {
+        return new TreeSet<String>(attributes.keySet());
     }
 
     /**
@@ -641,23 +643,6 @@ public class MapEvent extends DefaultEvent {
 
         sb.append("}");
         return sb.toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
-    }
-
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (getClass().getName().equals(o.getClass().getName())) {
-            return toString().equals(o.toString());
-        }
-        else {
-            return false;
-        }
     }
 
     /**
