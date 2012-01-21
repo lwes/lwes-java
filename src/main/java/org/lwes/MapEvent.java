@@ -1,5 +1,7 @@
 package org.lwes;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -444,6 +446,12 @@ public class MapEvent extends DefaultEvent {
         return bytesWritten;
     }
 
+    public int serialize(OutputStream output) throws IOException {
+      final byte[] bytes = serialize();
+      output.write(bytes);
+      return bytes.length;
+    }
+
     /**
      * Deserialize the Event from byte array
      *
@@ -600,6 +608,7 @@ public class MapEvent extends DefaultEvent {
      *
      * @return a String return of this event.
      */
+    @Override
     public String toString() {
         if (name == null) {
             return "";

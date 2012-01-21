@@ -12,6 +12,8 @@
 
 package org.lwes;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Enumeration;
@@ -187,6 +189,8 @@ public interface Event {
     byte[] serialize();
 
     int serialize(byte[] bytes, int offset);
+    
+    int serialize(OutputStream output) throws IOException;
     
     void deserialize(byte[] bytes) throws EventSystemException;
     
