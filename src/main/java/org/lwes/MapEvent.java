@@ -1,5 +1,6 @@
 package org.lwes;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -582,6 +583,12 @@ public class MapEvent extends DefaultEvent {
         if (bytesStoreSize != length) {
             throw new EventSystemException("Expected to deserialize " + length + " bytes, but actually read " + bytesStoreSize);
         }
+    }
+
+    public void deserialize(DataInputStream stream, int length) throws IOException, EventSystemException {
+      final byte[] bytes = new byte[length];
+      stream.readFully(bytes);
+      deserialize(bytes);
     }
 
     /**
