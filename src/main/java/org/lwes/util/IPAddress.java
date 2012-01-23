@@ -23,7 +23,7 @@ import java.net.UnknownHostException;
  * This is a wrapper class for InetAddress, which allows the setting of
  * an InetAddress with a byte arrays.  As well as other useful functions.
  *
- * @deprecated
+ * //@deprecated
  * @author Anthony Molinaro
  */
 public class IPAddress implements Serializable {
@@ -141,6 +141,7 @@ public class IPAddress implements Serializable {
      *
      * @return a string representation of an IPAddress.
      */
+    @Override
     public String toString() {
         return (((inet_addr[0]) & 0xff)
                 + "." + ((inet_addr[1]) & 0xff)
@@ -155,6 +156,7 @@ public class IPAddress implements Serializable {
         return 4;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof IPAddress)) {
             /* "o" is not an IPAddress object (note: it may be null). */
@@ -176,6 +178,7 @@ public class IPAddress implements Serializable {
         return true; /* passed all tests; return true */
     }
 
+    @Override
     public int hashCode() {
         int hash = 0;
         final byte[] theseBytes = this.getInetAddressAsBytes();

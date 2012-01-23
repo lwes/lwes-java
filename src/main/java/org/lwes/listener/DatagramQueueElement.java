@@ -82,7 +82,8 @@ public class DatagramQueueElement implements QueueElement {
 	 * @param object the object to compare with
 	 * @return true if the object is equal to this one, false if not
 	 */
-	public boolean equals(Object object) {
+	@Override
+  public boolean equals(Object object) {
 		if(object == null) return false;
 
 		if (object instanceof DatagramQueueElement)

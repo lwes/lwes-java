@@ -56,6 +56,7 @@ public class EventCountingHandler implements EventHandler {
             eventHandler = eh;
         }
 
+        @Override
         public void run() {
             eventHandler.destroy();
         }

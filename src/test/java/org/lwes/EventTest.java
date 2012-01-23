@@ -267,13 +267,11 @@ public class EventTest {
         assertTrue("Size exception was not thrown", exceptionThrown);
     }
     
-    @SuppressWarnings("unused")
     @Test
     public void testMaximallyLongEventNames() throws EventSystemException {
         new MapEvent("       010       020       030       040       050       060       070       080       090       100       110       120    127", false, eventTemplate);
     }
     
-    @SuppressWarnings("unused")
     @Test(expected=EventSystemException.class)
     public void testOverlyLongEventNames() throws EventSystemException {
         new MapEvent("       010       020       030       040       050       060       070       080       090       100       110       120     128", false, eventTemplate);

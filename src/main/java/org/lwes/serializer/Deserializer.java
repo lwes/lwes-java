@@ -388,6 +388,7 @@ public class Deserializer {
      * @return a String.
      * @deprecated
      */
+    @Deprecated
     public static String deserializeSTRING(DeserializerState myState, byte[] bytes) {
         return deserializeSTRING(myState, bytes, Event.DEFAULT_ENCODING);
     }

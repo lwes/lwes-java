@@ -703,6 +703,7 @@ public class EventTemplateDB {
      *
      * @return a string Representation of the EventTemplateDB
      */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("\n").append(META_EVENT_INFO).append("\n{\n");

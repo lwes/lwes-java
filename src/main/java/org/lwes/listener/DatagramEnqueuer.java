@@ -131,6 +131,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
         this.ttl = ttl;
     }
 
+    @Override
     public void initialize() throws IOException {
         if (address == null) {
             address = InetAddress.getByName(DEFAULT_ADDRESS);
@@ -160,6 +161,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
         socket.setReceiveBufferSize(bufSize);
     }
 
+    @Override
     public synchronized void shutdown() {
         running = false;
     }
@@ -168,6 +170,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
      * While running, repeatedly read datagrams and insert them into the queue along with the
      * receipt time and other metadata.
      */
+    @Override
     public void run() {
         running = true;
 

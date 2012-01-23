@@ -288,6 +288,7 @@ public class BaseType {
         return new BaseType(type, typeObject, required, sizeRestriction, defaultValue);
     }
 
+    @Override
     public String toString() {
         return typeObject.toString();
     }
