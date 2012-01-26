@@ -47,6 +47,13 @@ public class MapEvent extends DefaultEvent {
     private int bytesStoreSize = 0;
 
     /**
+     * Create an event with no name and no validation
+     */
+    public MapEvent() throws EventSystemException {
+        this("");
+    }
+
+    /**
      * Create an event called <tt>eventName</tt> with no validation
      */
     public MapEvent(String eventName) throws EventSystemException {
