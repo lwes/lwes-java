@@ -12,7 +12,7 @@
 
 package org.lwes;
 
-import java.io.DataInputStream;
+import java.io.DataInput;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -197,7 +197,7 @@ public interface Event {
     
     void deserialize(byte[] bytes, int offset, int length) throws EventSystemException;
     
-    void deserialize(DataInputStream stream, int length) throws IOException, EventSystemException;
+    void deserialize(DataInput stream, int length) throws IOException, EventSystemException;
 
     int getBytesSize();
     
