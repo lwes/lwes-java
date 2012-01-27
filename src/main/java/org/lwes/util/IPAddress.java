@@ -86,6 +86,18 @@ public class IPAddress implements Serializable {
     }
 
     /**
+     * Construct an IPAddress object with the series of numbers that make up the dotted quad.
+     *
+     * @param quad0 the most significant dotted quad value
+     * @param quad1 the second most significant dotted quad value
+     * @param quad2 the second least significant dotted quad value
+     * @param quad3 the least significant dotted quad value
+     */
+    public IPAddress(int quad0, int quad1, int quad2, int quad3) {
+        inet_addr = new byte[] { (byte) quad0, (byte) quad1, (byte) quad2, (byte) quad3 };
+    }
+
+    /**
      * Construct an IPAddress object with an InetAddress.
      *
      * @param anIPAddress the InetAddress to set this IPAddress to
