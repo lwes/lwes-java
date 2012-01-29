@@ -50,6 +50,8 @@ public interface Event {
     
     void clear(String key) throws EventSystemException;
     
+    void setEventName(String name) throws EventSystemException;
+    
     void set(String key, FieldType type, Object value) throws EventSystemException;
 
     void setInt16Array(String attributeName, short[] value) throws EventSystemException;
