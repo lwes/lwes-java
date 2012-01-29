@@ -46,6 +46,8 @@ public interface Event {
     
     // SETTERS
     
+    void reset();
+    
     void clear(String key) throws EventSystemException;
     
     void set(String key, FieldType type, Object value) throws EventSystemException;

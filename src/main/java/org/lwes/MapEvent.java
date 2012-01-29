@@ -141,6 +141,24 @@ public class MapEvent extends DefaultEvent {
         deserialize(bytes);
         setDefaultValues(eventTemplateDB);
     }
+    
+    public MapEvent(Event event) throws NoSuchAttributeException, EventSystemException {
+      setEventName(event.getEventName());
+      for (String field : event.getEventAttributes()) {
+        final FieldType type = event.getType(field);
+        set(field, type, event.get(field));
+      }
+    }
+
+    public void reset() {
+      name = "";
+      validating = false;
+      eventTemplateDB = null;
+      attributes.clear();
+      encoding = DEFAULT_ENCODING;
+      state.reset();
+      bytesStoreSize = 3;
+    }
 
     private static void checkShortStringLength(String string, short encoding, int maxLength)
     throws EventSystemException {
