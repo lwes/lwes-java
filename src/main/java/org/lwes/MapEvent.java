@@ -153,7 +153,7 @@ public class MapEvent extends DefaultEvent {
       eventTemplateDB = null;
       attributes.clear();
       encoding = DEFAULT_ENCODING;
-      state.reset();
+      if (state != null) state.reset();
       bytesStoreSize = 3;
     }
 
