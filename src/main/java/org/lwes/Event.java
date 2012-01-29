@@ -207,5 +207,7 @@ public interface Event {
     
     Event copy() throws EventSystemException;
     
+    void copyFrom(Event event) throws EventSystemException;
+    
     String toOneLineString();
 }

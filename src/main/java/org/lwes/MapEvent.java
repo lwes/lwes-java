@@ -143,11 +143,8 @@ public class MapEvent extends DefaultEvent {
     }
     
     public MapEvent(Event event) throws NoSuchAttributeException, EventSystemException {
-      setEventName(event.getEventName());
-      for (String field : event.getEventAttributes()) {
-        final FieldType type = event.getType(field);
-        set(field, type, event.get(field));
-      }
+      this();
+      copyFrom(event);
     }
 
     public void reset() {
@@ -633,6 +630,15 @@ public class MapEvent extends DefaultEvent {
             evt.set(key, value.cloneBaseType());
         }
         return evt;
+    }
+    
+    public void copyFrom(Event event) throws EventSystemException {
+      reset();
+      setEventName(event.getEventName());
+      for (String field : event.getEventAttributes()) {
+        final FieldType type = event.getType(field);
+        set(field, type, event.get(field));
+      }
     }
 
     /**
