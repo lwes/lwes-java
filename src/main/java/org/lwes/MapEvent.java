@@ -1,8 +1,8 @@
 package org.lwes;
 
 import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -469,7 +469,7 @@ public class MapEvent extends DefaultEvent {
         return bytesWritten;
     }
 
-    public int serialize(OutputStream output) throws IOException {
+    public int serialize(DataOutput output) throws IOException {
       final byte[] bytes = serialize();
       output.write(bytes);
       return bytes.length;
