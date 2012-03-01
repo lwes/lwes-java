@@ -789,16 +789,16 @@ public class EventTemplateDB {
      */
     public void validate(Event event, Pattern excludedFields) throws ValidationExceptions {
         final String name = event.getEventName();
-        ValidationExceptions ve = new ValidationExceptions(name);
+        ValidationExceptions ve = null;
 
         if (!checkForEvent(name)) {
-            ve.addException(new NoSuchEventException("Event " + name + " does not exist in event definition"));
-            throw ve;
+            throw new ValidationExceptions(new NoSuchEventException("Event " + name + " does not exist in event definition"));
         }
         for (String key : event.getEventAttributes()) {
             if (excludedFields != null && excludedFields.matcher(key).matches()) continue;
             
             if (!checkForAttribute(name, key)) {
+                if (ve==null) ve = new ValidationExceptions(name);
                 ve.addException(new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name));
                 continue;
             }
@@ -807,6 +807,7 @@ public class EventTemplateDB {
                 value = event.get(key);
             }
             catch (NoSuchAttributeException e) {
+                if (ve==null) ve = new ValidationExceptions(name);
                 ve.addException(e);
                 continue;
             }
@@ -814,6 +815,7 @@ public class EventTemplateDB {
             try {
                 getBaseTypeForObjectAttribute(name, key, value);
             } catch(NoSuchAttributeTypeException e) {
+                if (ve==null) ve = new ValidationExceptions(name);
                 ve.addException(e);
                 continue;
             }
@@ -824,12 +826,13 @@ public class EventTemplateDB {
             if (excludedFields != null && excludedFields.matcher(key).matches()) continue;
             if (entry.getValue().isRequired()) {
                 if (!event.isSet(key)) {
+                    if (ve==null) ve = new ValidationExceptions(name);
                     ve.addException(new AttributeRequiredException(key));
                 }
             }
         }
 
-        if (ve.hasExceptions()) {
+        if (ve!=null) {
             throw ve;
         }
     }
