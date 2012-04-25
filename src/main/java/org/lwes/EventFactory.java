@@ -159,7 +159,7 @@ public class EventFactory {
         if (validate && !eventTemplateDBInit) {
             throw new EventSystemException("Event template db not initialized");
         }
-        return new Event(eventName, validate, eventTemplateDB, encoding);
+        return new MapEvent(eventName, validate, eventTemplateDB, encoding);
     }
 
     /**
@@ -171,7 +171,7 @@ public class EventFactory {
      */
     public Event createEvent(byte[] bytes) throws EventSystemException {
         Event e = null;
-        e = new Event(bytes, eventTemplateDB);
+        e = new MapEvent(bytes, eventTemplateDB);
         return e;
     }
 
@@ -187,7 +187,7 @@ public class EventFactory {
         if (validate && !eventTemplateDBInit) {
             throw new EventSystemException("Event template db not initialized");
         }
-        return new Event(bytes, validate, eventTemplateDB);
+        return new MapEvent(bytes, validate, eventTemplateDB);
     }
 
 }

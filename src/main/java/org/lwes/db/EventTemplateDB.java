@@ -21,14 +21,22 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.lwes.AttributeRequiredException;
 import org.lwes.BaseType;
+import org.lwes.Event;
 import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 import org.lwes.FieldType;
+import org.lwes.NoSuchAttributeException;
+import org.lwes.NoSuchAttributeTypeException;
+import org.lwes.NoSuchEventException;
+import org.lwes.ValidationExceptions;
 import org.lwes.util.IPAddress;
 
 /**
@@ -313,6 +321,7 @@ public class EventTemplateDB {
      * @return a value suitable for storing in a BaseType of this 'type'
      * @throws EventSystemException if the value is not acceptable for the type.
      */
+    @SuppressWarnings("cast")
     private Object canonicalizeDefaultValue(String eventName, String attributeName, FieldType type, Object esfValue) throws EventSystemException {
         try {
             switch(type) {
@@ -567,10 +576,11 @@ public class EventTemplateDB {
      * @param attributeName  the name of an attribute of <tt>eventName</tt>
      * @param attributeValue the value of the attribute
      * @return the <tt>BaseType</tt> representation of <tt>attributeValue</tt>
+     * @throws NoSuchAttributeTypeException if the type and value are not compatible
      */
     public BaseType getBaseTypeForObjectAttribute(String eventName,
                                                   String attributeName,
-                                                  Object attributeValue) {
+                                                  Object attributeValue) throws NoSuchAttributeTypeException {
         if (eventName == null || attributeName == null || attributeValue == null) {
             return null;
         }
@@ -693,6 +703,7 @@ public class EventTemplateDB {
      *
      * @return a string Representation of the EventTemplateDB
      */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("\n").append(META_EVENT_INFO).append("\n{\n");
@@ -758,5 +769,71 @@ public class EventTemplateDB {
         Map<String, Map<String, BaseType>> cp = new TreeMap<String, Map<String, BaseType>>();
         cp.putAll(events);
         return cp;
+    }
+
+    /**
+     * This method can be used to validate an event after it has been created.
+     *
+     * @throws ValidationExceptions A list of validation errors
+     */
+    public void validate(Event event) throws ValidationExceptions {
+      validate(event,null);
+    }
+
+    /**
+     * This method can be used to validate an event after it has been created.
+     *
+     * @param event the event to validate
+     * @param excludedFields a pattern to determine which fields to ignore when validating
+     * @throws ValidationExceptions A list of validation errors
+     */
+    public void validate(Event event, Pattern excludedFields) throws ValidationExceptions {
+        final String name = event.getEventName();
+        ValidationExceptions ve = null;
+
+        if (!checkForEvent(name)) {
+            throw new ValidationExceptions(new NoSuchEventException("Event " + name + " does not exist in event definition"));
+        }
+        for (String key : event.getEventAttributes()) {
+            if (excludedFields != null && excludedFields.matcher(key).matches()) continue;
+            
+            if (!checkForAttribute(name, key)) {
+                if (ve==null) ve = new ValidationExceptions(name);
+                ve.addException(new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name));
+                continue;
+            }
+            Object value;
+            try {
+                value = event.get(key);
+            }
+            catch (NoSuchAttributeException e) {
+                if (ve==null) ve = new ValidationExceptions(name);
+                ve.addException(e);
+                continue;
+            }
+
+            try {
+                getBaseTypeForObjectAttribute(name, key, value);
+            } catch(NoSuchAttributeTypeException e) {
+                if (ve==null) ve = new ValidationExceptions(name);
+                ve.addException(e);
+                continue;
+            }
+        }
+        
+        for (Entry<String,BaseType> entry : getEvents().get(name).entrySet()) {
+            final String   key = entry.getKey();
+            if (excludedFields != null && excludedFields.matcher(key).matches()) continue;
+            if (entry.getValue().isRequired()) {
+                if (!event.isSet(key)) {
+                    if (ve==null) ve = new ValidationExceptions(name);
+                    ve.addException(new AttributeRequiredException(key));
+                }
+            }
+        }
+
+        if (ve!=null) {
+            throw ve;
+        }
     }
 }

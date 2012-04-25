@@ -15,22 +15,22 @@ package org.lwes.db;
  * @author fmaritato
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-import org.lwes.AttributeRequiredException;
-import org.lwes.Event;
-import org.lwes.EventSystemException;
-import org.lwes.ValidationExceptions;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Enumeration;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.lwes.AttributeRequiredException;
+import org.lwes.EventSystemException;
+import org.lwes.MapEvent;
+import org.lwes.ValidationExceptions;
 
 public class RequiredTest {
 
@@ -56,9 +56,9 @@ public class RequiredTest {
         boolean exceptionThrown = false;
 
         // Verify that an exception is thrown when a required field is not present.
-        Event evt = new Event("TestEvent", true, template);
+        MapEvent evt = new MapEvent("TestEvent", true, template);
         try {
-            evt.validate();
+            template.validate(evt);
         }
         catch (ValidationExceptions e) {
             if (log.isDebugEnabled()) {
@@ -80,7 +80,7 @@ public class RequiredTest {
             log.debug(evt.toString());
         }
         try {
-            evt.validate();
+            template.validate(evt);
         }
         catch (EventSystemException e) {
             if (log.isDebugEnabled()) {

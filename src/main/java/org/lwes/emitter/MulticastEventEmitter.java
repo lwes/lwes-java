@@ -197,6 +197,7 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
     /**
      * Initializes the emitter.
      */
+    @Override
     public void initialize() throws IOException {
         socket = new MulticastSocket();
 
@@ -211,6 +212,7 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
     /**
      * Shuts down the emitter.
      */
+    @Override
     public void shutdown() throws IOException {
         // FM: close the socket AFTER calling super shutdown since
         // that is trying to send a shutdown message.
@@ -275,6 +277,7 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
      * @param bytes the byte array to emit
      * @throws IOException throws an IOException if there is a network error.
      */
+    @Override
     protected void emit(byte[] bytes) throws IOException {
         /* don't bother with empty arrays */
         if (bytes == null) {

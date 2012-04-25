@@ -23,7 +23,7 @@ import java.net.UnknownHostException;
  * This is a wrapper class for InetAddress, which allows the setting of
  * an InetAddress with a byte arrays.  As well as other useful functions.
  *
- * @deprecated
+ * //@deprecated
  * @author Anthony Molinaro
  */
 public class IPAddress implements Serializable {
@@ -86,6 +86,18 @@ public class IPAddress implements Serializable {
     }
 
     /**
+     * Construct an IPAddress object with the series of numbers that make up the dotted quad.
+     *
+     * @param quad0 the most significant dotted quad value
+     * @param quad1 the second most significant dotted quad value
+     * @param quad2 the second least significant dotted quad value
+     * @param quad3 the least significant dotted quad value
+     */
+    public IPAddress(int quad0, int quad1, int quad2, int quad3) {
+        inet_addr = new byte[] { (byte) quad0, (byte) quad1, (byte) quad2, (byte) quad3 };
+    }
+
+    /**
      * Construct an IPAddress object with an InetAddress.
      *
      * @param anIPAddress the InetAddress to set this IPAddress to
@@ -141,6 +153,7 @@ public class IPAddress implements Serializable {
      *
      * @return a string representation of an IPAddress.
      */
+    @Override
     public String toString() {
         return (((inet_addr[0]) & 0xff)
                 + "." + ((inet_addr[1]) & 0xff)
@@ -155,6 +168,7 @@ public class IPAddress implements Serializable {
         return 4;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof IPAddress)) {
             /* "o" is not an IPAddress object (note: it may be null). */
@@ -176,6 +190,7 @@ public class IPAddress implements Serializable {
         return true; /* passed all tests; return true */
     }
 
+    @Override
     public int hashCode() {
         int hash = 0;
         final byte[] theseBytes = this.getInetAddressAsBytes();

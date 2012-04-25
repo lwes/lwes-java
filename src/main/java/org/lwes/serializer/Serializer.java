@@ -131,6 +131,7 @@ public class Serializer {
     /**
      * @deprecated
      */
+    @Deprecated
     public static int serializeSTRING(String aString, byte[] bytes, int offset) {
         return serializeSTRING(aString, bytes, offset, Event.DEFAULT_ENCODING);
     }
@@ -360,6 +361,7 @@ public class Serializer {
      * @return how many bytes were set in the array
      * @deprecated
      */
+    @Deprecated
     public static int serializeIPADDR(IPAddress anIPAddress, byte[] bytes, int offset) {
         byte[] inetaddr = anIPAddress.getInetAddressAsBytes();
         bytes[offset + 3] = inetaddr[0];
@@ -378,6 +380,7 @@ public class Serializer {
      * @return how many bytes were set in the array
      * @deprecated
      */
+    @Deprecated
     public static int serializeIPADDR(InetAddress anIPAddress, byte[] bytes, int offset) {
         byte[] inetaddr = anIPAddress.getAddress();
         bytes[offset + 3] = inetaddr[0];

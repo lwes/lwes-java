@@ -82,5 +82,6 @@ public class EncodedString {
 	}
 
 	public byte[] getBytes() { return getBytes(myString, myEncoding); }
-	public String toString() { return myString; }
+	@Override
+  public String toString() { return myString; }
 }

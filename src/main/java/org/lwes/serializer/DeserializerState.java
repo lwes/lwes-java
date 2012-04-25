@@ -67,9 +67,14 @@ public class DeserializerState
 	 *
 	 * @return a String return of this object.
 	 */
-	public String toString()
+	@Override
+  public String toString()
 	{
 		return "DeserializeState = "+index;
 	} 
+	
+	public void set(int index) {
+	    this.index = index;
+	}
 }
 

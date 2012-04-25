@@ -33,14 +33,17 @@ public class DatagramDequeuer extends ThreadedDequeuer {
     public DatagramDequeuer() {
     }
 
+    @Override
     public void initialize() throws IOException {
         super.initialize();
     }
 
+    @Override
     public synchronized void shutdown() {
         running = false;
     }
 
+    @Override
     public void run() {
         running = true;
 

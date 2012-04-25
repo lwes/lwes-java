@@ -34,7 +34,7 @@ public class TestEmitter {
 			e.setUInt16("uint16", 56789);
 			e.setInt32("int32", 55555555);
 			e.setUInt32("uint32", 20392039402L);
-			e.setInt64("int64", (long) 9999999);
+			e.setInt64("int64", 9999999);
 			e.setUInt64("uint64", new java.math.BigInteger("9999999"));
 			e.setIPAddress("ip", InetAddress.getByName("24.199.3.198"));
 			e.setString("key", "value");

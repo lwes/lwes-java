@@ -170,6 +170,7 @@ public class DatagramEventListener extends ThreadedEventListener {
      *
      * @param handler the EventHandler to add
      */
+    @Override
     public void addHandler(EventHandler handler) {
         if (dequeuer != null) {
             dequeuer.addHandler(handler);
@@ -193,6 +194,7 @@ public class DatagramEventListener extends ThreadedEventListener {
      *
      * @throws EventSystemException thrown if there is a problem initializing the listener
      */
+    @Override
     public void initialize() throws EventSystemException {
         this.setEnqueuer(enqueuer);
         this.setDequeuer(dequeuer);

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
+import org.lwes.MapEvent;
 import org.lwes.db.EventTemplateDB;
 
 import java.net.InetAddress;
@@ -85,7 +86,7 @@ public class MulticastEventEmitterTest {
 
         EventTemplateDB evtDb = new EventTemplateDB();
         evtDb.initialize();
-        Event evt = new Event("TestEvent", false, evtDb);
+        Event evt = new MapEvent("TestEvent", false, evtDb);
         evt.setIPAddress("SenderIP", InetAddress.getByName("192.168.1.1"));
         evt.setUInt16("SenderPort", 9191);
         evt.setInt64("ReceiptTime", System.currentTimeMillis());

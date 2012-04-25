@@ -59,7 +59,8 @@ public class ThreadedEventDispatcher extends Thread {
 		else throw new IllegalStateException("Contradictory state indication");
 	}
 
-	public void run() {
+	@Override
+  public void run() {
 		while(true) {
 			synchronized(this) {
 				if(isActive()) {

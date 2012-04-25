@@ -56,61 +56,73 @@ public abstract class CharacterEncoding {
 	public abstract String getIANAString();
 
 	public static final CharacterEncoding ISO_8859_1 = new CharacterEncoding() {
-		public String getEncodingString() {
+		@Override
+    public String getEncodingString() {
 			return "ISO-8859-1";
 		}
 
-		public String getIANAString() {
+		@Override
+    public String getIANAString() {
 			return "ISO-8859-1";
 		}
 	};
 
 	public static final CharacterEncoding UTF_8 = new CharacterEncoding() {
-		public String getEncodingString() {
+		@Override
+    public String getEncodingString() {
 			return "UTF-8";
 		}
 
-		public String getIANAString() {
+		@Override
+    public String getIANAString() {
 			return "UTF-8";
 		}
 	};
 
 	public static final CharacterEncoding ASCII = new CharacterEncoding() {
-		public String getEncodingString() {
+		@Override
+    public String getEncodingString() {
 			return "ASCII";
 		}
 
-		public String getIANAString() {
+		@Override
+    public String getIANAString() {
 			return "US-ASCII";
 		}
 	};
 
 	public static final CharacterEncoding SHIFT_JIS = new CharacterEncoding() {
-		public String getEncodingString() {
+		@Override
+    public String getEncodingString() {
 			return "SJIS";
 		}
 
-		public String getIANAString() {
+		@Override
+    public String getIANAString() {
 			return "Shift_JIS";
 		}
 	};
 
 	public static final CharacterEncoding EUC_JP = new CharacterEncoding() {
-		public String getEncodingString() {
+		@Override
+    public String getEncodingString() {
 			return "EUC_JP";
 		}
 
-		public String getIANAString() {
+		@Override
+    public String getIANAString() {
 			return "EUC-JP";
 		}
 	};
 
 	public static final CharacterEncoding EUC_KR = new CharacterEncoding() {
-		public String getEncodingString() {
+		@Override
+    public String getEncodingString() {
 			return "EUC_KR";
 		}
 
-		public String getIANAString() {
+		@Override
+    public String getIANAString() {
 			return "EUC-KR";
 		}
 	};
@@ -136,6 +148,7 @@ public abstract class CharacterEncoding {
         return getEncodingString().hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
 		return (o instanceof CharacterEncoding)
 				&& getEncodingString().equals(((CharacterEncoding) o).getEncodingString());

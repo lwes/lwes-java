@@ -12,17 +12,16 @@
 
 package org.lwes.serializer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.lwes.EventSystemException;
 import org.lwes.util.IPAddress;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author fmaritato
@@ -45,7 +44,7 @@ public class StringParserTest {
     }
 
     @Test
-    public void testFromStringBYTE() throws EventSystemException {
+    public void testFromStringBYTE() {
         assertEquals((byte) -128, StringParser.fromStringBYTE("-128"));
         assertEquals((byte) 127, StringParser.fromStringBYTE("127"));
     }

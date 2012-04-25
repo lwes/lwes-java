@@ -15,6 +15,8 @@ package org.lwes.serializer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.lwes.Event;
+import org.lwes.EventSystemException;
+import org.lwes.FieldType;
 import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 import org.lwes.util.NumberCodec;
@@ -238,14 +240,14 @@ public class Deserializer {
      * @param bytes   the bytes to deserialize
      * @return a byte array with the ip_addr with byte order 1234.
      */
-    public static byte[] deserializeIPADDR(DeserializerState myState, byte[] bytes) {
+    public static IPAddress deserializeIPADDR(DeserializerState myState, byte[] bytes) {
         byte[] inetaddr = new byte[4];
         inetaddr[0] = bytes[myState.currentIndex() + 3];
         inetaddr[1] = bytes[myState.currentIndex() + 2];
         inetaddr[2] = bytes[myState.currentIndex() + 1];
         inetaddr[3] = bytes[myState.currentIndex()];
         myState.incr(4);
-        return inetaddr;
+        return new IPAddress(inetaddr);
     }
 
     public static String deserializeIPADDRtoHexString(DeserializerState myState,
@@ -272,7 +274,7 @@ public class Deserializer {
         int length = deserializeUINT16(state, bytes);
         IPAddress[] rtn = new IPAddress[length];
         for (int i = 0; i < length; i++) {
-            rtn[i] = new IPAddress(deserializeIPADDR(state, bytes));
+            rtn[i] = deserializeIPADDR(state, bytes);
         }
         return rtn;
     }
@@ -386,6 +388,7 @@ public class Deserializer {
      * @return a String.
      * @deprecated
      */
+    @Deprecated
     public static String deserializeSTRING(DeserializerState myState, byte[] bytes) {
         return deserializeSTRING(myState, bytes, Event.DEFAULT_ENCODING);
     }
@@ -476,5 +479,59 @@ public class Deserializer {
     public static String deserializeATTRIBUTEWORD(DeserializerState myState,
                                                   byte[] bytes) {
         return deserializeEVENTWORD(myState, bytes, Event.DEFAULT_ENCODING);
+    }
+    
+    public static Object deserializeValue(DeserializerState state, byte[] bytes, FieldType type, short encoding) throws EventSystemException {
+        switch (type) {
+            case BOOLEAN:
+                return Deserializer.deserializeBOOLEAN(state, bytes);
+            case BYTE:
+                return Deserializer.deserializeBYTE(state, bytes);
+            case UINT16:
+                return Deserializer.deserializeUINT16(state, bytes);
+            case INT16:
+                return Deserializer.deserializeINT16(state, bytes);
+            case UINT32:
+                return Deserializer.deserializeUINT32(state, bytes);
+            case INT32:
+                return Deserializer.deserializeINT32(state, bytes);
+            case FLOAT:
+                return Deserializer.deserializeFLOAT(state, bytes);
+            case UINT64:
+                return Deserializer.deserializeUINT64(state, bytes);
+            case INT64:
+                return Deserializer.deserializeINT64(state, bytes);
+            case DOUBLE:
+                return Deserializer.deserializeDOUBLE(state, bytes);
+            case STRING:
+                return Deserializer.deserializeSTRING(state, bytes, encoding);
+            case IPADDR:
+                return Deserializer.deserializeIPADDR(state, bytes);
+            case STRING_ARRAY:
+                return Deserializer.deserializeStringArray(state, bytes, encoding);
+            case INT16_ARRAY:
+                return Deserializer.deserializeInt16Array(state, bytes);
+            case INT32_ARRAY:
+                return Deserializer.deserializeInt32Array(state, bytes);
+            case INT64_ARRAY:
+                return Deserializer.deserializeInt64Array(state, bytes);
+            case UINT16_ARRAY:
+                return Deserializer.deserializeUInt16Array(state, bytes);
+            case UINT32_ARRAY:
+                return Deserializer.deserializeUInt32Array(state, bytes);
+            case UINT64_ARRAY:
+                return Deserializer.deserializeUInt64Array(state, bytes);
+            case BOOLEAN_ARRAY:
+                return Deserializer.deserializeBooleanArray(state, bytes);
+            case BYTE_ARRAY:
+                return Deserializer.deserializeByteArray(state, bytes);
+            case DOUBLE_ARRAY:
+                return Deserializer.deserializeDoubleArray(state, bytes);
+            case FLOAT_ARRAY:
+                return Deserializer.deserializeFloatArray(state, bytes);
+            case IP_ADDR_ARRAY:
+                return Deserializer.deserializeIPADDRArray(state, bytes);
+        }
+        throw new EventSystemException("Unrecognized type: " + type);
     }
 }
