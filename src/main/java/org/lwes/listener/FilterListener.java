@@ -69,7 +69,7 @@ public class FilterListener implements EventHandler {
         catch (CmdLineException e) {
             System.err.println("Usage: ");
             parser.printUsage(System.err);
-            return;
+            throw new RuntimeException(e.getMessage(), e);
         }
         if (attrList != null && !attrList.isEmpty()) {
             eventAttrs = new HashMap<String, String>();
@@ -118,7 +118,6 @@ public class FilterListener implements EventHandler {
     }
 
     public static void main(String[] args) throws UnknownHostException,
-                                                  CmdLineException,
                                                   EventSystemException {
         new FilterListener().run(args);
     }
