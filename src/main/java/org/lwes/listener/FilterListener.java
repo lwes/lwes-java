@@ -1,3 +1,12 @@
+/*======================================================================*
+ * Licensed under the New BSD License (the "License"); you may not use  *
+ * this file except in compliance with the License.  Unless required    *
+ * by applicable law or agreed to in writing, software distributed      *
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT        *
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     *
+ * See the License for the specific language governing permissions and  *
+ * limitations under the License. See accompanying LICENSE file.        *
+ *======================================================================*/
 package org.lwes.listener;
 /**
  * This is a filtering multicast listener. It can filter by event name or any attribute of an event.
@@ -21,11 +30,12 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
-import org.lwes.NoSuchAttributeException;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,11 +53,12 @@ public class FilterListener implements EventHandler {
     private int queueSize = 5000;
 
     @Option(name = "-e", aliases = "--event-names", usage = "Comma separated list of event names")
-    private List<String> eventNames;
+    private String eventNamesList;
 
     @Option(name = "-a", aliases = "--eventAttrs", usage = "field=value,field2=value2 to filter on")
     private String attrList = null;
 
+    private List<String> eventNames;
     private Map<String, String> eventAttrs;
 
     public void processArguments(String[] args) {
@@ -72,6 +83,11 @@ public class FilterListener implements EventHandler {
                     log.warn(kv + " not a valid k=v pair");
                 }
             }
+        }
+        if (eventNamesList != null && !eventNamesList.isEmpty()) {
+            eventNames = new LinkedList<String>();
+            String[] eList = eventNamesList.split(",");
+            Collections.addAll(eventNames, eList);
         }
     }
 
@@ -138,17 +154,12 @@ public class FilterListener implements EventHandler {
 
         if (eventAttrs != null) {
             for (String key : eventAttrs.keySet()) {
-                try {
-                    Object o = event.get(key);
-                    String val = eventAttrs.get(key);
-                    // If more than one kv pair is submitted, events must meet
-                    // all conditions. If any of them fail, return.
-                    if (!(o != null && val.equals(o.toString()))) {
-                        return null;
-                    }
-                }
-                catch (NoSuchAttributeException e) {
-                    // don't care
+                Object o = event.get(key);
+                String val = eventAttrs.get(key);
+                // If more than one kv pair is submitted, events must meet
+                // all conditions. If any of them fail, return.
+                if (!(o != null && val.equals(o.toString()))) {
+                    return null;
                 }
             }
         }

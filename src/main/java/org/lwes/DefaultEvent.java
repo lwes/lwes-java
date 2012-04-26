@@ -1,12 +1,26 @@
+/*======================================================================*
+ * Licensed under the New BSD License (the "License"); you may not use  *
+ * this file except in compliance with the License.  Unless required    *
+ * by applicable law or agreed to in writing, software distributed      *
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT        *
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     *
+ * See the License for the specific language governing permissions and  *
+ * limitations under the License. See accompanying LICENSE file.        *
+ *======================================================================*/
 package org.lwes;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.util.Enumeration;
+import java.util.Set;
 
 import org.lwes.util.IPAddress;
 
 public abstract class DefaultEvent implements Event {
-    protected static final BigInteger UINT64_MASK = new BigInteger("10000000000000000",16);
+    protected static final BigInteger UINT64_MASK = new BigInteger("10000000000000000", 16);
 
     public void setInt16Array(String attributeName, short[] value) throws EventSystemException {
         set(attributeName, FieldType.INT16_ARRAY, value);
@@ -30,7 +44,9 @@ public abstract class DefaultEvent implements Event {
 
     public void setUInt64Array(String attributeName, long[] value) throws EventSystemException {
         final BigInteger[] value2 = new BigInteger[value.length];
-        for (int i=0; i<value.length; ++i) value2[i] = BigInteger.valueOf(value[i]).and(UINT64_MASK);
+        for (int i = 0; i < value.length; ++i) {
+            value2[i] = BigInteger.valueOf(value[i]).and(UINT64_MASK);
+        }
         set(attributeName, FieldType.UINT64_ARRAY, value);
     }
 
@@ -163,106 +179,101 @@ public abstract class DefaultEvent implements Event {
         set(attributeName, FieldType.IPADDR, address);
     }
 
-    
+
     public boolean isSet(String attributeName) {
-        try {
-            return (get(attributeName) != null);
-        }
-        catch (NoSuchAttributeException e) {
-            return false;
-        }
+        return (get(attributeName) != null);
     }
 
-    public short[] getInt16Array(String attributeName) throws NoSuchAttributeException {
+    public short[] getInt16Array(String attributeName) {
         return (short[]) get(attributeName);
     }
 
-    public int[] getInt32Array(String attributeName) throws NoSuchAttributeException {
+    public int[] getInt32Array(String attributeName) {
         return (int[]) get(attributeName);
     }
 
-    public long[] getInt64Array(String attributeName) throws NoSuchAttributeException {
+    public long[] getInt64Array(String attributeName) {
         return (long[]) get(attributeName);
     }
 
-    public int[] getUInt16Array(String attributeName) throws NoSuchAttributeException {
+    public int[] getUInt16Array(String attributeName) {
         return (int[]) get(attributeName);
     }
 
-    public long[] getUInt32Array(String attributeName) throws NoSuchAttributeException {
+    public long[] getUInt32Array(String attributeName) {
         return (long[]) get(attributeName);
     }
 
-    public long[] getUInt64Array(String attributeName) throws NoSuchAttributeException {
+    public long[] getUInt64Array(String attributeName) {
         return (long[]) get(attributeName);
     }
 
-    public String[] getStringArray(String attributeName) throws NoSuchAttributeException {
+    public String[] getStringArray(String attributeName) {
         return (String[]) get(attributeName);
     }
 
-    public byte[] getByteArray(String attributeName) throws NoSuchAttributeException {
+    public byte[] getByteArray(String attributeName) {
         return (byte[]) get(attributeName);
     }
 
-    public boolean[] getBooleanArray(String attributeName) throws NoSuchAttributeException {
+    public boolean[] getBooleanArray(String attributeName) {
         return (boolean[]) get(attributeName);
     }
 
-    public double[] getDoubleArray(String attributeName) throws NoSuchAttributeException {
+    public double[] getDoubleArray(String attributeName) {
         return (double[]) get(attributeName);
     }
 
-    public float[] getFloatArray(String attributeName) throws NoSuchAttributeException {
+    public float[] getFloatArray(String attributeName) {
         return (float[]) get(attributeName);
     }
 
-    public Double getDouble(String attributeName) throws NoSuchAttributeException {
+    public Double getDouble(String attributeName) {
         return (Double) get(attributeName);
     }
 
-    public Float getFloat(String attributeName) throws NoSuchAttributeException {
+    public Float getFloat(String attributeName) {
         return (Float) get(attributeName);
     }
 
-    public Byte getByte(String attributeName) throws NoSuchAttributeException {
+    public Byte getByte(String attributeName) {
         return (Byte) get(attributeName);
     }
 
-    public Boolean getBoolean(String attributeName) throws NoSuchAttributeException {
+    public Boolean getBoolean(String attributeName) {
         return (Boolean) get(attributeName);
     }
 
-    public Integer getUInt16(String attributeName) throws NoSuchAttributeException {
+    public Integer getUInt16(String attributeName) {
         return (Integer) get(attributeName);
     }
 
-    public Short getInt16(String attributeName) throws NoSuchAttributeException {
+    public Short getInt16(String attributeName) {
         return (Short) get(attributeName);
     }
 
-    public Long getUInt32(String attributeName) throws NoSuchAttributeException {
+    public Long getUInt32(String attributeName) {
         return (Long) get(attributeName);
     }
 
-    public Integer getInt32(String attributeName) throws NoSuchAttributeException {
+    public Integer getInt32(String attributeName) {
         return (Integer) get(attributeName);
     }
 
-    public BigInteger getUInt64(String attributeName) throws NoSuchAttributeException {
+    public BigInteger getUInt64(String attributeName) {
         return (BigInteger) get(attributeName);
     }
 
 
-    public Long getInt64(String attributeName) throws NoSuchAttributeException {
+    public Long getInt64(String attributeName) {
         return (Long) get(attributeName);
     }
 
-    public String getString(String attributeName) throws NoSuchAttributeException {
+    public String getString(String attributeName) {
         return (String) get(attributeName);
     }
 
-    public InetAddress getInetAddress(String attributeName) throws NoSuchAttributeException {
+    public InetAddress getInetAddress(String attributeName) {
         IPAddress a = (IPAddress) get(attributeName);
         if (a != null) {
             return a.toInetAddress();
@@ -272,11 +283,11 @@ public abstract class DefaultEvent implements Event {
         }
     }
 
-    public byte[] getIPAddress(String attributeName) throws NoSuchAttributeException {
+    public byte[] getIPAddress(String attributeName) {
         return ((IPAddress) get(attributeName)).getInetAddressAsBytes();
     }
 
-    public IPAddress getIPAddressObj(String attributeName) throws NoSuchAttributeException {
+    public IPAddress getIPAddressObj(String attributeName) {
         return (IPAddress) get(attributeName);
     }
 
@@ -284,7 +295,7 @@ public abstract class DefaultEvent implements Event {
         final byte[] bytes = new byte[getBytesSize()];
         final int length = serialize(bytes, 0);
         if (length != bytes.length) {
-            throw new IllegalStateException("Expected to write "+bytes.length+" bytes, but wrote "+length);
+            throw new IllegalStateException("Expected to write " + bytes.length + " bytes, but wrote " + length);
         }
         return bytes;
     }
@@ -304,6 +315,27 @@ public abstract class DefaultEvent implements Event {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Event ? toString().equals(o.toString()) : false;
+        return o instanceof Event && toString().equals(o.toString());
     }
+
+    // These are here mainly for @Override to work properly
+    public abstract void clear(String key);
+    public abstract void reset();
+    public abstract void setEventName(String name);
+    public abstract String getEventName();
+    public abstract void set(String key, FieldType type, Object value);
+    public abstract void setEncoding(short encoding);
+    public abstract int getNumEventAttributes();
+    public abstract Enumeration<String> getEventAttributeNames();
+    public abstract Set<String> getEventAttributes();
+    public abstract FieldType getType(String attributeName);
+    public abstract Object get(String attributeName);
+    public abstract short getEncoding();
+    public abstract int serialize(byte[] bytes, int offset);
+    public abstract int serialize(DataOutput output) throws IOException;
+    public abstract void deserialize(byte[] bytes, int offset, int length);
+    public abstract void deserialize(DataInput stream, int length) throws IOException;
+    public abstract int getBytesSize();
+    public abstract Event copy();
+    public abstract void copyFrom(Event event);
 }

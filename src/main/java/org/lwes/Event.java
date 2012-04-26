@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Enumeration;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.lwes.util.CharacterEncoding;
@@ -48,78 +49,68 @@ public interface Event {
     
     void reset();
     
-    void clear(String key) throws EventSystemException;
+    void clear(String key);
     
-    void setEventName(String name) throws EventSystemException;
+    void setEventName(String name);
     
-    void set(String key, FieldType type, Object value) throws EventSystemException;
+    void set(String key, FieldType type, Object value);
 
-    void setInt16Array(String attributeName, short[] value) throws EventSystemException;
+    void setInt16Array(String attributeName, short[] value);
 
-    void setInt32Array(String attributeName, int[] value) throws EventSystemException;
+    void setInt32Array(String attributeName, int[] value);
 
-    void setInt64Array(String attributeName, long[] value) throws EventSystemException;
+    void setInt64Array(String attributeName, long[] value);
 
-    void setUInt16Array(String attributeName, int[] value) throws EventSystemException;
+    void setUInt16Array(String attributeName, int[] value);
 
-    void setUInt32Array(String attributeName, long[] value) throws EventSystemException;
+    void setUInt32Array(String attributeName, long[] value);
 
-    void setUInt64Array(String attributeName, long[] value) throws EventSystemException;
+    void setUInt64Array(String attributeName, long[] value);
 
-    void setUInt64Array(String attributeName, BigInteger[] value) throws EventSystemException;
+    void setUInt64Array(String attributeName, BigInteger[] value);
 
-    void setStringArray(String attributeName, String[] value) throws EventSystemException;
+    void setStringArray(String attributeName, String[] value);
 
-    void setIPAddressArray(String attributeName, IPAddress[] value) throws EventSystemException;
+    void setIPAddressArray(String attributeName, IPAddress[] value);
 
-    void setBooleanArray(String attributeName, boolean[] value) throws EventSystemException;
+    void setBooleanArray(String attributeName, boolean[] value);
 
-    void setByteArray(String attributeName, byte[] value) throws EventSystemException;
+    void setByteArray(String attributeName, byte[] value);
 
-    void setDoubleArray(String attributeName, double[] value) throws EventSystemException;
+    void setDoubleArray(String attributeName, double[] value);
 
-    void setFloatArray(String attributeName, float[] value) throws EventSystemException;
+    void setFloatArray(String attributeName, float[] value);
 
-    void setDouble(String attributeName, Double value) throws EventSystemException;
-    void setDouble(String attributeName, double value) throws EventSystemException;
+    void setDouble(String attributeName, double value);
 
-    void setFloat(String attributeName, Float value) throws EventSystemException;
-    void setFloat(String attributeName, float value) throws EventSystemException;
+    void setFloat(String attributeName, float value);
 
-    void setByte(String attributeName, Byte value) throws EventSystemException;
-    void setByte(String attributeName, byte value) throws EventSystemException;
+    void setByte(String attributeName, byte value);
 
-    void setBoolean(String attributeName, Boolean aBool) throws EventSystemException;
-    void setBoolean(String attributeName, boolean aBool) throws EventSystemException;
+    void setBoolean(String attributeName, boolean aBool);
 
-    void setUInt16(String attributeName, Integer aNumber) throws EventSystemException;
-    void setUInt16(String attributeName, int aNumber) throws EventSystemException;
+    void setUInt16(String attributeName, int aNumber);
 
-    void setInt16(String attributeName, Short aNumber) throws EventSystemException;
-    void setInt16(String attributeName, short aNumber) throws EventSystemException;
+    void setInt16(String attributeName, short aNumber);
 
-    void setUInt32(String attributeName, Long aNumber) throws EventSystemException;
-    void setUInt32(String attributeName, long aNumber) throws EventSystemException;
+    void setUInt32(String attributeName, long aNumber);
 
-    void setInt32(String attributeName, Integer aNumber) throws EventSystemException;
-    void setInt32(String attributeName, int aNumber) throws EventSystemException;
+    void setInt32(String attributeName, int aNumber);
 
-    void setUInt64(String attributeName, BigInteger aNumber) throws EventSystemException;
-    void setUInt64(String attributeName, Long aNumber) throws EventSystemException;
-    void setUInt64(String attributeName, long aNumber) throws EventSystemException;
+    void setUInt64(String attributeName, BigInteger aNumber);
+    void setUInt64(String attributeName, long aNumber);
 
-    void setInt64(String attributeName, Long aNumber) throws EventSystemException;
-    void setInt64(String attributeName, long aNumber) throws EventSystemException;
+    void setInt64(String attributeName, long aNumber);
 
-    void setString(String attributeName, String aString) throws EventSystemException;
+    void setString(String attributeName, String aString);
 
-    void setIPAddress(String attributeName, byte[] address) throws EventSystemException;
+    void setIPAddress(String attributeName, byte[] address);
 
-    void setIPAddress(String attributeName, InetAddress address) throws EventSystemException;
+    void setIPAddress(String attributeName, InetAddress address);
 
-    void setIPAddress(String attributeName, IPAddress address) throws EventSystemException;
+    void setIPAddress(String attributeName, IPAddress address);
     
-    void setEncoding(short encoding) throws EventSystemException;
+    void setEncoding(short encoding);
 
     // GETTERS
 
@@ -128,66 +119,66 @@ public interface Event {
     int getNumEventAttributes();
     
     Enumeration<String> getEventAttributeNames();
-    
-    SortedSet<String> getEventAttributes();
+
+    Set<String> getEventAttributes();
     
     boolean isSet(String attributeName);
     
     FieldType getType(String attributeName);
 
-    Object get(String attributeName) throws NoSuchAttributeException;
+    Object get(String attributeName);
 
-    short[] getInt16Array(String attributeName) throws NoSuchAttributeException;
+    short[] getInt16Array(String attributeName);
 
-    int[] getInt32Array(String attributeName) throws NoSuchAttributeException;
+    int[] getInt32Array(String attributeName);
 
-    long[] getInt64Array(String attributeName) throws NoSuchAttributeException;
+    long[] getInt64Array(String attributeName);
 
-    int[] getUInt16Array(String attributeName) throws NoSuchAttributeException;
+    int[] getUInt16Array(String attributeName);
 
-    long[] getUInt32Array(String attributeName) throws NoSuchAttributeException;
+    long[] getUInt32Array(String attributeName);
 
-    long[] getUInt64Array(String attributeName) throws NoSuchAttributeException;
+    long[] getUInt64Array(String attributeName);
 
-    String[] getStringArray(String attributeName) throws NoSuchAttributeException;
+    String[] getStringArray(String attributeName);
 
-    byte[] getByteArray(String attributeName) throws NoSuchAttributeException;
+    byte[] getByteArray(String attributeName);
 
-    boolean[] getBooleanArray(String attributeName) throws NoSuchAttributeException;
+    boolean[] getBooleanArray(String attributeName);
 
-    double[] getDoubleArray(String attributeName) throws NoSuchAttributeException;
+    double[] getDoubleArray(String attributeName);
 
-    float[] getFloatArray(String attributeName) throws NoSuchAttributeException;
+    float[] getFloatArray(String attributeName);
 
-    Double getDouble(String attributeName) throws NoSuchAttributeException;
+    Double getDouble(String attributeName);
 
-    Float getFloat(String attributeName) throws NoSuchAttributeException;
+    Float getFloat(String attributeName);
 
-    Byte getByte(String attributeName) throws NoSuchAttributeException;
+    Byte getByte(String attributeName);
 
-    Boolean getBoolean(String attributeName) throws NoSuchAttributeException;
+    Boolean getBoolean(String attributeName);
 
-    Integer getUInt16(String attributeName) throws NoSuchAttributeException;
+    Integer getUInt16(String attributeName);
 
-    Short getInt16(String attributeName) throws NoSuchAttributeException;
+    Short getInt16(String attributeName);
 
-    Long getUInt32(String attributeName) throws NoSuchAttributeException;
+    Long getUInt32(String attributeName);
 
-    Integer getInt32(String attributeName) throws NoSuchAttributeException;
+    Integer getInt32(String attributeName);
 
-    BigInteger getUInt64(String attributeName) throws NoSuchAttributeException;
+    BigInteger getUInt64(String attributeName);
 
-    Long getInt64(String attributeName) throws NoSuchAttributeException;
+    Long getInt64(String attributeName);
 
-    String getString(String attributeName) throws NoSuchAttributeException;
+    String getString(String attributeName);
 
-    InetAddress getInetAddress(String attributeName) throws NoSuchAttributeException;
+    InetAddress getInetAddress(String attributeName);
 
-    byte[] getIPAddress(String attributeName) throws NoSuchAttributeException;
+    byte[] getIPAddress(String attributeName);
 
-    IPAddress getIPAddressObj(String attributeName) throws NoSuchAttributeException;
+    IPAddress getIPAddressObj(String attributeName);
     
-    short getEncoding() throws EventSystemException;
+    short getEncoding();
     
     // SERIALIZATION
     
@@ -197,19 +188,19 @@ public interface Event {
     
     int serialize(DataOutput output) throws IOException;
     
-    void deserialize(byte[] bytes) throws EventSystemException;
+    void deserialize(byte[] bytes);
     
-    void deserialize(byte[] bytes, int offset, int length) throws EventSystemException;
+    void deserialize(byte[] bytes, int offset, int length);
     
-    void deserialize(DataInput stream, int length) throws IOException, EventSystemException;
+    void deserialize(DataInput stream, int length) throws IOException;
 
     int getBytesSize();
     
     // MISCELLANEOUS
     
-    Event copy() throws EventSystemException;
+    Event copy();
     
-    void copyFrom(Event event) throws EventSystemException;
+    void copyFrom(Event event);
     
     String toOneLineString();
 }

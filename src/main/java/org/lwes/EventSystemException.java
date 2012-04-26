@@ -17,7 +17,7 @@ package org.lwes;
  * 
  * @author Anthony Molinaro
  */
-public class EventSystemException extends Exception {
+public class EventSystemException extends RuntimeException {
 	/**
 	 * Overrides <tt>Exception</tt> constructor
 	 * @param e the parent exception

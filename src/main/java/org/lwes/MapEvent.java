@@ -1,3 +1,12 @@
+/*======================================================================*
+ * Licensed under the New BSD License (the "License"); you may not use  *
+ * this file except in compliance with the License.  Unless required    *
+ * by applicable law or agreed to in writing, software distributed      *
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT        *
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     *
+ * See the License for the specific language governing permissions and  *
+ * limitations under the License. See accompanying LICENSE file.        *
+ *======================================================================*/
 package org.lwes;
 
 import java.io.DataInput;
@@ -70,7 +79,7 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
      */
     public MapEvent(String eventName, EventTemplateDB eventTemplateDB)
-        throws EventSystemException {
+            throws EventSystemException {
         this(eventName, true, eventTemplateDB);
     }
 
@@ -85,7 +94,7 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
      */
     public MapEvent(String eventName, boolean validate, EventTemplateDB eventTemplateDB)
-        throws EventSystemException {
+            throws EventSystemException {
         this(eventName, validate, eventTemplateDB, DEFAULT_ENCODING);
     }
 
@@ -100,7 +109,7 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
      */
     public MapEvent(String eventName, boolean validate, EventTemplateDB eventTemplateDB, short encoding)
-        throws EventSystemException {
+            throws EventSystemException {
         checkShortStringLength(eventName, encoding, MAX_EVENT_NAME_SIZE);
         setEventTemplateDB(eventTemplateDB);
         validating = validate;
@@ -119,7 +128,7 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchAttributeTypeException
      */
     public MapEvent(byte[] bytes, EventTemplateDB eventTemplateDB)
-        throws EventSystemException {
+            throws EventSystemException {
         this(bytes, true, eventTemplateDB);
     }
 
@@ -135,33 +144,36 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchAttributeTypeException
      */
     public MapEvent(byte[] bytes, boolean validate, EventTemplateDB eventTemplateDB)
-        throws EventSystemException {
+            throws EventSystemException {
         setEventTemplateDB(eventTemplateDB);
         validating = validate;
         deserialize(bytes);
         setDefaultValues(eventTemplateDB);
     }
-    
+
     public MapEvent(Event event) throws NoSuchAttributeException, EventSystemException {
-      this();
-      copyFrom(event);
+        this();
+        copyFrom(event);
     }
 
     public void reset() {
-      name = "";
-      validating = false;
-      eventTemplateDB = null;
-      attributes.clear();
-      encoding = DEFAULT_ENCODING;
-      if (state != null) state.reset();
-      bytesStoreSize = 3;
+        name = "";
+        validating = false;
+        eventTemplateDB = null;
+        attributes.clear();
+        encoding = DEFAULT_ENCODING;
+        if (state != null) {
+            state.reset();
+        }
+        bytesStoreSize = 3;
     }
 
     private static void checkShortStringLength(String string, short encoding, int maxLength)
-    throws EventSystemException {
+            throws EventSystemException {
         final int serializedLength = EncodedString.getBytes(string, Event.ENCODING_STRINGS[encoding]).length;
         if (serializedLength > maxLength) {
-            throw new EventSystemException("String "+string+" was longer than maximum length: "+serializedLength+" > "+maxLength);
+            throw new EventSystemException(
+                    "String " + string + " was longer than maximum length: " + serializedLength + " > " + maxLength);
         }
     }
 
@@ -169,9 +181,9 @@ public class MapEvent extends DefaultEvent {
         if (template == null) {
             return;
         }
-        for (Entry<String,BaseType> entry : template.getBaseTypesForEvent(getEventName()).entrySet()) {
-            final String   key = entry.getKey();
-            final BaseType bt  = entry.getValue();
+        for (Entry<String, BaseType> entry : template.getBaseTypesForEvent(getEventName()).entrySet()) {
+            final String key = entry.getKey();
+            final BaseType bt = entry.getValue();
             if (bt.getDefaultValue() != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Setting default value: " + key + "=" + bt.getDefaultValue());
@@ -182,7 +194,7 @@ public class MapEvent extends DefaultEvent {
     }
 
     public int getNumEventAttributes() {
-      return attributes.size();
+        return attributes.size();
     }
 
     /**
@@ -193,7 +205,7 @@ public class MapEvent extends DefaultEvent {
     public Enumeration<String> getEventAttributeNames() {
         return attributes.keys();
     }
-    
+
     public SortedSet<String> getEventAttributes() {
         return new TreeSet<String>(attributes.keySet());
     }
@@ -258,13 +270,7 @@ public class MapEvent extends DefaultEvent {
      * @param name the name of the event
      * @throws NoSuchEventException if the event is validating and does not exist in the EventTemplateDB
      */
-    public synchronized void setEventName(String name) throws NoSuchEventException {
-        if (isValidating() && getEventTemplateDB() != null) {
-            if (!getEventTemplateDB().checkForEvent(name)) {
-                throw new NoSuchEventException("Event " + name + " does not exist in event definition");
-            }
-        }
-
+    public synchronized void setEventName(String name) {
         /* determine if we already have the name and are just resetting it */
         if (this.name != null) {
             bytesStoreSize -= (this.name.length() + 1 + 2);
@@ -304,26 +310,17 @@ public class MapEvent extends DefaultEvent {
      * @return the object poitned to by attributeName
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
-    public Object get(String attributeName) throws NoSuchAttributeException {
+    public Object get(String attributeName) {
         if (attributes.containsKey(attributeName)) {
             return attributes.get(attributeName).getTypeObject();
         }
 
-        if (isValidating() && getEventTemplateDB() != null) {
-            if (getEventTemplateDB().checkForAttribute(name, attributeName)) {
-                return null;
-            }
-            else {
-                throw new NoSuchAttributeException("Attribute " + attributeName + " does not exist for event " + name);
-            }
-        }
-
         return null;
     }
-    
-    public void clear(String attributeName) throws NoSuchAttributeTypeException {
+
+    public void clear(String attributeName) {
         final BaseType bt = attributes.remove(attributeName);
-        if (bt!=null) {
+        if (bt != null) {
             bytesStoreSize -= bt.bytesStoreSize(encoding);
         }
     }
@@ -336,42 +333,40 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchAttributeException     if the attribute does not exist in this event
      * @throws NoSuchAttributeTypeException if there is an attribute with an undefined type
      */
-    public void set(String attributeName, Object attributeValue)
-        throws EventSystemException {
+    public void set(String attributeName, Object attributeValue) {
         if (isValidating() && getEventTemplateDB() != null) {
             if (getEventTemplateDB().checkForAttribute(getEventName(), attributeName)) {
                 set(attributeName, getEventTemplateDB().getBaseTypeForObjectAttribute(getEventName(),
-                        attributeName, attributeValue));
+                                                                                      attributeName, attributeValue));
             }
         }
         else {
-            throw new NoSuchAttributeException("Must be able to check the EventTemplateDB to use set(String,Object)");
+            throw new EventSystemException("Must be able to check the EventTemplateDB to use set(String,Object)");
         }
     }
-    
+
     public void set(String attribute, FieldType type, Object value) throws EventSystemException {
         set(attribute, new BaseType(type, value));
     }
-    
+
     /**
      * @param attribute the name of the attribute to set
-     * @param type      the type of this attribute
-     * @param value     the value for this attribute
+     * @param bt        the type of this attribute
      * @throws NoSuchAttributeException     if the attribute does not exist in this event
      * @throws NoSuchAttributeTypeException if there is an attribute with an undefined type
      */
-    private void set(String attribute, BaseType bt) throws EventSystemException {
+    private void set(String attribute, BaseType bt) {
         checkShortStringLength(attribute, encoding, MAX_FIELD_NAME_SIZE);
 
         if (isValidating() && getEventTemplateDB() != null) {
             if (getEventTemplateDB().checkForAttribute(name, attribute)) {
                 if (!getEventTemplateDB().checkTypeForAttribute(name, attribute, bt)) {
-                    throw new NoSuchAttributeTypeException("Wrong type '" + bt.getType() +
-                                                           "' for " + name + "." + attribute);
+                    throw new EventSystemException("Wrong type '" + bt.getType() +
+                                                   "' for " + name + "." + attribute);
                 }
             }
             else {
-                throw new NoSuchAttributeException("Attribute " + attribute + " does not exist for event " + name);
+                throw new EventSystemException("Attribute " + attribute + " does not exist for event " + name);
             }
             getEventTemplateDB().checkForSize(name, attribute, bt);
         }
@@ -381,7 +376,7 @@ public class MapEvent extends DefaultEvent {
         if (oldObject != null) {
             bytesStoreSize -= (attribute.length() + 1) + oldObject.bytesStoreSize(encoding);
         }
-        
+
         if (bt.getTypeObject() != null) {
             int newSize = bytesStoreSize + ((attribute.length() + 1) + bt.bytesStoreSize(encoding));
             if (newSize > MAX_MESSAGE_SIZE) {
@@ -460,19 +455,20 @@ public class MapEvent extends DefaultEvent {
 
             log.trace("Serialized attribute " + key);
         } // while(e.hasMoreElements())
-        
+
         final int bytesWritten = pos - offset;
         if (bytesStoreSize != bytesWritten) {
-            throw new IllegalStateException("Expected to write "+bytesStoreSize+" bytes, but actually wrote "+bytesWritten);
+            throw new IllegalStateException(
+                    "Expected to write " + bytesStoreSize + " bytes, but actually wrote " + bytesWritten);
         }
 
         return bytesWritten;
     }
 
     public int serialize(DataOutput output) throws IOException {
-      final byte[] bytes = serialize();
-      output.write(bytes);
-      return bytes.length;
+        final byte[] bytes = serialize();
+        output.write(bytes);
+        return bytes.length;
     }
 
     /**
@@ -482,7 +478,7 @@ public class MapEvent extends DefaultEvent {
      * @throws EventSystemException
      */
     public void deserialize(byte[] bytes, int offset, int length)
-        throws EventSystemException {
+            throws EventSystemException {
         if (bytes == null) {
             return;
         }
@@ -597,20 +593,22 @@ public class MapEvent extends DefaultEvent {
                         log.warn("Unknown type " + type + " in deserialization");
                 }
             }
-            if (bytesStoreSize != state.currentIndex()-offset) {
-              throw new EventSystemException("Deserializing "+type+" field "+attribute+" resulted in incorrect cache of serialized size");
+            if (bytesStoreSize != state.currentIndex() - offset) {
+                throw new EventSystemException("Deserializing " + type + " field " + attribute +
+                                               " resulted in incorrect cache of serialized size");
             }
         } // for (int i =0 ...
 
         if (bytesStoreSize != length) {
-            throw new EventSystemException("Expected to deserialize " + length + " bytes, but actually read " + bytesStoreSize);
+            throw new EventSystemException(
+                    "Expected to deserialize " + length + " bytes, but actually read " + bytesStoreSize);
         }
     }
 
     public void deserialize(DataInput stream, int length) throws IOException, EventSystemException {
-      final byte[] bytes = new byte[length];
-      stream.readFully(bytes);
-      deserialize(bytes);
+        final byte[] bytes = new byte[length];
+        stream.readFully(bytes);
+        deserialize(bytes);
     }
 
     /**
@@ -631,14 +629,14 @@ public class MapEvent extends DefaultEvent {
         }
         return evt;
     }
-    
+
     public void copyFrom(Event event) throws EventSystemException {
-      reset();
-      setEventName(event.getEventName());
-      for (String field : event.getEventAttributes()) {
-        final FieldType type = event.getType(field);
-        set(field, type, event.get(field));
-      }
+        reset();
+        setEventName(event.getEventName());
+        for (String field : event.getEventAttributes()) {
+            final FieldType type = event.getType(field);
+            set(field, type, event.get(field));
+        }
     }
 
     /**
@@ -668,16 +666,11 @@ public class MapEvent extends DefaultEvent {
             BaseType value = attributes.get(keys[i]);
             if (isValidating() && getEventTemplateDB() != null) {
                 if (getEventTemplateDB().checkTypeForAttribute(name, keys[i], FieldType.UINT64)) {
-                    try {
-                        sb.append("\t")
-                        .append(keys[i])
-                        .append(" = ")
-                        .append(NumberCodec.toHexString(getUInt64(keys[i])))
-                        .append(";\n");
-                    }
-                    catch (EventSystemException exc) {
-                        log.warn("Event.toString : ", exc);
-                    }
+                    sb.append("\t")
+                      .append(keys[i])
+                      .append(" = ")
+                      .append(NumberCodec.toHexString(getUInt64(keys[i])))
+                      .append(";\n");
                 }
                 else {
                     sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
@@ -706,16 +699,18 @@ public class MapEvent extends DefaultEvent {
             ve.addException(new EventSystemException("No template defined."));
             throw ve;
         }
-        
+
         templ.validate(this);
     }
 
     public FieldType getType(String field) {
         final BaseType bt = attributes.get(field);
-        return bt==null ? null : bt.getType();
+        return bt == null ? null : bt.getType();
     }
 
-    /** This returns the number of bytes necessary for serialization, not the number of attributes. */
+    /**
+     * This returns the number of bytes necessary for serialization, not the number of attributes.
+     */
     public int getBytesSize() {
         return bytesStoreSize;
     }

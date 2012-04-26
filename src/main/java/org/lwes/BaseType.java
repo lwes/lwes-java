@@ -188,7 +188,7 @@ public class BaseType {
         this.sizeRestriction = sizeRestriction;
     }
 
-    public int getByteSize(short encoding) throws NoSuchAttributeTypeException {
+    public int getByteSize(short encoding) {
         switch (type) {
             case BOOLEAN:
             case BYTE:
@@ -232,10 +232,10 @@ public class BaseType {
             case DOUBLE_ARRAY:
                 return Array.getLength(typeObject) * 8 + 2;
         }
-        throw new NoSuchAttributeTypeException("Unknown size of BaseType " + type.name);
+        throw new IllegalArgumentException("Unknown size of BaseType " + type.name);
     }
 
-    public int bytesStoreSize(short encoding) throws NoSuchAttributeTypeException {
+    public int bytesStoreSize(short encoding) {
         /* add size of data plus size of token denoting data type */
         return getByteSize(encoding) + 1;
     }

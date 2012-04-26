@@ -412,7 +412,7 @@ public class EventTemplateDB {
     /**
      * Returns true if the type given by aTypeName is a valid type in the DB.
      *
-     * @param aTypeName a type name according to the ESF Specification
+     * @param type a type name according to the ESF Specification
      * @return true if the type exists in the DB, false otherwise
      */
     public boolean checkForType(FieldType type) {
@@ -536,7 +536,8 @@ public class EventTemplateDB {
      *         EventTemplateDB, false otherwise.
      */
     public boolean checkTypeForAttribute(String anEventName,
-                                         String anAttributeName, FieldType anAttributeType) {
+                                         String anAttributeName,
+                                         FieldType anAttributeType) {
         if (anEventName == null || anAttributeName == null || anAttributeType == null) {
             return false;
         }
@@ -802,16 +803,7 @@ public class EventTemplateDB {
                 ve.addException(new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name));
                 continue;
             }
-            Object value;
-            try {
-                value = event.get(key);
-            }
-            catch (NoSuchAttributeException e) {
-                if (ve==null) ve = new ValidationExceptions(name);
-                ve.addException(e);
-                continue;
-            }
-
+            Object value = event.get(key);
             try {
                 getBaseTypeForObjectAttribute(name, key, value);
             } catch(NoSuchAttributeTypeException e) {
