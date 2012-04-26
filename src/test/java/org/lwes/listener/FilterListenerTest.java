@@ -20,12 +20,45 @@ import org.junit.Test;
 import org.lwes.Event;
 import org.lwes.MapEvent;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class FilterListenerTest {
 
     private static transient Log log = LogFactory.getLog(FilterListenerTest.class);
+
+    @Test(expected = RuntimeException.class)
+    public void testBadArgument() {
+        FilterListener filterListener = new FilterListener();
+        filterListener.processArguments(
+                new String[]{
+                        "-x", "224.0.0.0",
+                });
+    }
+
+    @Test
+    public void testManuallySet() {
+        FilterListener filterListener = new FilterListener();
+        filterListener.processArguments(
+                new String[]{
+                        "-m", "224.0.0.0",
+                        "-p", "0000"
+                });
+        Map<String, String> inattrs = new HashMap<String, String>();
+        inattrs.put("eid", "1");
+        filterListener.setEventAttrs(inattrs);
+
+        // Verify the argument was parsed properly
+        Map<String,String> attrs = filterListener.getEventAttrs();
+        Assert.assertNotNull(attrs);
+        Assert.assertEquals(1, attrs.size());
+        Assert.assertEquals("1", attrs.get("eid"));
+
+        filterListener.destroy();
+        Assert.assertNull(filterListener.getEventAttrs());
+        Assert.assertNull(filterListener.getEventNames());
+    }
 
     @Test
     public void testSingleEventFilter() {
@@ -45,10 +78,12 @@ public class FilterListenerTest {
         MapEvent evt = new MapEvent("Test::One");
         Event matchedEvent = filterListener.match(evt);
         Assert.assertNotNull(matchedEvent);
+        filterListener.handleEvent(evt);
 
         evt = new MapEvent("Test::Two");
         matchedEvent = filterListener.match(evt);
         Assert.assertNull(matchedEvent);
+        filterListener.handleEvent(evt);
     }
 
     @Test
