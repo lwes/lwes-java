@@ -9,6 +9,8 @@
  *======================================================================*/
 package org.lwes;
 
+import org.lwes.util.IPAddress;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -16,8 +18,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Set;
-
-import org.lwes.util.IPAddress;
 
 public abstract class DefaultEvent implements Event {
     protected static final BigInteger UINT64_MASK = new BigInteger("10000000000000000", 16);
@@ -79,56 +79,28 @@ public abstract class DefaultEvent implements Event {
         set(attributeName, FieldType.FLOAT_ARRAY, value);
     }
 
-    public void setDouble(String attributeName, Double value) throws EventSystemException {
-        set(attributeName, FieldType.DOUBLE, value);
-    }
-
     public void setDouble(String attributeName, double value) throws EventSystemException {
         set(attributeName, FieldType.DOUBLE, value);
-    }
-
-    public void setFloat(String attributeName, Float value) throws EventSystemException {
-        set(attributeName, FieldType.FLOAT, value);
     }
 
     public void setFloat(String attributeName, float value) throws EventSystemException {
         set(attributeName, FieldType.FLOAT, value);
     }
 
-    public void setByte(String attributeName, Byte value) throws EventSystemException {
-        set(attributeName, FieldType.BYTE, value);
-    }
-
     public void setByte(String attributeName, byte value) throws EventSystemException {
         set(attributeName, FieldType.BYTE, value);
-    }
-
-    public void setBoolean(String attributeName, Boolean aBool) throws EventSystemException {
-        set(attributeName, FieldType.BOOLEAN, aBool);
     }
 
     public void setBoolean(String attributeName, boolean aBool) throws EventSystemException {
         set(attributeName, FieldType.BOOLEAN, aBool);
     }
 
-    public void setUInt16(String attributeName, Integer aNumber) throws EventSystemException {
-        set(attributeName, FieldType.UINT16, aNumber);
-    }
-
     public void setUInt16(String attributeName, int aNumber) throws EventSystemException {
         set(attributeName, FieldType.UINT16, aNumber);
     }
 
-    public void setInt16(String attributeName, Short aNumber) throws EventSystemException {
-        set(attributeName, FieldType.INT16, aNumber);
-    }
-
     public void setInt16(String attributeName, short aNumber) throws EventSystemException {
         set(attributeName, FieldType.INT16, aNumber);
-    }
-
-    public void setUInt32(String attributeName, Long aNumber) throws EventSystemException {
-        set(attributeName, FieldType.UINT32, aNumber);
     }
 
     public void setUInt32(String attributeName, long aNumber) throws EventSystemException {
@@ -147,16 +119,8 @@ public abstract class DefaultEvent implements Event {
         set(attributeName, FieldType.UINT64, aNumber);
     }
 
-    public void setUInt64(String attributeName, Long aNumber) throws EventSystemException {
-        set(attributeName, FieldType.UINT64, BigInteger.valueOf(aNumber));
-    }
-
     public void setUInt64(String attributeName, long aNumber) throws EventSystemException {
         set(attributeName, FieldType.UINT64, BigInteger.valueOf(aNumber));
-    }
-
-    public void setInt64(String attributeName, Long aNumber) throws EventSystemException {
-        set(attributeName, FieldType.INT64, aNumber);
     }
 
     public void setInt64(String attributeName, long aNumber) throws EventSystemException {
