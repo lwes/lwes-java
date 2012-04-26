@@ -1,16 +1,25 @@
+/*======================================================================*
+ * Licensed under the New BSD License (the "License"); you may not use  *
+ * this file except in compliance with the License.  Unless required    *
+ * by applicable law or agreed to in writing, software distributed      *
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT        *
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     *
+ * See the License for the specific language governing permissions and  *
+ * limitations under the License. See accompanying LICENSE file.        *
+ *======================================================================*/
 package org.lwes;
+
+import org.apache.log4j.Logger;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.util.Arrays;
-import java.util.Enumeration;
-
-import org.apache.log4j.Logger;
-import org.junit.Test;
 
 public final class ArrayEventTest {
 
