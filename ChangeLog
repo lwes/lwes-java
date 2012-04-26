@@ -1,5 +1,5 @@
 ***
-1.0.0 Changes
+1.0.1 Changes
 - Spec: https://github.com/lwes/lwes-website/blob/master/specs/lwes-v1
 - Event class is now an interface. Implementation moved to MapEvent.
 - ip_addr is now deprecated and should not be used. Use a byte array or a string for ip addresses.
@@ -8,6 +8,8 @@
 - Required/Optional
 - Size limitations
 - ArrayEvent added as a fast implementation of Event
+- EventSystemException and subclasses are now Runtime exceptions
+- Added FilterListener
 
 ***
 0.2.5
