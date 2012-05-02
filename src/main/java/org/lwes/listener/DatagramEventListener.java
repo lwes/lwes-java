@@ -15,6 +15,7 @@ package org.lwes.listener;
 import org.lwes.EventSystemException;
 
 import java.net.InetAddress;
+import java.util.Collection;
 
 /**
  * This is an event listener that handles UDP packets.  Automatically
@@ -187,6 +188,13 @@ public class DatagramEventListener extends ThreadedEventListener {
         if (dequeuer != null) {
             dequeuer.removeHandler(handler);
         }
+    }
+
+    public Collection<EventHandler> getHandlers() {
+        if (dequeuer != null) {
+            return dequeuer.getHandlers();
+        }
+        return null;
     }
 
     /**

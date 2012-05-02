@@ -15,6 +15,7 @@ package org.lwes.listener;
 import org.lwes.Event;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -127,6 +128,10 @@ public abstract class ThreadedDequeuer implements Runnable {
 			handlers.put(name, handler);
 		}
 	}
+
+    public Collection<EventHandler> getHandlers() {
+        return handlers.values();
+    }
 
 	/**
 	 * Removes a handler so it no longer is processing events
