@@ -478,12 +478,13 @@ public final class ArrayEvent extends DefaultEvent {
                 return 2 + deserializeUINT16(valueIndex);
             case STRING_ARRAY: {
                 int count = deserializeUINT16(valueIndex);
+                int sum = 2;
                 int index = valueIndex;
                 index += 2;
                 for (int n = 0; n < count; ++n) {
-                    index += 2 + deserializeUINT16(index);
+                    sum += 2 + deserializeUINT16(index);
                 }
-                return index;
+                return sum;
             }
             case BOOLEAN_ARRAY:
             case BYTE_ARRAY:
