@@ -9,6 +9,12 @@
  *======================================================================*/
 package org.lwes;
 
+import org.apache.commons.lang.mutable.MutableInt;
+import org.lwes.serializer.Deserializer;
+import org.lwes.serializer.DeserializerState;
+import org.lwes.serializer.Serializer;
+import org.lwes.util.EncodedString;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -20,12 +26,6 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.apache.commons.lang.mutable.MutableInt;
-import org.lwes.serializer.Deserializer;
-import org.lwes.serializer.DeserializerState;
-import org.lwes.serializer.Serializer;
-import org.lwes.util.EncodedString;
 
 public final class ArrayEvent extends DefaultEvent {
 
@@ -63,7 +63,6 @@ public final class ArrayEvent extends DefaultEvent {
         setEventName(name);
     }
 
-    @Deprecated
     public ArrayEvent(byte[] bytes) {
         this();
         this.length = bytes.length;
@@ -556,12 +555,7 @@ public final class ArrayEvent extends DefaultEvent {
             encoding = ae.encoding;
         }
         else {
-            reset();
-            setEventName(event.getEventName());
-            for (String field : event.getEventAttributes()) {
-                final FieldType type = event.getType(field);
-                set(field, type, event.get(field));
-            }
+            super.copyFrom(event);
         }
     }
 

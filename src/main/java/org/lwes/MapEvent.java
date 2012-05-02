@@ -9,6 +9,15 @@
  *======================================================================*/
 package org.lwes;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.lwes.db.EventTemplateDB;
+import org.lwes.serializer.Deserializer;
+import org.lwes.serializer.DeserializerState;
+import org.lwes.serializer.Serializer;
+import org.lwes.util.EncodedString;
+import org.lwes.util.NumberCodec;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -19,15 +28,6 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.lwes.db.EventTemplateDB;
-import org.lwes.serializer.Deserializer;
-import org.lwes.serializer.DeserializerState;
-import org.lwes.serializer.Serializer;
-import org.lwes.util.EncodedString;
-import org.lwes.util.NumberCodec;
 
 public class MapEvent extends DefaultEvent {
     private static transient Log log = LogFactory.getLog(MapEvent.class);
@@ -628,15 +628,6 @@ public class MapEvent extends DefaultEvent {
             evt.set(key, value.cloneBaseType());
         }
         return evt;
-    }
-
-    public void copyFrom(Event event) throws EventSystemException {
-        reset();
-        setEventName(event.getEventName());
-        for (String field : event.getEventAttributes()) {
-            final FieldType type = event.getType(field);
-            set(field, type, event.get(field));
-        }
     }
 
     /**

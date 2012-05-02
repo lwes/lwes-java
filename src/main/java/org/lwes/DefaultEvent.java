@@ -301,5 +301,13 @@ public abstract class DefaultEvent implements Event {
     public abstract void deserialize(DataInput stream, int length) throws IOException;
     public abstract int getBytesSize();
     public abstract Event copy();
-    public abstract void copyFrom(Event event);
+
+    public void copyFrom(Event event) {
+        reset();
+        setEventName(event.getEventName());
+        for (String field : event.getEventAttributes()) {
+            final FieldType type = event.getType(field);
+            set(field, type, event.get(field));
+        }
+    }
 }
