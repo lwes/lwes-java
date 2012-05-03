@@ -168,8 +168,8 @@ public abstract class DefaultEvent implements Event {
         return (long[]) get(attributeName);
     }
 
-    public long[] getUInt64Array(String attributeName) {
-        return (long[]) get(attributeName);
+    public BigInteger[] getUInt64Array(String attributeName) {
+        return (BigInteger[]) get(attributeName);
     }
 
     public String[] getStringArray(String attributeName) {

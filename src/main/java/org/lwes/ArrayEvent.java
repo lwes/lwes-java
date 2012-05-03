@@ -322,7 +322,7 @@ public final class ArrayEvent extends DefaultEvent {
             case FLOAT:
                 return Deserializer.deserializeFLOAT(tempState, bytes);
             case UINT64:
-                return Deserializer.deserializeUINT64(tempState, bytes);
+                return Deserializer.deserializeUInt64ToBigInteger(tempState, bytes);
             case INT64:
                 return Deserializer.deserializeINT64(tempState, bytes);
             case DOUBLE:

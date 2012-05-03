@@ -12,6 +12,9 @@
 
 package org.lwes;
 
+import org.lwes.util.CharacterEncoding;
+import org.lwes.util.IPAddress;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -19,10 +22,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Set;
-import java.util.SortedSet;
-
-import org.lwes.util.CharacterEncoding;
-import org.lwes.util.IPAddress;
 
 public interface Event {
     static final int MAX_EVENT_NAME_SIZE = 127;
@@ -138,7 +137,7 @@ public interface Event {
 
     long[] getUInt32Array(String attributeName);
 
-    long[] getUInt64Array(String attributeName);
+    BigInteger[] getUInt64Array(String attributeName);
 
     String[] getStringArray(String attributeName);
 

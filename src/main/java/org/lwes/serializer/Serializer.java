@@ -261,14 +261,14 @@ public class Serializer {
         return (offset - offsetStart);
     }
 
-    public static int serializeUInt64Array(long[] value,
+    public static int serializeUInt64Array(BigInteger[] value,
                                            byte[] bytes,
                                            int offset) {
         int numbytes = 0;
         int offsetStart = offset;
         numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
-        for (long s : value) {
+        for (BigInteger s : value) {
             numbytes = serializeUINT64(s, bytes, offset);
             offset += numbytes;
         }
@@ -448,7 +448,7 @@ public class Serializer {
             case UINT32_ARRAY:
                 return Serializer.serializeUInt32Array((long[]) data, bytes, offset);
             case UINT64_ARRAY:
-                return Serializer.serializeUInt64Array((long[]) data, bytes, offset);
+                return Serializer.serializeUInt64Array((BigInteger[]) data, bytes, offset);
             case BOOLEAN_ARRAY:
                 return Serializer.serializeBooleanArray((boolean[]) data, bytes, offset);
             case BYTE_ARRAY:

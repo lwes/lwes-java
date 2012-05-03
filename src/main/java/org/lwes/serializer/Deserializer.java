@@ -21,6 +21,7 @@ import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 import org.lwes.util.NumberCodec;
 
+import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -188,6 +189,11 @@ public class Deserializer {
         return aLong;
     }
 
+    public static BigInteger deserializeUInt64ToBigInteger(DeserializerState state,
+                                                           byte[] bytes) {
+        return BigInteger.valueOf(deserializeUINT64(state, bytes));
+    }
+
     public static String deserializeUINT64toHexString(DeserializerState myState,
                                                       byte[] bytes) {
         String aString =
@@ -329,12 +335,12 @@ public class Deserializer {
         return rtn;
     }
 
-    public static long[] deserializeUInt64Array(DeserializerState state,
+    public static BigInteger[] deserializeUInt64Array(DeserializerState state,
                                                 byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        long[] rtn = new long[length];
+        BigInteger[] rtn = new BigInteger[length];
         for (int i = 0; i < length; i++) {
-            rtn[i] = deserializeUINT64(state, bytes);
+            rtn[i] = deserializeUInt64ToBigInteger(state, bytes);
         }
         return rtn;
     }
