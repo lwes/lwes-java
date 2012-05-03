@@ -22,6 +22,7 @@ import org.lwes.EventSystemException;
 import org.lwes.MapEvent;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
@@ -292,8 +293,9 @@ public class ArrayTest {
     public void testUInt64() throws EventSystemException {
         // First try to set a valid string array
         Event evt = new MapEvent("TestEvent", true, template);
-        evt.setUInt64Array("field7", new long[]{123456789012l, 234567890123l});
-        long[] ar = evt.getUInt64Array("field7");
+        evt.setUInt64Array("field7", new BigInteger[]{new BigInteger("123456789012"),
+                                                      new BigInteger("234567890123")});
+        BigInteger[] ar = evt.getUInt64Array("field7");
         assertNotNull("string array was null", ar);
         assertEquals("length was incorrect", 2, ar.length);
 
@@ -301,7 +303,7 @@ public class ArrayTest {
         byte[] serializedEvent = evt.serialize();
         Event evt2 = new MapEvent(serializedEvent, true, template);
         assertNotNull(evt2);
-        long[] a2 = evt2.getUInt64Array("field7");
+        BigInteger[] a2 = evt2.getUInt64Array("field7");
         assertNotNull(a2);
         assertEquals("deserialized array length was incorrect", 2, a2.length);
         assertEquals("a2[0]", a2[0], 123456789012l);
