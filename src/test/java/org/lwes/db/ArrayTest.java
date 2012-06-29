@@ -306,8 +306,8 @@ public class ArrayTest {
         BigInteger[] a2 = evt2.getUInt64Array("field7");
         assertNotNull(a2);
         assertEquals("deserialized array length was incorrect", 2, a2.length);
-        assertEquals("a2[0]", a2[0], 123456789012l);
-        assertEquals("a2[1]", a2[1], 234567890123l);
+        assertEquals("a2[0]", a2[0].longValue(), 123456789012l);
+        assertEquals("a2[1]", a2[1].longValue(), 234567890123l);
 
         // Now try to set an invalid string array and make
         // sure an exception is thrown.
