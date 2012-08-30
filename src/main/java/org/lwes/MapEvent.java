@@ -166,15 +166,6 @@ public class MapEvent extends DefaultEvent {
         bytesStoreSize = 3;
     }
 
-    private static void checkShortStringLength(String string, short encoding, int maxLength)
-            throws EventSystemException {
-        final int serializedLength = EncodedString.getBytes(string, Event.ENCODING_STRINGS[encoding]).length;
-        if (serializedLength > maxLength) {
-            throw new EventSystemException(
-                    "String " + string + " was longer than maximum length: " + serializedLength + " > " + maxLength);
-        }
-    }
-
     protected void setDefaultValues(EventTemplateDB template) throws EventSystemException {
         if (template == null) {
             return;
@@ -269,6 +260,8 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchEventException if the event is validating and does not exist in the EventTemplateDB
      */
     public synchronized void setEventName(String name) {
+        checkShortStringLength(name, encoding, MAX_EVENT_NAME_SIZE);
+        
         /* determine if we already have the name and are just resetting it */
         if (this.name != null) {
             bytesStoreSize -= (this.name.length() + 1 + 2);

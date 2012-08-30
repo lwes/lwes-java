@@ -113,6 +113,7 @@ public final class ArrayEvent extends DefaultEvent {
 
     @Override
     public void setEventName(String name) {
+        checkShortStringLength(name, encoding, MAX_EVENT_NAME_SIZE);
         final String oldName = getEventName();
         final String defaultEncodingString = ENCODING_STRINGS[DEFAULT_ENCODING].getEncodingString();
         try {
@@ -139,6 +140,7 @@ public final class ArrayEvent extends DefaultEvent {
      */
     @Override
     public void set(String key, FieldType type, Object value) {
+        checkShortStringLength(key, encoding, MAX_FIELD_NAME_SIZE);
         if (ENCODING.equals(key)) {
             if (type == FieldType.INT16) {
                 setEncoding((Short) value);

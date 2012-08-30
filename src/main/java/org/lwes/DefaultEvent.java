@@ -19,6 +19,7 @@ import java.util.Enumeration;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 
 public abstract class DefaultEvent implements Event {
@@ -344,5 +345,14 @@ public abstract class DefaultEvent implements Event {
 
         sb.append("}");
         return sb.toString();
+    }
+
+    protected static void checkShortStringLength(String string, short encoding, int maxLength)
+            throws EventSystemException {
+        final int serializedLength = EncodedString.getBytes(string, Event.ENCODING_STRINGS[encoding]).length;
+        if (serializedLength > maxLength) {
+            throw new EventSystemException(
+                    "String " + string + " was longer than maximum length: " + serializedLength + " > " + maxLength);
+        }
     }
 }
