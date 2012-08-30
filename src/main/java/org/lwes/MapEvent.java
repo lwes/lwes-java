@@ -9,6 +9,16 @@
  *======================================================================*/
 package org.lwes;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.Enumeration;
+import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.lwes.db.EventTemplateDB;
@@ -16,18 +26,6 @@ import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.EncodedString;
-import org.lwes.util.NumberCodec;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Map.Entry;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class MapEvent extends DefaultEvent {
     private static transient Log log = LogFactory.getLog(MapEvent.class);
@@ -628,52 +626,6 @@ public class MapEvent extends DefaultEvent {
             evt.set(key, value.cloneBaseType());
         }
         return evt;
-    }
-
-    /**
-     * Returns a String representation of this event
-     *
-     * @return a String return of this event.
-     */
-    @Override
-    public String toString() {
-        if (name == null) {
-            return "";
-        }
-
-        StringBuffer sb = new StringBuffer();
-        sb.append(name);
-        sb.append("\n{\n");
-
-        int i = 0;
-        String[] keys = new String[attributes.size()];
-        for (Enumeration<String> e = attributes.keys(); e.hasMoreElements(); ) {
-            keys[i++] = e.nextElement();
-        }
-
-        Arrays.sort(keys);
-
-        for (i = 0; i < attributes.size(); ++i) {
-            BaseType value = attributes.get(keys[i]);
-            if (isValidating() && getEventTemplateDB() != null) {
-                if (getEventTemplateDB().checkTypeForAttribute(name, keys[i], FieldType.UINT64)) {
-                    sb.append("\t")
-                      .append(keys[i])
-                      .append(" = ")
-                      .append(NumberCodec.toHexString(getUInt64(keys[i])))
-                      .append(";\n");
-                }
-                else {
-                    sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
-                }
-            }
-            else {
-                sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
-            }
-        } // for(i = 0; i < attributes.size() ...
-
-        sb.append("}");
-        return sb.toString();
     }
 
     /**

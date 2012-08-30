@@ -9,15 +9,17 @@
  *======================================================================*/
 package org.lwes;
 
-import org.lwes.util.IPAddress;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Set;
+import java.util.TreeSet;
+
+import org.lwes.util.IPAddress;
 
 public abstract class DefaultEvent implements Event {
     protected static final BigInteger UINT64_MASK = new BigInteger("10000000000000000", 16);
@@ -309,5 +311,38 @@ public abstract class DefaultEvent implements Event {
             final FieldType type = event.getType(field);
             set(field, type, event.get(field));
         }
+    }
+
+    /**
+     * Returns a String representation of this event
+     *
+     * @return a String return of this event.
+     */
+    @Override
+    public String toString() {
+        final String eventName = getEventName();
+        if (eventName == null || eventName.isEmpty()) {
+            return "";
+        }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(eventName);
+        sb.append("\n{\n");
+
+        for (String field : new TreeSet<String>(getEventAttributes())) {
+            final Object value = get(field);
+            final String valueString;
+            if (value==null) {
+                valueString = "";
+            } else if (value.getClass().isArray()) {
+                valueString = Arrays.deepToString(new Object[] { value }).replaceFirst("^\\[(.*)\\]$", "$1");
+            } else {
+                valueString = value.toString();
+            }
+            sb.append("\t").append(field).append(" = ").append(valueString).append(";\n");
+        }
+
+        sb.append("}");
+        return sb.toString();
     }
 }

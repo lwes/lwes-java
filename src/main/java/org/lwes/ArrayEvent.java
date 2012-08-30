@@ -9,12 +9,6 @@
  *======================================================================*/
 package org.lwes;
 
-import org.apache.commons.lang.mutable.MutableInt;
-import org.lwes.serializer.Deserializer;
-import org.lwes.serializer.DeserializerState;
-import org.lwes.serializer.Serializer;
-import org.lwes.util.EncodedString;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -26,6 +20,12 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.apache.commons.lang.mutable.MutableInt;
+import org.lwes.serializer.Deserializer;
+import org.lwes.serializer.DeserializerState;
+import org.lwes.serializer.Serializer;
+import org.lwes.util.EncodedString;
 
 public final class ArrayEvent extends DefaultEvent {
 
@@ -523,25 +523,6 @@ public final class ArrayEvent extends DefaultEvent {
 
     private int getTokenIndexFromFieldIndex(int fieldIndex) {
         return fieldIndex + getEventWordLength(fieldIndex);
-    }
-
-    @Override
-    public String toString() {
-        if (length == 0) {
-            return "";
-        }
-
-        StringBuffer sb = new StringBuffer();
-        sb.append(getEventName());
-        sb.append("\n{\n");
-
-        for (String field : getEventAttributes()) {
-            String value = get(field).toString();
-            sb.append("\t").append(field).append(" = ").append(value).append(";\n");
-        }
-
-        sb.append("}");
-        return sb.toString();
     }
 
     @Override
