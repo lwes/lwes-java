@@ -37,9 +37,11 @@ import org.junit.Test;
 import org.lwes.db.EventTemplateDB;
 import org.lwes.util.IPAddress;
 
-public class EventTest {
+public abstract class EventTest {
 
     private EventTemplateDB eventTemplate;
+    
+    protected abstract Event createEvent();
 
     @Before
     public void setUp() {
@@ -50,7 +52,8 @@ public class EventTest {
 
     @Test
     public void testRemove() throws EventSystemException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         evt.setString("test", "value");
         assertTrue(evt.isSet("test"));
         assertEquals("value", evt.get("test"));
@@ -61,7 +64,8 @@ public class EventTest {
 
     @Test
     public void testGetAttributeNames() throws EventSystemException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         evt.setString("str", "string");
 
         boolean success = false;
@@ -77,7 +81,8 @@ public class EventTest {
 
     @Test
     public void testGetInetAddress() throws EventSystemException, UnknownHostException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         final InetAddress localhost = InetAddress.getLocalHost();
         evt.setIPAddress("ip", localhost);
         InetAddress a = evt.getInetAddress("ip");
@@ -87,7 +92,8 @@ public class EventTest {
 
     @Test
     public void testGetInetAddressAsBytes() throws EventSystemException, UnknownHostException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         final InetAddress localhost = InetAddress.getLocalHost();
         evt.setByteArray("ip", localhost.getAddress());
         byte[] iparr = evt.getByteArray("ip");
@@ -98,7 +104,8 @@ public class EventTest {
 
     @Test
     public void testIsSet() throws EventSystemException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         assertFalse(evt.isSet("notset"));
 
         evt.setInt32("set", 32);
@@ -107,7 +114,8 @@ public class EventTest {
 
     @Test
     public void testToString() throws EventSystemException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         evt.setInt32("set", 32);
         assertEquals("Test { \tenc = 1; \tset = 32; }", evt.toOneLineString());
         assertEquals("Test\n{\n\tenc = 1;\n\tset = 32;\n}", evt.toString());
@@ -115,7 +123,8 @@ public class EventTest {
 
     @Test
     public void testNullValue() throws EventSystemException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         Short s = evt.getInt16("a");
         assertNull(s);
         evt.setInt16("a", (short) 1);
@@ -126,7 +135,8 @@ public class EventTest {
 
     @Test
     public void testUnsignedTypesValidate() throws EventSystemException {
-        MapEvent evt = new MapEvent("Test");
+        Event evt = createEvent();
+        evt.setEventName("Test");
         try {
             evt.setUInt16("SiteID", 0);
             eventTemplate.validate(evt);
@@ -139,7 +149,8 @@ public class EventTest {
     @Test
     public void testValidateEventName() throws EventSystemException {
         boolean exceptionThrown = false;
-        MapEvent evt = new MapEvent("Test2");
+        Event evt = createEvent();
+        evt.setEventName("Test2");
         try {
             eventTemplate.validate(evt);
         }
@@ -151,7 +162,8 @@ public class EventTest {
 
     @Test
     public void testValidateField() throws EventSystemException {
-        MapEvent evt = new MapEvent("Test");
+        Event evt = createEvent();
+        evt.setEventName("Test");
         try {
             evt.setString("field1", "avalue");
             eventTemplate.validate(evt);
@@ -163,7 +175,8 @@ public class EventTest {
 
     @Test
     public void testValidateBadTypeField() throws EventSystemException {
-        MapEvent evt = new MapEvent("Test");
+        Event evt = createEvent();
+        evt.setEventName("Test");
         try {
             evt.setInt16("field1", (short) 15);
             eventTemplate.validate(evt);
@@ -179,7 +192,8 @@ public class EventTest {
 
     @Test
     public void testValidateBadField() throws EventSystemException {
-        MapEvent evt = new MapEvent("Test");
+        Event evt = createEvent();
+        evt.setEventName("Test");
         try {
             evt.setInt16("field3", (short) 15);
             eventTemplate.validate(evt);
@@ -195,7 +209,8 @@ public class EventTest {
 
     @Test
     public void testSerialize() throws EventSystemException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         evt.setString("attr_s", "str_value");
         evt.setInt32("attr_i", 1);
         byte[] bytes = evt.serialize();
@@ -206,7 +221,8 @@ public class EventTest {
 
     @Test
     public void testEventAccessors() throws EventSystemException, UnknownHostException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
 
         evt.setInt16("int16", (short) 1);
         evt.setInt32("int32", 1337);
@@ -242,8 +258,8 @@ public class EventTest {
 
     @Test
     public void testEventSize() throws EventSystemException {
-
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
 
         for (int i = 0; i < 5000; i++) {
             evt.setInt32("" + i, i);
@@ -269,17 +285,20 @@ public class EventTest {
     
     @Test
     public void testMaximallyLongEventNames() throws EventSystemException {
-        new MapEvent("       010       020       030       040       050       060       070       080       090       100       110       120    127", false, eventTemplate);
+        createEvent().setEventName(
+                "       010       020       030       040       050       060       070       080       090       100       110       120    127");
     }
     
     @Test(expected=EventSystemException.class)
     public void testOverlyLongEventNames() throws EventSystemException {
-        new MapEvent("       010       020       030       040       050       060       070       080       090       100       110       120     128", false, eventTemplate);
+        createEvent().setEventName(
+                "       010       020       030       040       050       060       070       080       090       100       110       120     128");
     }
     
     @Test
     public void testMaximallyLongFieldName() throws EventSystemException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         
         final String name = "       010       020       030       040       050       060       070       080       090       100       110       120       130       140       150       160       170       180       190       200       210       220       230       240       250  255";
         evt.setString(name, "irrelevant");
@@ -289,14 +308,16 @@ public class EventTest {
     
     @Test(expected=EventSystemException.class)
     public void testOverlyLongFieldName() throws EventSystemException {
-        Event evt = new MapEvent("Test", false, eventTemplate);
+        Event evt = createEvent();
+        evt.setEventName("Test");
         final String name = "       010       020       030       040       050       060       070       080       090       100       110       120       130       140       150       160       170       180       190       200       210       220       230       240       250   256";
         evt.setString(name, "irrelevant");
     }
     
     @Test
     public void testAllFieldTypes() throws EventSystemException {
-        MapEvent evt = new MapEvent("Everything");
+        Event evt = createEvent();
+        evt.setEventName("Everything");
         evt.setUInt16("field1", 1);
         evt.setInt16("field2", (short) 2);
         evt.setUInt32("field3", 3L);
