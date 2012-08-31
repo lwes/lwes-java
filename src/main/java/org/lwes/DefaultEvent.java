@@ -23,7 +23,7 @@ import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 
 public abstract class DefaultEvent implements Event {
-    protected static final BigInteger UINT64_MASK = new BigInteger("10000000000000000", 16);
+    private static final BigInteger UINT64_MASK = new BigInteger("ffffffffffffffff", 16);
 
     public void setInt16Array(String attributeName, short[] value) throws EventSystemException {
         set(attributeName, FieldType.INT16_ARRAY, value);
@@ -50,7 +50,7 @@ public abstract class DefaultEvent implements Event {
         for (int i = 0; i < value.length; ++i) {
             value2[i] = BigInteger.valueOf(value[i]).and(UINT64_MASK);
         }
-        set(attributeName, FieldType.UINT64_ARRAY, value);
+        set(attributeName, FieldType.UINT64_ARRAY, value2);
     }
 
     public void setUInt64Array(String attributeName, BigInteger[] value) throws EventSystemException {
