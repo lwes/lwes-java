@@ -50,7 +50,7 @@ public final class ArrayEvent extends DefaultEvent {
 
     public ArrayEvent() {
         length = getValueListIndex();
-        encoding = DEFAULT_ENCODING;
+        setEncoding(DEFAULT_ENCODING);
         final MutableInt creations = STATS.get(ArrayEventStats.CREATIONS);
         final MutableInt deletions = STATS.get(ArrayEventStats.DELETIONS);
         final MutableInt highwater = STATS.get(ArrayEventStats.HIGHWATER);
@@ -71,6 +71,7 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {
+        this();
         this.bytes = Arrays.copyOfRange(bytes, offset, length + excess);
         this.length = length;
         resetCaches();
