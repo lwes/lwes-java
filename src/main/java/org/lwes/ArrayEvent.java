@@ -480,14 +480,13 @@ public final class ArrayEvent extends DefaultEvent {
             case STRING:
                 return 2 + deserializeUINT16(valueIndex);
             case STRING_ARRAY: {
+                int index0 = valueIndex;
                 int count = deserializeUINT16(valueIndex);
-                int sum = 2;
-                int index = valueIndex;
-                index += 2;
+                valueIndex += 2;
                 for (int n = 0; n < count; ++n) {
-                    sum += 2 + deserializeUINT16(index);
+                    valueIndex += 2 + deserializeUINT16(valueIndex);
                 }
-                return sum;
+                return valueIndex - index0;
             }
             case BOOLEAN_ARRAY:
             case BYTE_ARRAY:
@@ -555,7 +554,15 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     /**
-     * These two ArrayEvent objects swap all of their fields
+     * These two ArrayEvent objects swap all of their fields.
+     * 
+     * Why would one want to do this? If one must set "this" to the value of
+     * "event", but it's acceptable to modify "event" in the process, then
+     * swap() accomplishes the copy faster than copyFrom(event) can.
+     * 
+     * Typical events seem to take about 6ms for copyFrom() but only 100ns for
+     * swap().  However, if you're not doing enough copies that the performance
+     * difference matters, you should probably use copyFrom().
      */
     public void swap(ArrayEvent event) {
         if (this == event) {
@@ -610,5 +617,49 @@ public final class ArrayEvent extends DefaultEvent {
 
         return true;
     }
-
+    
+    /**
+     * This method shows detailed information about the internal state of the
+     * event, and was designed as a "Detail Formatter" for tracing execution
+     * under Eclipse.  It may be useful for other IDEs or other uses.
+     */
+    public String toStringDetailed() {
+        final StringBuilder buf = new StringBuilder();
+        try {
+            buf.append(String.format("Event name:        \"%s\"\n", getEventName()));
+            buf.append(String.format("Serialized length: %d\n", length));
+            buf.append(String.format("tempState index:   %d\n", tempState.currentIndex()));
+            buf.append(String.format("Encoding:          %s\n", Event.ENCODING_STRINGS[encoding].getEncodingString()));
+            buf.append(String.format("Number of fields:  %d\n", getNumEventAttributes()));
+            final DeserializerState ds = new DeserializerState();
+            ds.set(getValueListIndex());
+            while (ds.currentIndex() < length) {
+              String    field;
+              FieldType type;
+              Object    value;
+              try {
+                field = Deserializer.deserializeATTRIBUTEWORD(ds, bytes);
+              } catch(Exception e) {
+                throw new Exception("Error when reading field name: "+e.getMessage());
+              }
+              try {
+                type = FieldType.byToken(Deserializer.deserializeBYTE(ds, bytes));
+              } catch(Exception e) {
+                throw new Exception("Error when reading field name: "+e.getMessage());
+              }
+              try {
+                value = Deserializer.deserializeValue(ds, bytes, type, encoding);
+              } catch(Exception e) {
+                throw new Exception("Error when reading field name: "+e.getMessage());
+              }
+              if (value.getClass().isArray()) {
+                value = Arrays.deepToString(new Object[] { value });
+              }
+              buf.append(String.format("  field \"%s\" (%s): %s\n", field, type, value));
+            }
+        } catch(Exception e) {
+            buf.append("\nEXCEPTION: ").append(e.getMessage());
+        }
+        return buf.toString();
+    }
 }
