@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-public class MapEventTest {
+public class MapEventTest extends EventTest {
 
     private static transient Log log = LogFactory.getLog(MapEventTest.class);
 
@@ -91,6 +91,11 @@ public class MapEventTest {
 
         evt.set("int64[]", FieldType.INT64_ARRAY, new long[] {10l});
         Assert.assertEquals(10, evt.getInt64Array("int64[]")[0]);
+    }
+
+    @Override
+    protected MapEvent createEvent() {
+        return new MapEvent();
     }
 
 }

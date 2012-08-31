@@ -9,6 +9,16 @@
  *======================================================================*/
 package org.lwes;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.Enumeration;
+import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.lwes.db.EventTemplateDB;
@@ -16,18 +26,6 @@ import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.EncodedString;
-import org.lwes.util.NumberCodec;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Map.Entry;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class MapEvent extends DefaultEvent {
     private static transient Log log = LogFactory.getLog(MapEvent.class);
@@ -168,15 +166,6 @@ public class MapEvent extends DefaultEvent {
         bytesStoreSize = 3;
     }
 
-    private static void checkShortStringLength(String string, short encoding, int maxLength)
-            throws EventSystemException {
-        final int serializedLength = EncodedString.getBytes(string, Event.ENCODING_STRINGS[encoding]).length;
-        if (serializedLength > maxLength) {
-            throw new EventSystemException(
-                    "String " + string + " was longer than maximum length: " + serializedLength + " > " + maxLength);
-        }
-    }
-
     protected void setDefaultValues(EventTemplateDB template) throws EventSystemException {
         if (template == null) {
             return;
@@ -271,6 +260,8 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchEventException if the event is validating and does not exist in the EventTemplateDB
      */
     public synchronized void setEventName(String name) {
+        checkShortStringLength(name, encoding, MAX_EVENT_NAME_SIZE);
+        
         /* determine if we already have the name and are just resetting it */
         if (this.name != null) {
             bytesStoreSize -= (this.name.length() + 1 + 2);
@@ -539,7 +530,7 @@ public class MapEvent extends DefaultEvent {
                         setFloat(attribute, Deserializer.deserializeFLOAT(state, bytes));
                         break;
                     case UINT64:
-                        setUInt64(attribute, BigInteger.valueOf(Deserializer.deserializeUINT64(state, bytes)));
+                        setUInt64(attribute, Deserializer.deserializeUInt64ToBigInteger(state, bytes));
                         break;
                     case INT64:
                         setInt64(attribute, Deserializer.deserializeINT64(state, bytes));
@@ -628,52 +619,6 @@ public class MapEvent extends DefaultEvent {
             evt.set(key, value.cloneBaseType());
         }
         return evt;
-    }
-
-    /**
-     * Returns a String representation of this event
-     *
-     * @return a String return of this event.
-     */
-    @Override
-    public String toString() {
-        if (name == null) {
-            return "";
-        }
-
-        StringBuffer sb = new StringBuffer();
-        sb.append(name);
-        sb.append("\n{\n");
-
-        int i = 0;
-        String[] keys = new String[attributes.size()];
-        for (Enumeration<String> e = attributes.keys(); e.hasMoreElements(); ) {
-            keys[i++] = e.nextElement();
-        }
-
-        Arrays.sort(keys);
-
-        for (i = 0; i < attributes.size(); ++i) {
-            BaseType value = attributes.get(keys[i]);
-            if (isValidating() && getEventTemplateDB() != null) {
-                if (getEventTemplateDB().checkTypeForAttribute(name, keys[i], FieldType.UINT64)) {
-                    sb.append("\t")
-                      .append(keys[i])
-                      .append(" = ")
-                      .append(NumberCodec.toHexString(getUInt64(keys[i])))
-                      .append(";\n");
-                }
-                else {
-                    sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
-                }
-            }
-            else {
-                sb.append("\t").append(keys[i]).append(" = ").append(value).append(";\n");
-            }
-        } // for(i = 0; i < attributes.size() ...
-
-        sb.append("}");
-        return sb.toString();
     }
 
     /**

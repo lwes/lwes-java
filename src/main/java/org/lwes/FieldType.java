@@ -125,6 +125,37 @@ public enum FieldType {
         }
         throw new IllegalStateException("Unsupported type: "+this);
     }
+
+    public FieldType getComponentType() {
+        switch (this) {
+            case BOOLEAN:
+            case BYTE:
+            case DOUBLE:
+            case FLOAT:
+            case INT16:
+            case INT32:
+            case INT64:
+            case IPADDR:
+            case STRING:
+            case UINT16:
+            case UINT32:
+            case UINT64:
+                throw new IllegalStateException("Only array types provide component types "+this+".getComponentType() unsupported");
+            case BOOLEAN_ARRAY: return BOOLEAN;
+            case BYTE_ARRAY:    return BYTE;
+            case DOUBLE_ARRAY:  return DOUBLE;
+            case FLOAT_ARRAY:   return FLOAT;
+            case INT16_ARRAY:   return INT16;
+            case INT32_ARRAY:   return INT32;
+            case INT64_ARRAY:   return INT64;
+            case IP_ADDR_ARRAY:  return IPADDR;
+            case STRING_ARRAY:  return STRING;
+            case UINT16_ARRAY:  return UINT16;
+            case UINT32_ARRAY:  return UINT32;
+            case UINT64_ARRAY:  return UINT64;
+        }
+        throw new IllegalStateException("Unsupported type: "+this);
+    }
     
     public boolean isConstantSize() {
         switch (this) {

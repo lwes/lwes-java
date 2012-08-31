@@ -9,12 +9,6 @@
  *======================================================================*/
 package org.lwes;
 
-import org.apache.commons.lang.mutable.MutableInt;
-import org.lwes.serializer.Deserializer;
-import org.lwes.serializer.DeserializerState;
-import org.lwes.serializer.Serializer;
-import org.lwes.util.EncodedString;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -26,6 +20,12 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.apache.commons.lang.mutable.MutableInt;
+import org.lwes.serializer.Deserializer;
+import org.lwes.serializer.DeserializerState;
+import org.lwes.serializer.Serializer;
+import org.lwes.util.EncodedString;
 
 public final class ArrayEvent extends DefaultEvent {
 
@@ -50,7 +50,7 @@ public final class ArrayEvent extends DefaultEvent {
 
     public ArrayEvent() {
         length = getValueListIndex();
-        encoding = DEFAULT_ENCODING;
+        setEncoding(DEFAULT_ENCODING);
         final MutableInt creations = STATS.get(ArrayEventStats.CREATIONS);
         final MutableInt deletions = STATS.get(ArrayEventStats.DELETIONS);
         final MutableInt highwater = STATS.get(ArrayEventStats.HIGHWATER);
@@ -71,6 +71,7 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {
+        this();
         this.bytes = Arrays.copyOfRange(bytes, offset, length + excess);
         this.length = length;
         resetCaches();
@@ -113,6 +114,7 @@ public final class ArrayEvent extends DefaultEvent {
 
     @Override
     public void setEventName(String name) {
+        checkShortStringLength(name, encoding, MAX_EVENT_NAME_SIZE);
         final String oldName = getEventName();
         final String defaultEncodingString = ENCODING_STRINGS[DEFAULT_ENCODING].getEncodingString();
         try {
@@ -139,6 +141,7 @@ public final class ArrayEvent extends DefaultEvent {
      */
     @Override
     public void set(String key, FieldType type, Object value) {
+        checkShortStringLength(key, encoding, MAX_FIELD_NAME_SIZE);
         if (ENCODING.equals(key)) {
             if (type == FieldType.INT16) {
                 setEncoding((Short) value);
@@ -477,14 +480,13 @@ public final class ArrayEvent extends DefaultEvent {
             case STRING:
                 return 2 + deserializeUINT16(valueIndex);
             case STRING_ARRAY: {
+                int index0 = valueIndex;
                 int count = deserializeUINT16(valueIndex);
-                int sum = 2;
-                int index = valueIndex;
-                index += 2;
+                valueIndex += 2;
                 for (int n = 0; n < count; ++n) {
-                    sum += 2 + deserializeUINT16(index);
+                    valueIndex += 2 + deserializeUINT16(valueIndex);
                 }
-                return sum;
+                return valueIndex - index0;
             }
             case BOOLEAN_ARRAY:
             case BYTE_ARRAY:
@@ -526,25 +528,6 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     @Override
-    public String toString() {
-        if (length == 0) {
-            return "";
-        }
-
-        StringBuffer sb = new StringBuffer();
-        sb.append(getEventName());
-        sb.append("\n{\n");
-
-        for (String field : getEventAttributes()) {
-            String value = get(field).toString();
-            sb.append("\t").append(field).append(" = ").append(value).append(";\n");
-        }
-
-        sb.append("}");
-        return sb.toString();
-    }
-
-    @Override
     public void copyFrom(Event event) {
         STATS.get(ArrayEventStats.COPIES).increment();
         reset();
@@ -571,7 +554,15 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     /**
-     * These two ArrayEvent objects swap all of their fields
+     * These two ArrayEvent objects swap all of their fields.
+     * 
+     * Why would one want to do this? If one must set "this" to the value of
+     * "event", but it's acceptable to modify "event" in the process, then
+     * swap() accomplishes the copy faster than copyFrom(event) can.
+     * 
+     * Typical events seem to take about 6ms for copyFrom() but only 100ns for
+     * swap().  However, if you're not doing enough copies that the performance
+     * difference matters, you should probably use copyFrom().
      */
     public void swap(ArrayEvent event) {
         if (this == event) {
@@ -626,5 +617,49 @@ public final class ArrayEvent extends DefaultEvent {
 
         return true;
     }
-
+    
+    /**
+     * This method shows detailed information about the internal state of the
+     * event, and was designed as a "Detail Formatter" for tracing execution
+     * under Eclipse.  It may be useful for other IDEs or other uses.
+     */
+    public String toStringDetailed() {
+        final StringBuilder buf = new StringBuilder();
+        try {
+            buf.append(String.format("Event name:        \"%s\"\n", getEventName()));
+            buf.append(String.format("Serialized length: %d\n", length));
+            buf.append(String.format("tempState index:   %d\n", tempState.currentIndex()));
+            buf.append(String.format("Encoding:          %s\n", Event.ENCODING_STRINGS[encoding].getEncodingString()));
+            buf.append(String.format("Number of fields:  %d\n", getNumEventAttributes()));
+            final DeserializerState ds = new DeserializerState();
+            ds.set(getValueListIndex());
+            while (ds.currentIndex() < length) {
+              String    field;
+              FieldType type;
+              Object    value;
+              try {
+                field = Deserializer.deserializeATTRIBUTEWORD(ds, bytes);
+              } catch(Exception e) {
+                throw new Exception("Error when reading field name: "+e.getMessage());
+              }
+              try {
+                type = FieldType.byToken(Deserializer.deserializeBYTE(ds, bytes));
+              } catch(Exception e) {
+                throw new Exception("Error when reading field name: "+e.getMessage());
+              }
+              try {
+                value = Deserializer.deserializeValue(ds, bytes, type, encoding);
+              } catch(Exception e) {
+                throw new Exception("Error when reading field name: "+e.getMessage());
+              }
+              if (value.getClass().isArray()) {
+                value = Arrays.deepToString(new Object[] { value });
+              }
+              buf.append(String.format("  field \"%s\" (%s): %s\n", field, type, value));
+            }
+        } catch(Exception e) {
+            buf.append("\nEXCEPTION: ").append(e.getMessage());
+        }
+        return buf.toString();
+    }
 }

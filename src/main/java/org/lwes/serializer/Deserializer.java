@@ -36,7 +36,8 @@ import java.net.UnknownHostException;
  */
 public class Deserializer {
 
-    private static transient Log log = LogFactory.getLog(Deserializer.class);
+    private static final BigInteger UINT64_MASK = new BigInteger("ffffffffffffffff", 16);
+    private static transient Log    log         = LogFactory.getLog(Deserializer.class);
 
     /**
      * Deserialize a byte out of the byte array <tt>bytes</tt>
@@ -191,7 +192,9 @@ public class Deserializer {
 
     public static BigInteger deserializeUInt64ToBigInteger(DeserializerState state,
                                                            byte[] bytes) {
-        return BigInteger.valueOf(deserializeUINT64(state, bytes));
+        final long l = NumberCodec.decodeLongUnchecked(bytes, state.currentIndex());
+        state.incr(8);
+        return BigInteger.valueOf(l).and(UINT64_MASK);
     }
 
     public static String deserializeUINT64toHexString(DeserializerState myState,
@@ -504,7 +507,7 @@ public class Deserializer {
             case FLOAT:
                 return Deserializer.deserializeFLOAT(state, bytes);
             case UINT64:
-                return Deserializer.deserializeUINT64(state, bytes);
+                return Deserializer.deserializeUInt64ToBigInteger(state, bytes);
             case INT64:
                 return Deserializer.deserializeINT64(state, bytes);
             case DOUBLE:
