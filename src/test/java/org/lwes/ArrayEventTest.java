@@ -174,21 +174,6 @@ public final class ArrayEventTest extends EventTest {
         evt.set("int64[]", FieldType.INT64_ARRAY, new long[] {10l});
         Assert.assertEquals(10, evt.getInt64Array("int64[]")[0]);
     }
-    
-    @Test
-    public void testLengthRestriction() throws EventSystemException {
-        final ArrayEvent event = new ArrayEvent("Event");
-        event.setByteArray("field", new byte[65490]);
-        try {
-            event.setByteArray("field", new byte[65491]);
-            fail("Should have failed when creating such a large event");
-        }
-        catch (EventSystemException e) {
-            if (!e.getMessage().contains("causing an overrun")) {
-                throw e;
-            }
-        }
-    }
 
     @Test(expected = EventSystemException.class)
     public void testInvalidEncodingType() throws EventSystemException {

@@ -15,13 +15,6 @@ package org.lwes;
  * @author fmaritato
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -36,6 +29,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.lwes.db.EventTemplateDB;
 import org.lwes.util.IPAddress;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public abstract class EventTest {
 
@@ -230,7 +231,7 @@ public abstract class EventTest {
         evt.setBoolean("bool", true);
         evt.setString("str", "string");
         evt.setUInt16("uint16", 1337); // uint16 in java is just an int
-        evt.setUInt32("uint32", 1337133713371337l); // uint32 in java is a long
+        evt.setUInt32("uint32", 0xffffffffL); // uint32 in java is a long
         evt.setUInt64("uint64", 1337133713371337l); // uint64 is a BigInteger
         evt.setIPAddress("ipaddr", InetAddress.getByName("localhost"));
 
@@ -249,11 +250,14 @@ public abstract class EventTest {
         assertNotNull(i);
         assertEquals("uint16 wrong", 1337, i.intValue());
         l = evt.getUInt32("uint32");
-        assertEquals("uint32 wrong", 1337133713371337l, l.longValue());
+        assertEquals("uint32 wrong", 0xffffffffL, l.longValue());
         assertEquals("uint64 wrong",
                      BigInteger.valueOf(1337133713371337l),
                      evt.getUInt64("uint64"));
 
+        final Event evt2 = createEvent();
+        evt2.deserialize(evt.serialize());
+        assertEquals("Event changed under [de]serialization:\n"+evt+"\n"+evt2, evt, evt2);
     }
 
     @Test
@@ -281,6 +285,21 @@ public abstract class EventTest {
                          e.getClass().getName());
         }
         assertTrue("Size exception was not thrown", exceptionThrown);
+    }
+    
+    @Test
+    public void testLengthRestriction() throws EventSystemException {
+        final ArrayEvent event = new ArrayEvent("Event");
+        event.setByteArray("field", new byte[65483]);
+        try {
+            event.setByteArray("field", new byte[65484]);
+            fail("Should have failed when creating such a large event");
+        }
+        catch (EventSystemException e) {
+            if (!e.getMessage().contains("causing an overrun")) {
+                throw e;
+            }
+        }
     }
     
     @Test
@@ -354,6 +373,96 @@ public abstract class EventTest {
                 fail("Failed to detect a problem when storing a "+value.getClass().getName()+" as a "+evt.getType(field));
             } catch(NoSuchAttributeTypeException nsate) { }
         }
+    }
+    
+    @Test
+    public void testIntBounds() {
+        final Event evt = createEvent();
+        evt.setEventName("Test");
+        
+        evt.setByte("byte_min",  Byte.MIN_VALUE);
+        evt.setByte("byte_zero", (byte) 0);
+        evt.setByte("byte_one",  (byte) 1);
+        evt.setByte("byte_max",  Byte.MAX_VALUE);
+        
+        evt.setInt16("int16_min",  Short.MIN_VALUE);
+        evt.setInt16("int16_zero", (short) 0);
+        evt.setInt16("int16_one",  (short) 1);
+        evt.setInt16("int16_max",  Short.MAX_VALUE);
+        
+        evt.setInt32("int32_min",  Integer.MIN_VALUE);
+        evt.setInt32("int32_zero", 0);
+        evt.setInt32("int32_one",  1);
+        evt.setInt32("int32_max",  Integer.MAX_VALUE);
+        
+        evt.setInt64("int64_min",  Long.MIN_VALUE);
+        evt.setInt64("int64_zero", 0);
+        evt.setInt64("int64_one",  1);
+        evt.setInt64("int64_max",  Long.MAX_VALUE);
+        
+        evt.setUInt16("uint16_zero", 0);
+        evt.setUInt16("uint16_one",  1);
+        evt.setUInt16("uint16_max",  0xffff);
+        
+        evt.setUInt32("uint32_zero", 0);
+        evt.setUInt32("uint32_one",  1);
+        evt.setUInt32("uint32_max",  0xffffffffL);
+        
+        evt.setUInt64("uint64_zero", BigInteger.ZERO);
+        evt.setUInt64("uint64_one",  BigInteger.ONE);
+        evt.setUInt64("uint64_max",  BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
+        
+        evt.setInt16Array("int16[]", new short[] { Short.MIN_VALUE, 0, 1, Short.MAX_VALUE });
+        evt.setInt32Array("int32[]", new int[] { Integer.MIN_VALUE, 0, 1, Integer.MAX_VALUE });
+        evt.setInt64Array("int64[]", new long[] { Long.MIN_VALUE, 0, 1, Long.MAX_VALUE });
+        evt.setUInt16Array("uint16[]", new int[] { 0, 1, 0xffff });
+        evt.setUInt32Array("uint32[]", new long[] { 0, 1, 0xffffffffL });
+        evt.setUInt64Array("uint64[]", new BigInteger[] { BigInteger.ZERO, BigInteger.ONE, BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE) });
+        evt.setUInt64Array("uint64[] prim", new long[] { 0, 1, -1 });
+        
+        final Event evt2 = createEvent();
+        evt2.deserialize(evt.serialize());
+        //assertEquals(evt, evt2);
+        
+        assertEquals(Byte.MIN_VALUE, evt.getByte("byte_min").byteValue());
+        assertEquals((byte) 0, evt.getByte("byte_zero").byteValue());
+        assertEquals((byte) 1, evt.getByte("byte_one").byteValue());
+        assertEquals(Byte.MAX_VALUE, evt.getByte("byte_max").byteValue());
+        
+        assertEquals(Short.MIN_VALUE, evt.getInt16("int16_min").shortValue());
+        assertEquals((short) 0, evt.getInt16("int16_zero").shortValue());
+        assertEquals((short) 1, evt.getInt16("int16_one").shortValue());
+        assertEquals(Short.MAX_VALUE, evt.getInt16("int16_max").shortValue());
+        
+        assertEquals(Integer.MIN_VALUE, evt.getInt32("int32_min").intValue());
+        assertEquals(0, evt.getInt32("int32_zero").intValue());
+        assertEquals(1, evt.getInt32("int32_one").intValue());
+        assertEquals(Integer.MAX_VALUE, evt.getInt32("int32_max").intValue());
+        
+        assertEquals(Long.MIN_VALUE, evt.getInt64("int64_min").longValue());
+        assertEquals(0, evt.getInt64("int64_zero").longValue());
+        assertEquals(1, evt.getInt64("int64_one").longValue());
+        assertEquals(Long.MAX_VALUE, evt.getInt64("int64_max").longValue());
+        
+        assertEquals(0, evt.getUInt16("uint16_zero").intValue());
+        assertEquals(1, evt.getUInt16("uint16_one").intValue());
+        assertEquals(0xffff, evt.getUInt16("uint16_max").intValue());
+        
+        assertEquals(0, evt.getUInt32("uint32_zero").longValue());
+        assertEquals(1, evt.getUInt32("uint32_one").longValue());
+        assertEquals(0xffffffffL, evt.getUInt32("uint32_max").longValue());
+        
+        assertEquals(BigInteger.ZERO, evt.getUInt64("uint64_zero"));
+        assertEquals(BigInteger.ONE, evt.getUInt64("uint64_one"));
+        assertEquals(BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE), evt.getUInt64("uint64_max"));
+        
+        assertArrayEquals(new short[] { Short.MIN_VALUE, 0, 1, Short.MAX_VALUE }, evt.getInt16Array("int16[]"));
+        assertArrayEquals(new int[] { Integer.MIN_VALUE, 0, 1, Integer.MAX_VALUE }, evt.getInt32Array("int32[]"));
+        assertArrayEquals(new long[] { Long.MIN_VALUE, 0, 1, Long.MAX_VALUE }, evt.getInt64Array("int64[]"));
+        assertArrayEquals(new int[] { 0, 1, 0xffff }, evt.getUInt16Array("uint16[]"));
+        assertArrayEquals(new long[] { 0, 1, 0xffffffffL }, evt.getUInt32Array("uint32[]"));
+        assertArrayEquals(new BigInteger[] { BigInteger.ZERO, BigInteger.ONE, BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE) }, evt.getUInt64Array("uint64[]"));
+        assertArrayEquals(new BigInteger[] { BigInteger.ZERO, BigInteger.ONE, BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE) }, evt.getUInt64Array("uint64[] prim"));
     }
     
     @Test
