@@ -530,7 +530,7 @@ public class MapEvent extends DefaultEvent {
                         setFloat(attribute, Deserializer.deserializeFLOAT(state, bytes));
                         break;
                     case UINT64:
-                        setUInt64(attribute, BigInteger.valueOf(Deserializer.deserializeUINT64(state, bytes)));
+                        setUInt64(attribute, Deserializer.deserializeUInt64ToBigInteger(state, bytes));
                         break;
                     case INT64:
                         setInt64(attribute, Deserializer.deserializeINT64(state, bytes));
