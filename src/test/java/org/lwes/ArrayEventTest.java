@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public final class ArrayEventTest {
+public final class ArrayEventTest extends EventTest {
 
     private static final Logger log = Logger.getLogger(ArrayEventTest.class);
 
@@ -91,7 +91,7 @@ public final class ArrayEventTest {
         assertEquals("Different { \tab = -1234; \tcd = value; \tenc = 1; }", e5.toOneLineString());
 
         e1.reset();
-        assertEquals(" { }", e1.toOneLineString());
+        assertEquals("", e1.toOneLineString());
         assertFalse(e1.isSet("ab"));
 
         System.gc();
@@ -174,25 +174,15 @@ public final class ArrayEventTest {
         evt.set("int64[]", FieldType.INT64_ARRAY, new long[] {10l});
         Assert.assertEquals(10, evt.getInt64Array("int64[]")[0]);
     }
-    
-    @Test
-    public void testLengthRestriction() throws EventSystemException {
-        final ArrayEvent event = new ArrayEvent("Event");
-        event.setByteArray("field", new byte[65490]);
-        try {
-            event.setByteArray("field", new byte[65491]);
-            fail("Should have failed when creating such a large event");
-        }
-        catch (EventSystemException e) {
-            if (!e.getMessage().contains("causing an overrun")) {
-                throw e;
-            }
-        }
-    }
 
     @Test(expected = EventSystemException.class)
     public void testInvalidEncodingType() throws EventSystemException {
         final ArrayEvent event = new ArrayEvent("Event");
         event.set("enc", FieldType.INT32, Event.DEFAULT_ENCODING);
+    }
+
+    @Override
+    protected ArrayEvent createEvent() {
+        return new ArrayEvent();
     }
 }
