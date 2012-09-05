@@ -32,6 +32,7 @@ import org.lwes.BaseType;
 import org.lwes.Event;
 import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
+import org.lwes.FieldAccessor;
 import org.lwes.FieldType;
 import org.lwes.NoSuchAttributeException;
 import org.lwes.NoSuchAttributeTypeException;
@@ -789,36 +790,40 @@ public class EventTemplateDB {
      * @throws ValidationExceptions A list of validation errors
      */
     public void validate(Event event, Pattern excludedFields) throws ValidationExceptions {
-        final String name = event.getEventName();
+        final String eventName = event.getEventName();
         ValidationExceptions ve = null;
 
-        if (!checkForEvent(name)) {
-            throw new ValidationExceptions(new NoSuchEventException("Event " + name + " does not exist in event definition"));
+        final Map<String, BaseType> eventTypes = events.get(eventName);
+        if (eventTypes == null) {
+            throw new ValidationExceptions(new NoSuchEventException("Event " + eventName + " does not exist in event definition"));
         }
-        for (String key : event.getEventAttributes()) {
-            if (excludedFields != null && excludedFields.matcher(key).matches()) continue;
+        
+        for (FieldAccessor field : event) {
+            final String fieldName = field.getName();
+            if (excludedFields != null && excludedFields.matcher(fieldName).matches()) continue;
             
-            if (!checkForAttribute(name, key)) {
-                if (ve==null) ve = new ValidationExceptions(name);
-                ve.addException(new NoSuchAttributeException("Attribute " + key + " does not exist for event " + name));
+            final BaseType baseType = eventTypes.get(fieldName);
+            if (baseType == null) {
+                if (ve==null) ve = new ValidationExceptions(eventName);
+                ve.addException(new NoSuchAttributeException("Attribute " + fieldName + " does not exist for event " + eventName));
                 continue;
             }
-            Object value = event.get(key);
-            try {
-                getBaseTypeForObjectAttribute(name, key, value);
-            } catch(NoSuchAttributeTypeException e) {
-                if (ve==null) ve = new ValidationExceptions(name);
-                ve.addException(e);
+            
+            if (baseType.getType() != field.getType()) {
+                if (ve==null) ve = new ValidationExceptions(eventName);
+                ve.addException(new NoSuchAttributeTypeException(
+                        "Wrong type "+field.getType()+" for field "+eventName+"."
+                        +fieldName+"; should be "+baseType.getType()));
                 continue;
             }
         }
         
-        for (Entry<String,BaseType> entry : getEvents().get(name).entrySet()) {
+        for (Entry<String,BaseType> entry : eventTypes.entrySet()) {
             final String   key = entry.getKey();
             if (excludedFields != null && excludedFields.matcher(key).matches()) continue;
             if (entry.getValue().isRequired()) {
                 if (!event.isSet(key)) {
-                    if (ve==null) ve = new ValidationExceptions(name);
+                    if (ve==null) ve = new ValidationExceptions(eventName);
                     ve.addException(new AttributeRequiredException(key));
                 }
             }

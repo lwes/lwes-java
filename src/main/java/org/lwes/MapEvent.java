@@ -12,7 +12,6 @@ package org.lwes;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Enumeration;
 import java.util.Map.Entry;
 import java.util.SortedSet;
@@ -25,7 +24,6 @@ import org.lwes.db.EventTemplateDB;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
-import org.lwes.util.EncodedString;
 
 public class MapEvent extends DefaultEvent {
     private static transient Log log = LogFactory.getLog(MapEvent.class);

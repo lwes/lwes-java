@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -308,56 +309,59 @@ public final class ArrayEvent extends DefaultEvent {
 
     private Object get(FieldType type, int valueIndex) {
         tempState.set(valueIndex);
-
+        return get(type, tempState);
+    }
+    
+    private Object get(FieldType type, DeserializerState state) {
         switch (type) {
             case BOOLEAN:
-                return Deserializer.deserializeBOOLEAN(tempState, bytes);
+                return Deserializer.deserializeBOOLEAN(state, bytes);
             case BYTE:
-                return Deserializer.deserializeBYTE(tempState, bytes);
+                return Deserializer.deserializeBYTE(state, bytes);
             case UINT16:
-                return Deserializer.deserializeUINT16(tempState, bytes);
+                return Deserializer.deserializeUINT16(state, bytes);
             case INT16:
-                return Deserializer.deserializeINT16(tempState, bytes);
+                return Deserializer.deserializeINT16(state, bytes);
             case UINT32:
-                return Deserializer.deserializeUINT32(tempState, bytes);
+                return Deserializer.deserializeUINT32(state, bytes);
             case INT32:
-                return Deserializer.deserializeINT32(tempState, bytes);
+                return Deserializer.deserializeINT32(state, bytes);
             case FLOAT:
-                return Deserializer.deserializeFLOAT(tempState, bytes);
+                return Deserializer.deserializeFLOAT(state, bytes);
             case UINT64:
-                return Deserializer.deserializeUInt64ToBigInteger(tempState, bytes);
+                return Deserializer.deserializeUInt64ToBigInteger(state, bytes);
             case INT64:
-                return Deserializer.deserializeINT64(tempState, bytes);
+                return Deserializer.deserializeINT64(state, bytes);
             case DOUBLE:
-                return Deserializer.deserializeDOUBLE(tempState, bytes);
+                return Deserializer.deserializeDOUBLE(state, bytes);
             case STRING:
-                return Deserializer.deserializeSTRING(tempState, bytes, encoding);
+                return Deserializer.deserializeSTRING(state, bytes, encoding);
             case IPADDR:
-                return Deserializer.deserializeIPADDR(tempState, bytes);
+                return Deserializer.deserializeIPADDR(state, bytes);
             case STRING_ARRAY:
-                return Deserializer.deserializeStringArray(tempState, bytes, encoding);
+                return Deserializer.deserializeStringArray(state, bytes, encoding);
             case INT16_ARRAY:
-                return Deserializer.deserializeInt16Array(tempState, bytes);
+                return Deserializer.deserializeInt16Array(state, bytes);
             case INT32_ARRAY:
-                return Deserializer.deserializeInt32Array(tempState, bytes);
+                return Deserializer.deserializeInt32Array(state, bytes);
             case INT64_ARRAY:
-                return Deserializer.deserializeInt64Array(tempState, bytes);
+                return Deserializer.deserializeInt64Array(state, bytes);
             case UINT16_ARRAY:
-                return Deserializer.deserializeUInt16Array(tempState, bytes);
+                return Deserializer.deserializeUInt16Array(state, bytes);
             case UINT32_ARRAY:
-                return Deserializer.deserializeUInt32Array(tempState, bytes);
+                return Deserializer.deserializeUInt32Array(state, bytes);
             case UINT64_ARRAY:
-                return Deserializer.deserializeUInt64Array(tempState, bytes);
+                return Deserializer.deserializeUInt64Array(state, bytes);
             case BOOLEAN_ARRAY:
-                return Deserializer.deserializeBooleanArray(tempState, bytes);
+                return Deserializer.deserializeBooleanArray(state, bytes);
             case BYTE_ARRAY:
-                return Deserializer.deserializeByteArray(tempState, bytes);
+                return Deserializer.deserializeByteArray(state, bytes);
             case DOUBLE_ARRAY:
-                return Deserializer.deserializeDoubleArray(tempState, bytes);
+                return Deserializer.deserializeDoubleArray(state, bytes);
             case FLOAT_ARRAY:
-                return Deserializer.deserializeFloatArray(tempState, bytes);
+                return Deserializer.deserializeFloatArray(state, bytes);
             case IP_ADDR_ARRAY:
-                return Deserializer.deserializeIPADDRArray(tempState, bytes);
+                return Deserializer.deserializeIPADDRArray(state, bytes);
         }
         throw new IllegalStateException("Bad type: " + type);
     }
@@ -661,5 +665,57 @@ public final class ArrayEvent extends DefaultEvent {
             buf.append("\nEXCEPTION: ").append(e.getMessage());
         }
         return buf.toString();
+    }
+
+    @Override
+    public Iterator<FieldAccessor> iterator() {
+        return new Iterator<FieldAccessor>() {
+            private final ArrayEventFieldAccessor accessor = new ArrayEventFieldAccessor();
+            
+            public boolean hasNext() {
+                return accessor.nextFieldIndex < length;
+            }
+
+            public FieldAccessor next() {
+                accessor.advance();
+                return accessor;
+            }
+
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    private final class ArrayEventFieldAccessor extends DefaultFieldAccessor {
+        private transient final DeserializerState accessorTempState = new DeserializerState();
+        private int                               nextFieldIndex    = getValueListIndex(),
+                currentFieldIndex = Integer.MIN_VALUE,
+                currentValueIndex = Integer.MIN_VALUE;
+        
+        public void advance() {
+            // Deserialize name,type eagerly; deserialize value lazily. 
+            currentFieldIndex = nextFieldIndex;
+            accessorTempState.set(currentFieldIndex);
+            setName(Deserializer.deserializeATTRIBUTEWORD(accessorTempState, bytes));
+            setType(FieldType.byToken(Deserializer.deserializeBYTE(accessorTempState, bytes)));
+            // Clear any existing value, to indicate that we have not cached it yet.
+            setValue(null);
+            // Remember where the current value starts.
+            currentValueIndex = accessorTempState.currentIndex();
+            // Remember where the next field (or end of event) is.
+            nextFieldIndex    = currentValueIndex + getValueByteSize(getType(), currentValueIndex);
+        }
+
+        @Override
+        public Object getValue() {
+            Object value = super.getValue();
+            if (value == null) {
+                // The value has not been cached yet.  Do so.
+                value = get(getType(), currentValueIndex);
+                setValue(value);
+            }
+            return value;
+        }
     }
 }
