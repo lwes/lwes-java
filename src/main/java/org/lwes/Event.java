@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Set;
 
-public interface Event {
+public interface Event extends Iterable<FieldAccessor> {
     static final int MAX_EVENT_NAME_SIZE = 127;
     static final int MAX_FIELD_NAME_SIZE = 255;
     static final int MAX_MESSAGE_SIZE    = 65507;
@@ -202,4 +203,7 @@ public interface Event {
     void copyFrom(Event event);
     
     String toOneLineString();
+
+    /** Some implementations will re-use the FieldAccessor object, so next() may invalidate it. */
+    Iterator<FieldAccessor> iterator();
 }

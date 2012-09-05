@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -308,9 +309,8 @@ public abstract class DefaultEvent implements Event {
     public void copyFrom(Event event) {
         reset();
         setEventName(event.getEventName());
-        for (String field : event.getEventAttributes()) {
-            final FieldType type = event.getType(field);
-            set(field, type, event.get(field));
+        for (FieldAccessor field : event) {
+            set(field.getName(), field.getType(), field.getValue());
         }
     }
 
@@ -354,5 +354,25 @@ public abstract class DefaultEvent implements Event {
             throw new EventSystemException(
                     "String " + string + " was longer than maximum length: " + serializedLength + " > " + maxLength);
         }
+    }
+
+    /** Please override this in subclasses for increased speed */
+    public Iterator<FieldAccessor> iterator() {
+        final Iterator<String> iterator = getEventAttributes().iterator();
+        
+        return new Iterator<FieldAccessor>() {
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            public FieldAccessor next() {
+                final String name = iterator.next();
+                return new DefaultFieldAccessor(name, getType(name), get(name));
+            }
+
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }
