@@ -3,7 +3,7 @@
     <groupId>org.lwes</groupId>
     <artifactId>lwes-java</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <name>lwes-java</name>
     <url>http://lwes.org</url>
 
