@@ -1,11 +1,23 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lwes</groupId>
     <artifactId>lwes-java</artifactId>
     <packaging>jar</packaging>
     <version>1.1.1-SNAPSHOT</version>
     <name>lwes-java</name>
+    <description>Lightweight event system, java implementation</description>
     <url>http://lwes.org</url>
+
+    <licenses>
+        <license>
+            <name>BSD</name>
+            <url>https://github.com/lwes/lwes-java/blob/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,7 +25,16 @@
 
     <scm>
         <connection>scm:git:git@github.com:lwes/lwes-java.git</connection>
+        <url>https://github.com/lwes/lwes-java</url>
     </scm>
+
+    <developers>
+        <developer>
+            <id>lwes-team</id>
+            <name>LWES Development Team</name>
+            <email>lwes-devel@sourceforge.net</email>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>
@@ -91,7 +112,16 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.0</version>
                 <configuration>
-                    <goals>package javadoc:jar assembly:assembly</goals>
+                    <goals>package</goals>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/dist.xml</descriptor>
+                    </descriptors>
                 </configuration>
             </plugin>
             <plugin>
@@ -182,20 +212,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <formats>
-                        <format>html</format>
-                    </formats>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
-
 </project>
