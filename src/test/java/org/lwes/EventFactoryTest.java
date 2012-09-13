@@ -15,13 +15,14 @@ package org.lwes;
  * @author fmaritato
  */
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class EventFactoryTest {
 
@@ -55,6 +56,9 @@ public class EventFactoryTest {
 
         Event evt = fact.createEvent("TestEvent");
         assertNotNull(evt);
+        // Verify the default values are set.
+        assertEquals("yeah", evt.get("field1"));
+        assertEquals(10, evt.get("field3"));
 
         evt = fact.createEvent("TestEvent", (short) 1);
         assertNotNull(evt);

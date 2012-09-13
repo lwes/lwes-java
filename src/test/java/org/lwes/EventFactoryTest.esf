@@ -10,7 +10,7 @@ MetaEventInfo
 
 TestEvent
 {
-  required string field1;
+  required string field1 = "yeah";
   optional string field2;
-  int32 field3;
+  int32 field3 = 10;
 }

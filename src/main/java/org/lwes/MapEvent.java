@@ -175,7 +175,7 @@ public class MapEvent extends DefaultEvent {
                 if (log.isDebugEnabled()) {
                     log.debug("Setting default value: " + key + "=" + bt.getDefaultValue());
                 }
-                set(key, bt.getDefaultValue());
+                set(key, bt.getType(), bt.getDefaultValue());
             }
         }
     }
