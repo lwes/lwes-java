@@ -56,9 +56,14 @@ public class EventFactoryTest {
 
         Event evt = fact.createEvent("TestEvent");
         assertNotNull(evt);
+
         // Verify the default values are set.
         assertEquals("yeah", evt.get("field1"));
         assertEquals(10, evt.get("field3"));
+
+        // Verify that setting a field that had a default value, overrides it.
+        evt.setInt32("field3", 42);
+        assertEquals(42, (long) evt.getInt32("field3"));
 
         evt = fact.createEvent("TestEvent", (short) 1);
         assertNotNull(evt);
