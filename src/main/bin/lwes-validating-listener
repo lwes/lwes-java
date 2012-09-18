@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#
+#
+#
+
+set -u
+set -e
+
+
+java -cp ${LWES_JAVA_HOME}/lib/lwes-java-${LWES_JAVA_VERSION}-jar-with-dependencies.jar:${LWES_JAVA_HOME}/conf \
+  org.lwes.listener.ValidatingListener "$@"
