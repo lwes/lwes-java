@@ -9,6 +9,9 @@
     <name>lwes-java</name>
     <description>Lightweight event system, java implementation</description>
     <url>http://lwes.org</url>
+    <organization>
+        <name>LWES</name>
+    </organization>
 
     <licenses>
         <license>
@@ -237,7 +240,7 @@
                 <version>2.1-alpha-1</version>
                 <configuration>
                     <summary>Lightweight event system, java implementation</summary>
-                    <group>Lwes</group>
+                    <group>Org/Lwes</group>
                     <mappings>
                         <mapping>
                             <directory>${lwes.java.home}/bin</directory>
@@ -279,7 +282,7 @@
                         <groupname>root</groupname>
                         <sources>
                             <source>
-                                <location>target/lwes-java.sh</location>
+                                <location>target/classes/lwes-java.sh</location>
                             </source>
                         </sources>
                     </mapping>
