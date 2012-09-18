@@ -9,11 +9,11 @@
  *======================================================================*/
 package org.lwes;
 
-import org.lwes.util.IPAddress;
-
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.lwes.util.IPAddress;
 
 public enum FieldType {
     UINT16(0x01, "uint16", 0),
@@ -26,20 +26,20 @@ public enum FieldType {
     UINT64(0x08, "uint64", BigInteger.ZERO),
     BOOLEAN(0x09, "boolean", true),
     BYTE(0x0A, "byte", (byte) 0),
-    FLOAT(0x0B, "float"),
-    DOUBLE(0x0C, "double"),
-    UINT16_ARRAY(0x81, "[Luint16"),
-    INT16_ARRAY(0x82, "[Lint16"),
-    UINT32_ARRAY(0x83, "[Luint32"),
-    INT32_ARRAY(0x84, "[Lint32"),
-    STRING_ARRAY(0x85, "[Lstring"),
-    IP_ADDR_ARRAY(0x86, "[Lip_addr"),
-    INT64_ARRAY(0x87, "[Lint64"),
-    UINT64_ARRAY(0x88, "[Luint64"),
-    BOOLEAN_ARRAY(0x89, "[Lboolean"),
-    BYTE_ARRAY(0x8A, "[Lbyte"),
-    FLOAT_ARRAY(0x8B, "[Lfloat"),
-    DOUBLE_ARRAY(0x8C, "[Ldouble");
+    FLOAT(0x0B, "float", (float) 0.0),
+    DOUBLE(0x0C, "double", 0.0),
+    UINT16_ARRAY(0x81, "[Luint16", new short[0]),
+    INT16_ARRAY(0x82, "[Lint16", new int[0]),
+    UINT32_ARRAY(0x83, "[Luint32", new int[0]),
+    INT32_ARRAY(0x84, "[Lint32", new long[0]),
+    STRING_ARRAY(0x85, "[Lstring", new String[0]),
+    IP_ADDR_ARRAY(0x86, "[Lip_addr", new IPAddress[0]),
+    INT64_ARRAY(0x87, "[Lint64", new BigInteger[0]),
+    UINT64_ARRAY(0x88, "[Luint64", new long[0]),
+    BOOLEAN_ARRAY(0x89, "[Lboolean", new boolean[0]),
+    BYTE_ARRAY(0x8A, "[Lbyte", new byte[0]),
+    FLOAT_ARRAY(0x8B, "[Lfloat", new float[0]),
+    DOUBLE_ARRAY(0x8C, "[Ldouble", new double[0]);
 
     public final byte                           token;
     public final String                         name;
