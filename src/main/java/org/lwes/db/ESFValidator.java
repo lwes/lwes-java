@@ -32,22 +32,17 @@ public class ESFValidator {
             System.exit(1);
         }
 
-        try {
-            parseFile(file);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage(), e);
+        if (!parseFile(file)) {
             System.exit(1);
         }
         System.exit(0);
     }
 
 
-    public EventTemplateDB parseFile(String file) {
+    public boolean parseFile(String file) {
         EventTemplateDB db = new EventTemplateDB();
         db.setESFFile(new File(file));
-        db.initialize();
-        return db;
+        return db.initialize();
     }
 
     public static void main(String[] args) {
