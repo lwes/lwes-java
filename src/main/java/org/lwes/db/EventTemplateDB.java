@@ -20,8 +20,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -408,6 +409,14 @@ public class EventTemplateDB {
      */
     public Enumeration<String> getEventNames() {
         return Collections.enumeration(this.events.keySet());
+    }
+
+    /**
+     * More useful than getting an Enumeration<String>
+     * @return Set<String>
+     */
+    public Set<String> getEventNameSet() {
+        return this.events.keySet();
     }
 
     /**
