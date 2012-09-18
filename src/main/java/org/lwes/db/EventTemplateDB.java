@@ -156,7 +156,7 @@ public class EventTemplateDB {
                 */
         }
         catch (ParseException e) {
-            log.warn("Parser error in ESF file " + getESFFile(), e);
+            log.error("Parser error in ESF file " + getESFFile(), e);
             return false;
         }
         catch (Exception e) {
