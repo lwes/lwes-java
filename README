@@ -3,14 +3,28 @@ This is the Java API for the Light Weight Event System.
 ***
 Prerequisites
 - JDK 1.5.x (http://java.sun.com/) or later
-- Maven 2.2.x (http://apache.maven.org/) or later
+- Maven 3.0.4 (http://apache.maven.org/) or later
+- GPG, if you are going to deploy a release (http://www.gnupg.org/download)
 
 ***
 How to build:
 % mvn clean package
 
 To create a release:
-% mvn --batch-mode release:prepare release:perform
+% mvn release:prepare release:perform
+
+NOTE: you cannot use batch-mode anymore. Deploying to central requires a gpg key
+and it needs to prompt you for your passphrase. It will error out if you have
+specified batch-mode.
+
+NOTE: Read this document for deploying releases to central:
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+
+If the release plugin doesn't work for some reason and you need to push to central,
+you will need to check out the release tag and then do the manual deploy:
+% git clone git@github.com:lwes/lwes-java.git
+% cd lwes-java && git checkout -b lwes-java-1.1.2 lwes-java-1.1.2 # Or whatever the tag name is
+% mvn package gpg:sign deploy
 
 ***
 To increase the read buffer size on the multicast socket, set the system property
