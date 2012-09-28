@@ -623,7 +623,7 @@ public class MapEvent extends DefaultEvent {
      * This method can be used to validate an event after it has been created.
      *
      * @throws ValidationExceptions A list of validation errors
-     * @use {@link EventTemplateDB#validate(Event)}
+     * use {@link EventTemplateDB#validate(Event)}
      */
     @Deprecated
     public void validate() throws ValidationExceptions {

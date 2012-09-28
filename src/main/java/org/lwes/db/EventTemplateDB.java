@@ -391,7 +391,9 @@ public class EventTemplateDB {
                 eventName, attributeName, value, min, max));
     }
 
-    /** @use {@link #addEventAttribute(String, String, FieldType, Integer, boolean, Object)} */
+    /**
+     * use {@link #addEventAttribute(String, String, FieldType, Integer, boolean, Object)}
+     */
     @Deprecated
     public boolean addEventAttribute(String anEventName,
             String anAttributeName,
@@ -570,8 +572,10 @@ public class EventTemplateDB {
 
         return false;
     }
-    
-    /** @use {@link #checkTypeForAttribute(String, String, FieldType)} */
+
+    /**
+     * use {@link #checkTypeForAttribute(String, String, FieldType)}
+     */
     @Deprecated
     public boolean checkTypeForAttribute(String anEventName,
             String anAttributeName, String anAttributeType) {

@@ -138,25 +138,30 @@ public class BaseType {
         this.type = type;
     }
 
-    /** @use {@link setType(FieldType)} */
+    /**
+     * use {@link #setType(FieldType)}
+     */
     @Deprecated
     public void setTypeName(String typeName) {
         this.type = FieldType.byName(typeName);
     }
 
-    /** @use {@link getType(FieldType).name} */
+    /**
+     * use {@link #getType()}
+     */
     @Deprecated
     public String getTypeName() {
         return type.name;
     }
 
-    /** @use {@link setType(FieldType)} */
+    /**
+     * use {@link #setType(FieldType)}
+     */
     @Deprecated
     public void setTypeToken(byte typeToken) {
         this.type = FieldType.byToken(typeToken);
     }
 
-    /** @use {@link getType(FieldType).token} */
     public byte getTypeToken() {
         return type.token;
     }

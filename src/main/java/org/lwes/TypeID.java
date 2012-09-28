@@ -18,7 +18,7 @@ package org.lwes;
  *
  * @author Anthony Molinaro
  * @author Michael P. Lum
- * @use {@link FieldType}
+ * use {@link FieldType}
  */
 @Deprecated
 public class TypeID {
@@ -85,7 +85,7 @@ public class TypeID {
     /**
      * Simple conversion utility
      *
-     * @param id The id token to translate
+     * @param token The token to translate
      * @return String representation of this id
      */
     public static String byteIDToString(byte token) {
@@ -95,7 +95,7 @@ public class TypeID {
     /**
      * Another conversion utility
      *
-     * @param id String representation of the type id
+     * @param name String representation of the type id
      * @return byte token representation of the type id
      */
     public static byte stringToByteID(String name) {

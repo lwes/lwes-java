@@ -12,15 +12,15 @@
 
 package org.lwes.serializer;
 
+import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+
 import org.lwes.Event;
 import org.lwes.FieldType;
 import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 import org.lwes.util.NumberCodec;
-
-import java.math.BigInteger;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 
 /**
  * This contains low level type serialization used by the
@@ -159,7 +159,7 @@ public class Serializer {
      * @param bytes
      * @param offset
      * @param encoding
-     * @return
+     * @return the offset
      */
     public static int serializeStringArray(String[] value,
                                            byte[] bytes,
