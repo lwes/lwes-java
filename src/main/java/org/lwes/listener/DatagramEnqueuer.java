@@ -152,6 +152,10 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
             else {
                 socket = new DatagramSocket(port, address);
             }
+            
+            if(port == 0){
+            	port = socket.getLocalPort();
+            }
         }
         int bufSize = MAX_DATAGRAM_SIZE * 50;
         String bufSizeStr = System.getProperty("MulticastReceiveBufferSize");
