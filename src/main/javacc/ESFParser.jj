@@ -148,7 +148,7 @@ void eventName() :
 void attributeList() :
 {}
 {
-  attribute() ( attribute() )*
+  (comment())* attribute() ( attribute() )*
 }
 
 String stringLiteral() :
