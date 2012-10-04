@@ -67,6 +67,7 @@ public class EventTemplateDB {
      * System Attributes
      */
     private Map<String, Map<String, BaseType>> events = null;
+    private Map<String,String> eventComments = null;
     private Map<FieldType, BaseType> knownTypes = null;
     private Map<String, BaseType> reservedWords = null;
 
@@ -75,6 +76,7 @@ public class EventTemplateDB {
      */
     public EventTemplateDB() {
         events = new ConcurrentHashMap<String, Map<String, BaseType>>();
+	eventComments = new ConcurrentHashMap<String,String>();
         knownTypes = new ConcurrentHashMap<FieldType, BaseType>();
         reservedWords = new ConcurrentHashMap<String, BaseType>();
         for (FieldType type : FieldType.values()) {
@@ -168,13 +170,24 @@ public class EventTemplateDB {
         return true;
     }
 
-    /**
+   /**
      * Add an Event to the EventTemplateDB
      *
      * @param anEventName the name of the Event to add
      * @return true if the event was added, false if it was not
      */
-    public synchronized boolean addEvent(String anEventName) {
+    public boolean addEvent(String anEventName) {
+	return addEvent(anEventName,null);
+    }
+    
+    /**
+     * Add an Event to the EventTemplateDB
+     *
+     * @param anEventName the name of the Event to add
+     * @param comment a comment associated with the event
+     * @return true if the event was added, false if it was not
+     */
+    public synchronized boolean addEvent(String anEventName, String comment) {
         if (anEventName == null) {
             return false;
         }
@@ -202,6 +215,9 @@ public class EventTemplateDB {
             }
 
             events.put(anEventName, evtHash);
+	    if(comment!=null){
+		eventComments.put(anEventName,comment);
+	    }
         }
         catch (Exception e) {
             log.warn("Error adding event to EventTemplateDB", e);
@@ -230,6 +246,17 @@ public class EventTemplateDB {
         return addEventAttribute(anEventName, anAttributeName, anAttributeType, size, required, null);
     }
 
+    public synchronized boolean addEventAttribute(String anEventName,
+                                                  String anAttributeName,
+                                                  FieldType anAttributeType,
+                                                  Integer size,
+                                                  boolean required,
+                                                  Object defaultValue) {
+	return addEventAttribute(anEventName,anAttributeName,anAttributeType,
+		size,required,defaultValue, null) ;
+	
+    }
+    
     /**
      * Add an attribute to an Event in the EventTemplateDB
      *
@@ -246,7 +273,8 @@ public class EventTemplateDB {
                                                   FieldType anAttributeType,
                                                   Integer size,
                                                   boolean required,
-                                                  Object defaultValue) {
+                                                  Object defaultValue,
+						  String comment) {
 
         if (anEventName == null || anAttributeName == null || anAttributeType == null) {
             return false;
@@ -258,6 +286,7 @@ public class EventTemplateDB {
                     BaseType bt = knownTypes.get(anAttributeType).cloneBaseType();
                     bt.setRequired(required);
                     bt.setSizeRestriction(size);
+		    bt.setComment(comment);
                     if (defaultValue != null) {
                         bt.setDefaultValue(canonicalizeDefaultValue(anEventName, anAttributeName, anAttributeType, defaultValue));
                     }
@@ -286,6 +315,7 @@ public class EventTemplateDB {
                 if (checkForType(anAttributeType)) {
                     BaseType bt = knownTypes.get(anAttributeType).cloneBaseType();
                     bt.setRequired(required);
+		    bt.setComment(comment);
                     bt.setSizeRestriction(size);
                     if (defaultValue != null) {
                         bt.setDefaultValue(canonicalizeDefaultValue(anEventName, anAttributeName, bt.getType(), defaultValue));
@@ -411,6 +441,18 @@ public class EventTemplateDB {
         return Collections.enumeration(this.events.keySet());
     }
 
+    public String getEventComment(String event) {
+	if(eventComments.containsKey(event)) {
+	    return eventComments.get(event);
+	} else {
+	    return null;
+	}
+    }
+    
+    public void setEventComment(String event, String comment) {
+	eventComments.put(event, comment);
+    }
+    
     /**
      * More useful than getting an Enumeration<String>
      * @return Set<String>

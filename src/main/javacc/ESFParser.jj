@@ -37,6 +37,8 @@ public class ESFParser
   private String currentEvent;
   private EventTemplateDB eventTemplateDB;
 
+  private StringBuilder commentAccumulator = new StringBuilder();
+
   public void setEventTemplateDB(EventTemplateDB DB)
     { eventTemplateDB = DB; }
 
@@ -62,20 +64,19 @@ SKIP :
 | "\t"
 | "\n"
 | "\r"
-| "#" : IN_LINE_COMMENT
 }
 
-<IN_LINE_COMMENT> SKIP:
+
+/* COMMENTS: we want to parse them and store them with the field definitions */
+
+
+TOKEN :
 {
-   "\n" : DEFAULT
-|  "\r" : DEFAULT
-|  "\r\n" : DEFAULT
+  <SINGLE_LINE_COMMENT: "#" (~["\n","\r"])* ("\n"|"\r"|"\r\n")?> 
 }
 
-<IN_LINE_COMMENT> MORE:
-{
-  < ~[] >
-}
+
+
 
 
 TOKEN :
@@ -100,9 +101,16 @@ TOKEN :
  */
 void eventlist() :
 {
+    String aComment = null;
 }
 {
-  event() ( event() )* <EOF>
+  ( 
+// take care of comments at the end of the esf
+    LOOKAHEAD ( (comment())+ <EOF> )
+	(comment())+
+  |
+    (aComment=comment())* event() 
+   )* <EOF> 
 }
 
 /**
@@ -125,8 +133,9 @@ void eventName() :
 {
   t=<ID>
   {
-    if ( getEventTemplateDB().addEvent(t.image))
+    if ( getEventTemplateDB().addEvent(t.image,commentAccumulator.toString()))
     {
+      commentAccumulator.setLength(0);
       setCurrentEvent(t.image);
     }
     else
@@ -271,11 +280,12 @@ void attribute() :
   int anArraySize = 0;
   boolean required = false;
   Object aDefaultValue = null;
+  String aComment = null;
 }
 {
-  (((required = required()) (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";"))
+  (((required = required()) (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";" ( aComment=comment() )* ))
 |
-  (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";")  ) {
+  (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";"   ( aComment=comment() )*  )  ) {
       String evt = getCurrentEvent();
       if ( evt == null ) throw new ParseException("Bad Event");
 
@@ -294,11 +304,15 @@ void attribute() :
                                                    aType,
                                                    anArraySize,
                                                    required,
-                                                   aDefaultValue))
+                                                   aDefaultValue,
+						   commentAccumulator.toString()
+		))
       {
         throw new ParseException("Problem adding attribute "+evt+"("
                                  +aType+","+anAttribute+")");
       }
+      // after comment is stored, reset accumulator
+      commentAccumulator.setLength(0);
    }
 }
 
@@ -322,4 +336,16 @@ String attributeName() :
   {
     return t.image;
   }
+}
+
+String comment() :
+{
+    Token t;
+}
+{
+   t=<SINGLE_LINE_COMMENT>
+   {
+    commentAccumulator.append(t.image);
+    return commentAccumulator.toString();
+    }
 }

@@ -31,7 +31,6 @@ import java.util.Map;
 /**
  * @author fmaritato
  */
-
 public class EventTemplateDBTest {
 
     private static final String ESF = "src/test/java/org/lwes/db/EventTemplateDBTest.esf";
@@ -48,6 +47,8 @@ public class EventTemplateDBTest {
 
         assertTrue("TestEvent was not known to the template",
                    template.checkForEvent(TEST_EVENT));
+	
+	assertEquals("# Event comment\n# spans 2 lines\n", template.getEventComment(TEST_EVENT));
 
         assertTrue("field1 attribute not known to the template",
                    template.checkForAttribute(TEST_EVENT, "field1"));
@@ -59,7 +60,8 @@ public class EventTemplateDBTest {
         BaseType bt = template.getBaseTypeForObjectAttribute(TEST_EVENT, "field2", 100l);
         assertNotNull(bt);
         assertEquals("Wrong BaseType returned", FieldType.INT64, bt.getType());
-
+	assertEquals("# this is a comment\n", bt.getComment());
+	
         assertTrue("Wrong type for attribute field2",
                    template.checkTypeForAttribute(TEST_EVENT, "field2", bt));
 
