@@ -49,6 +49,8 @@ public class EventTemplateDBTest {
                    template.checkForEvent(TEST_EVENT));
 	
 	assertEquals("# Event comment\n# spans 2 lines\n", template.getEventComment(TEST_EVENT));
+	
+	assertEquals("# metaevent comment\n",template.getMetaComment());
 
         assertTrue("field1 attribute not known to the template",
                    template.checkForAttribute(TEST_EVENT, "field1"));

@@ -70,6 +70,7 @@ public class EventTemplateDB {
     private Map<String,String> eventComments = null;
     private Map<FieldType, BaseType> knownTypes = null;
     private Map<String, BaseType> reservedWords = null;
+    private String metaInfoComments = null;
 
     /**
      * This is the EventTemplateDB constructor.
@@ -194,6 +195,7 @@ public class EventTemplateDB {
 
         try {
             if (anEventName.equals(META_EVENT_INFO)) {
+		addMetaComment(comment);
                 return true;
             }
 
@@ -883,5 +885,17 @@ public class EventTemplateDB {
         if (ve!=null) {
             throw ve;
         }
+    }
+
+    private void addMetaComment(String comment) {
+	if(metaInfoComments == null) {
+	    metaInfoComments = comment;
+	} else {
+	    metaInfoComments = metaInfoComments.concat(comment);
+	}
+    }
+    
+    public String getMetaComment() {
+	return metaInfoComments;
     }
 }

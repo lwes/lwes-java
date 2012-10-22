@@ -1,3 +1,4 @@
+# metaevent comment
 MetaEventInfo
 {
   ip_addr SenderIP;    # IP address of Sender
