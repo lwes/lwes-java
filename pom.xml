@@ -1,15 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-
-   <!-- This section is here so we can publish to central -->
-   <parent>
-     <groupId>org.sonatype.oss</groupId>
-     <artifactId>oss-parent</artifactId>
-     <version>7</version>
-   </parent>
-
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.lwes</groupId>
+  <modelVersion>4.0.0</modelVersion>
+    <groupId>com.gradientx</groupId>
     <artifactId>lwes-java</artifactId>
     <packaging>jar</packaging>
     <version>1.2.0-SNAPSHOT</version>
@@ -46,6 +37,58 @@
             <email>lwes-devel@sourceforge.net</email>
         </developer>
     </developers>
+    
+    
+  
+  <repositories>
+    <repository>
+      <id>gradientx-release-repo</id>
+      <name>Gradient X Release Repository</name>
+      <url>s3://codex.corp.gradientx.com/maven/release</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>gradientx-snapshot-repo</id>
+      <name>Gradient X Snapshot Repository</name>
+      <url>s3://codex.corp.gradientx.com/maven/snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  
+  <pluginRepositories>
+    <pluginRepository>
+      <id>gradientx-release-repo</id>
+      <name>Gradient X Release Repository</name>
+      <url>s3://codex.corp.gradientx.com/maven/release</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>gradientx-snapshot-repo</id>
+      <name>Gradient X Snapshot Repository</name>
+      <url>s3://codex.corp.gradientx.com/maven/snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
     <dependencies>
         <dependency>
@@ -111,6 +154,13 @@
     </dependencies>
 
     <build>
+    <extensions>
+      <extension>
+        <groupId>org.springframework.build.aws</groupId>
+        <artifactId>org.springframework.build.aws.maven</artifactId>
+        <version>3.0.0.RELEASE</version>
+      </extension>
+    </extensions>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -121,7 +171,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.0</version>
                 <configuration>
                     <goals>package</goals>
                 </configuration>
@@ -148,6 +197,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -161,6 +211,7 @@
                     </execution>
                 </executions>
             </plugin>
+             -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
@@ -314,5 +365,63 @@
                 </configuration>
             </plugin>
         </plugins>
+        
+        <pluginManagement>
+          <plugins>
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>
+                          com.google.code.maven-replacer-plugin
+                        </groupId>
+                        <artifactId>maven-replacer-plugin</artifactId>
+                        <versionRange>[1.3.2,)</versionRange>
+                        <goals>
+                          <goal>replace</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore></ignore>
+                      </action>
+                    </pluginExecution>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>javacc-maven-plugin</artifactId>
+                        <versionRange>[2.6,)</versionRange>
+                        <goals>
+                          <goal>javacc</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore></ignore>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
     </build>
+  
+  <distributionManagement>
+    <repository>
+      <id>gradientx-release-repo</id>
+      <name>Gradient X Release Repository</name>
+      <url>s3://codex.corp.gradientx.com/maven/release</url>
+    </repository>
+    <snapshotRepository>
+      <id>gradientx-snapshot-repo</id>
+      <name>Gradient X Snapshot Repository</name>
+      <url>s3://codex.corp.gradientx.com/maven/snapshot</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
