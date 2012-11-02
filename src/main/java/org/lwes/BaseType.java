@@ -56,6 +56,11 @@ public class BaseType {
      */
     private Object defaultValue;
 
+    /**
+     * comment describing attribute
+     */
+    private String comment;
+    
     public BaseType() {
     }
 
@@ -115,11 +120,21 @@ public class BaseType {
                     boolean required,
                     int sizeRestriction,
                     Object defaultValue) {
+        this(type,typeObject,required,sizeRestriction,defaultValue,null);
+    }
+    
+    public BaseType(FieldType type,
+                    Object typeObject,
+                    boolean required,
+                    int sizeRestriction,
+                    Object defaultValue,
+		    String comment) {
         this.required = required;
         this.sizeRestriction = sizeRestriction;
         this.type = type;
         this.typeObject = typeObject;
         this.defaultValue = defaultValue;
+	this.comment = comment;
     }
 
     public Object getDefaultValue() {
@@ -290,11 +305,22 @@ public class BaseType {
     }
 
     public BaseType cloneBaseType() {
-        return new BaseType(type, typeObject, required, sizeRestriction, defaultValue);
+        return new BaseType(type, typeObject, required, sizeRestriction, defaultValue, comment);
     }
 
     @Override
     public String toString() {
         return typeObject.toString();
     }
+
+    public String getComment() {
+	return comment;
+    }
+
+    public void setComment(String comment) {
+	this.comment = comment;
+    }
+    
+    
+    
 }
