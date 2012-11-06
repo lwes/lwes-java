@@ -54,3 +54,5 @@ maven wins. :)
 
 - I removed AttributeNotSetException because throwing an exception if an attribute isn't set
 in the event should not be the proper behavior (after all, HashMap and the like do not do this).
+
+- Added comment parsing and retrieving functionality in TemplateDb

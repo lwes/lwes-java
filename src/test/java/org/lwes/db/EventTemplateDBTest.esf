@@ -1,3 +1,4 @@
+# metaevent comment
 MetaEventInfo
 {
   ip_addr SenderIP;    # IP address of Sender
@@ -8,8 +9,12 @@ MetaEventInfo
   uint16  SiteID;      # id of site sending the event
 }
 
+# Event comment
+# spans 2 lines
 TestEvent
 {
+# comment before ?
   string field1;
-  int64 field2;
+  int64 field2;	# this is a comment
 }
+# comment hear breaks things
