@@ -17,4 +17,4 @@ TestEvent
   string field1;
   int64 field2;	# this is a comment
 }
-# comment hear breaks things
+# comment here breaks things
