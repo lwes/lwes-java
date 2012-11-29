@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.lwes.BaseType;
 import org.lwes.FieldType;
@@ -47,10 +48,10 @@ public class EventTemplateDBTest {
 
         assertTrue("TestEvent was not known to the template",
                    template.checkForEvent(TEST_EVENT));
-	
-	assertEquals("# Event comment\n# spans 2 lines\n", template.getEventComment(TEST_EVENT));
-	
-	assertEquals("# metaevent comment\n",template.getMetaComment());
+
+        assertEquals("# Event comment\n# spans 2 lines\n", template.getEventComment(TEST_EVENT));
+
+        assertEquals("# metaevent comment\n", template.getMetaComment());
 
         assertTrue("field1 attribute not known to the template",
                    template.checkForAttribute(TEST_EVENT, "field1"));
@@ -62,8 +63,8 @@ public class EventTemplateDBTest {
         BaseType bt = template.getBaseTypeForObjectAttribute(TEST_EVENT, "field2", 100l);
         assertNotNull(bt);
         assertEquals("Wrong BaseType returned", FieldType.INT64, bt.getType());
-	assertEquals("# this is a comment\n", bt.getComment());
-	
+        assertEquals("# this is a comment\n", bt.getComment());
+
         assertTrue("Wrong type for attribute field2",
                    template.checkTypeForAttribute(TEST_EVENT, "field2", bt));
 
@@ -82,46 +83,46 @@ public class EventTemplateDBTest {
 
         String testHtmlString =
                 new StringBuilder().append("<table>\n")
-                        .append("<tr><th>MetaEventInfo</th><th>Type</th><th>Name</th></tr>\n")
-                        .append("<tr><td></td><td>uint16</td><td>SiteID</td></tr>\n")
-                        .append("<tr><td></td><td>int16</td><td>enc</td></tr>\n")
-                        .append("<tr><td></td><td>ip_addr</td><td>SenderIP</td></tr>\n")
-                        .append("<tr><td></td><td>int64</td><td>ReceiptTime</td></tr>\n")
-                        .append("<tr><td></td><td>uint16</td><td>SenderPort</td></tr>\n")
-                        .append("<tr><th>TestEvent</th><th>Type</th><th>Name</th></tr>\n")
-                        .append("<tr><td></td><td>uint16</td><td>SiteID</td></tr>\n")
-                        .append("<tr><td></td><td>int16</td><td>enc</td></tr>\n")
-                        .append("<tr><td></td><td>string</td><td>field1</td></tr>\n")
-                        .append("<tr><td></td><td>int64</td><td>field2</td></tr>\n")
-                        .append("<tr><td></td><td>ip_addr</td><td>SenderIP</td></tr>\n")
-                        .append("<tr><td></td><td>int64</td><td>ReceiptTime</td></tr>\n")
-                        .append("<tr><td></td><td>uint16</td><td>SenderPort</td></tr>\n")
-                        .append("</table>\n")
-                        .toString();
+                                   .append("<tr><th>MetaEventInfo</th><th>Type</th><th>Name</th></tr>\n")
+                                   .append("<tr><td></td><td>uint16</td><td>SiteID</td></tr>\n")
+                                   .append("<tr><td></td><td>int16</td><td>enc</td></tr>\n")
+                                   .append("<tr><td></td><td>ip_addr</td><td>SenderIP</td></tr>\n")
+                                   .append("<tr><td></td><td>int64</td><td>ReceiptTime</td></tr>\n")
+                                   .append("<tr><td></td><td>uint16</td><td>SenderPort</td></tr>\n")
+                                   .append("<tr><th>TestEvent</th><th>Type</th><th>Name</th></tr>\n")
+                                   .append("<tr><td></td><td>uint16</td><td>SiteID</td></tr>\n")
+                                   .append("<tr><td></td><td>int16</td><td>enc</td></tr>\n")
+                                   .append("<tr><td></td><td>string</td><td>field1</td></tr>\n")
+                                   .append("<tr><td></td><td>int64</td><td>field2</td></tr>\n")
+                                   .append("<tr><td></td><td>ip_addr</td><td>SenderIP</td></tr>\n")
+                                   .append("<tr><td></td><td>int64</td><td>ReceiptTime</td></tr>\n")
+                                   .append("<tr><td></td><td>uint16</td><td>SenderPort</td></tr>\n")
+                                   .append("</table>\n")
+                                   .toString();
         String htmlString = template.toHtmlString();
         assertNotNull("html string was null", htmlString);
         assertEquals("html string did not match", testHtmlString, htmlString);
 
         String testString =
                 new StringBuilder().append("\nMetaEventInfo\n")
-                        .append("{\n")
-                        .append("\tint64 ReceiptTime;\n")
-                        .append("\tip_addr SenderIP;\n")
-                        .append("\tuint16 SenderPort;\n")
-                        .append("\tuint16 SiteID;\n")
-                        .append("\tint16 enc;\n")
-                        .append("}\n")
-                        .append("TestEvent\n")
-                        .append("{\n")
-                        .append("\tint64 ReceiptTime;\n")
-                        .append("\tip_addr SenderIP;\n")
-                        .append("\tuint16 SenderPort;\n")
-                        .append("\tuint16 SiteID;\n")
-                        .append("\tint16 enc;\n")
-                        .append("\tstring field1;\n")
-                        .append("\tint64 field2;\n")
-                        .append("}\n")
-                        .toString();
+                                   .append("{\n")
+                                   .append("\tint64 ReceiptTime;\n")
+                                   .append("\tip_addr SenderIP;\n")
+                                   .append("\tuint16 SenderPort;\n")
+                                   .append("\tuint16 SiteID;\n")
+                                   .append("\tint16 enc;\n")
+                                   .append("}\n")
+                                   .append("TestEvent\n")
+                                   .append("{\n")
+                                   .append("\tint64 ReceiptTime;\n")
+                                   .append("\tip_addr SenderIP;\n")
+                                   .append("\tuint16 SenderPort;\n")
+                                   .append("\tuint16 SiteID;\n")
+                                   .append("\tint16 enc;\n")
+                                   .append("\tstring field1;\n")
+                                   .append("\tint64 field2;\n")
+                                   .append("}\n")
+                                   .toString();
         String toString = template.toString();
         assertNotNull("toString was null", toString);
         assertEquals("test string did not match", testString, toString);
