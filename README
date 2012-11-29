@@ -20,12 +20,6 @@ specified batch-mode.
 NOTE: Read this document for deploying releases to central:
 https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
 
-If the release plugin doesn't work for some reason and you need to push to central,
-you will need to check out the release tag and then do the manual deploy:
-% git clone git@github.com:lwes/lwes-java.git
-% cd lwes-java && git checkout -b lwes-java-1.1.2 lwes-java-1.1.2 # Or whatever the tag name is
-% mvn package gpg:sign deploy
-
 ***
 To increase the read buffer size on the multicast socket, set the system property
 MulticastReceiveBufferSize. For example,
