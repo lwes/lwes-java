@@ -107,7 +107,7 @@ void eventlist() :
   ( 
 // take care of comments at the end of the esf
     LOOKAHEAD ( (comment())+ <EOF> )
-	(comment())+
+	comment()
   |
     (aComment=comment())* event() 
    )* <EOF> 
