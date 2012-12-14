@@ -208,6 +208,7 @@ public abstract class EventTest {
         }
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testSerialize() throws EventSystemException {
         Event evt = createEvent();

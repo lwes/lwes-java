@@ -4,19 +4,15 @@ package org.lwes.listener;
  * Date: 4/26/12
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
-import org.junit.Test;
-import org.lwes.FieldType;
-
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class DatagramQueueElementTest {
+import org.junit.Assert;
+import org.junit.Test;
+import org.lwes.FieldType;
 
-    private static transient Log log = LogFactory.getLog(DatagramQueueElementTest.class);
+public class DatagramQueueElementTest {
 
     @Test
     public void testObjectMethods() {
