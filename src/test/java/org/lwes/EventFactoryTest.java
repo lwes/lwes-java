@@ -16,8 +16,6 @@ package org.lwes;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
@@ -25,33 +23,35 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class EventFactoryTest {
+  
+    private static final String ESF = "EventFactoryTest.esf";
 
     @Test
     public void testEventFactoryInitializeFile() throws EventSystemException {
         EventFactory fact = new EventFactory();
-        fact.setESFFile(new File("src/test/java/org/lwes/EventFactoryTest.esf"));
+        fact.setESFFile(new File(getClass().getResource(ESF).getPath()));
         fact.initialize();
     }
 
     @Test
     public void testEventFactoryInitializePath() throws EventSystemException {
         EventFactory fact = new EventFactory();
-        fact.setESFFilePath("src/test/java/org/lwes/EventFactoryTest.esf");
+        fact.setESFFilePath(getClass().getResource(ESF).getPath());
         fact.initialize();
     }
 
     @Test
     public void testEventFactoryInitializeStream()
-            throws EventSystemException, FileNotFoundException {
+            throws EventSystemException {
         EventFactory fact = new EventFactory();
-        fact.setESFInputStream(new FileInputStream("src/test/java/org/lwes/EventFactoryTest.esf"));
+        fact.setESFInputStream(getClass().getResourceAsStream(ESF));
         fact.initialize();
     }
 
     @Test
     public void testEventFactoryCreateEvent() throws EventSystemException {
         EventFactory fact = new EventFactory();
-        fact.setESFFile(new File("src/test/java/org/lwes/EventFactoryTest.esf"));
+        fact.setESFInputStream(getClass().getResourceAsStream(ESF));
         fact.initialize();
 
         Event evt = fact.createEvent("TestEvent");

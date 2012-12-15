@@ -36,13 +36,13 @@ public class RequiredTest {
 
     private static transient Log log = LogFactory.getLog(RequiredTest.class);
 
-    private static final String ESF = "src/test/java/org/lwes/db/RequiredTest.esf";
+    private static final String ESF        = "RequiredTest.esf";
     private static final String TEST_EVENT = "TestEvent";
 
     @Test
     public void testRequired() throws EventSystemException {
         EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFInputStream(getClass().getResourceAsStream(ESF));
         assertTrue("Template did not initialize", template.initialize());
         Enumeration<String> eventNames = template.getEventNames();
         assertNotNull("Event names enum was null", eventNames);
