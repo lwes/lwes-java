@@ -15,12 +15,6 @@ package org.lwes.db;
  * @author fmaritato
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -31,6 +25,11 @@ import org.lwes.AttributeRequiredException;
 import org.lwes.EventSystemException;
 import org.lwes.MapEvent;
 import org.lwes.ValidationExceptions;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class RequiredTest {
 
