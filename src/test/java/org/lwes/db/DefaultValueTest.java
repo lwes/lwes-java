@@ -15,14 +15,13 @@ package org.lwes.db;
  * @author fmaritato
  */
 
+import java.math.BigInteger;
+
 import org.junit.Test;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
 import org.lwes.MapEvent;
 import org.lwes.util.IPAddress;
-
-import java.io.File;
-import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,13 +29,13 @@ import static org.junit.Assert.assertTrue;
 
 public class DefaultValueTest {
 
-    private static final String ESF = "src/test/java/org/lwes/db/DefaultValueTest.esf";
+    private static final String ESF = "DefaultValueTest.esf";
 
     @Test
     public void testDefaultValue() throws EventSystemException {
 
         EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFInputStream(getClass().getResourceAsStream(ESF));
         template.initialize();
 
         assertTrue(template.checkForEvent("DefaultValueEvent"));

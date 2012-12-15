@@ -14,8 +14,6 @@ package org.lwes.db;
 
 import org.junit.Test;
 
-import java.io.File;
-
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -24,13 +22,13 @@ import static org.junit.Assert.assertTrue;
 
 public class EmptyEventTest {
 
-    private static final String ESF = "src/test/java/org/lwes/db/EmptyEventTest.esf";
+    private static final String ESF = "EmptyEventTest.esf";
 
     @Test
     public void testEmptyEvent() {
 
         EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFInputStream(getClass().getResourceAsStream(ESF));
         template.initialize();
 
         assertTrue(template.checkForEvent("EmptyEvent"));
