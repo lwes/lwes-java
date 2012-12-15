@@ -4,16 +4,13 @@ package org.lwes;
  * Date: 5/2/12
  */
 
-import junit.framework.Assert;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-
 import java.math.BigInteger;
 
-public class MapEventTest extends EventTest {
+import org.junit.Test;
 
-    private static transient Log log = LogFactory.getLog(MapEventTest.class);
+import junit.framework.Assert;
+
+public class MapEventTest extends EventTest {
 
     @Test
     public void testGettersSetters() {

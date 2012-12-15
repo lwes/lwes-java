@@ -13,20 +13,17 @@ package org.lwes.listener;
  * Date: 4/25/12
  */
 
-import junit.framework.Assert;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-import org.lwes.Event;
-import org.lwes.MapEvent;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FilterListenerTest {
+import org.junit.Test;
+import org.lwes.Event;
+import org.lwes.MapEvent;
 
-    private static transient Log log = LogFactory.getLog(FilterListenerTest.class);
+import junit.framework.Assert;
+
+public class FilterListenerTest {
 
     @Test(expected = RuntimeException.class)
     public void testBadArgument() {
