@@ -15,7 +15,6 @@ package org.lwes;
  * @author fmaritato
  */
 
-import java.io.File;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -47,7 +46,7 @@ public abstract class EventTest {
     @Before
     public void setUp() {
         eventTemplate = new EventTemplateDB();
-        eventTemplate.setESFFile(new File("src/test/java/org/lwes/EventTest.esf"));
+        eventTemplate.setESFInputStream(getClass().getResourceAsStream("EventTest.esf"));
         eventTemplate.initialize();
     }
 

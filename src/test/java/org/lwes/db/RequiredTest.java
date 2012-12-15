@@ -15,12 +15,7 @@ package org.lwes.db;
  * @author fmaritato
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -28,21 +23,27 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.lwes.AttributeRequiredException;
+import org.lwes.EventFactoryTest;
 import org.lwes.EventSystemException;
 import org.lwes.MapEvent;
 import org.lwes.ValidationExceptions;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class RequiredTest {
 
     private static transient Log log = LogFactory.getLog(RequiredTest.class);
 
-    private static final String ESF = "src/test/java/org/lwes/db/RequiredTest.esf";
-    private static final String TEST_EVENT = "TestEvent";
+    private static final String  ESF        = "RequiredTest.esf";
+    private static final String  TEST_EVENT = "TestEvent";
 
     @Test
-    public void testRequired() throws EventSystemException {
+    public void testRequired() throws EventSystemException, IOException {
         EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFInputStream(getClass().getResource(ESF).openStream());
         assertTrue("Template did not initialize", template.initialize());
         Enumeration<String> eventNames = template.getEventNames();
         assertNotNull("Event names enum was null", eventNames);

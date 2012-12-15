@@ -12,21 +12,19 @@
 
 package org.lwes.db;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
+
 import org.junit.Test;
 import org.lwes.BaseType;
 import org.lwes.FieldType;
 import org.lwes.NoSuchAttributeTypeException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.Enumeration;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author fmaritato
@@ -34,13 +32,13 @@ import java.util.Map;
 
 public class EventTemplateDBTest {
 
-    private static final String ESF = "src/test/java/org/lwes/db/EventTemplateDBTest.esf";
+    private static final String ESF        = "EventTemplateDBTest.esf";
     private static final String TEST_EVENT = "TestEvent";
 
     @Test
-    public void testTemplateFromFile() throws NoSuchAttributeTypeException {
+    public void testTemplateFromFile() throws NoSuchAttributeTypeException, IOException {
         EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFInputStream(getClass().getResource(ESF).openStream());
         assertTrue("Template did not initialize", template.initialize());
 
         Enumeration<String> eventNames = template.getEventNames();
@@ -126,12 +124,7 @@ public class EventTemplateDBTest {
     @Test
     public void testTemplateFromStream() {
         EventTemplateDB template = new EventTemplateDB();
-        try {
-            template.setESFInputStream(new FileInputStream(ESF));
-        }
-        catch (FileNotFoundException e) {
-            fail(e.getMessage());
-        }
+        template.setESFInputStream(getClass().getResourceAsStream(ESF));
         assertTrue(template.initialize());
     }
 }

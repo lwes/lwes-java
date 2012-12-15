@@ -12,6 +12,9 @@
 
 package org.lwes.db;
 
+import java.math.BigInteger;
+import java.util.Enumeration;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -20,10 +23,6 @@ import org.lwes.Event;
 import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 import org.lwes.MapEvent;
-
-import java.io.File;
-import java.math.BigInteger;
-import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,7 +37,7 @@ public class ArrayTest {
 
     private static transient Log log = LogFactory.getLog(ArrayTest.class);
 
-    private static final String ESF = "src/test/java/org/lwes/db/ArrayTest.esf";
+    private static final String ESF        = "ArrayTest.esf";
     private static final String TEST_EVENT = "TestEvent";
 
     private EventTemplateDB template = null;
@@ -46,7 +45,7 @@ public class ArrayTest {
     @Before
     public void setUp() {
         template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFInputStream(getClass().getResourceAsStream(ESF));
         template.initialize();
     }
 
@@ -54,7 +53,7 @@ public class ArrayTest {
     public void testArrayParse() {
 
         EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFInputStream(getClass().getResourceAsStream(ESF));
         assertTrue("Template did not initialize", template.initialize());
 
         Enumeration<String> eventNames = template.getEventNames();

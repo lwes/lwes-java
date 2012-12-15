@@ -15,42 +15,41 @@ package org.lwes;
  * @author fmaritato
  */
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 public class EventFactoryTest {
 
     @Test
     public void testEventFactoryInitializeFile() throws EventSystemException {
         EventFactory fact = new EventFactory();
-        fact.setESFFile(new File("src/test/java/org/lwes/EventFactoryTest.esf"));
+        fact.setESFFile(new File(getClass().getResource("EventFactoryTest.esf").getPath()));
         fact.initialize();
     }
 
     @Test
     public void testEventFactoryInitializePath() throws EventSystemException {
         EventFactory fact = new EventFactory();
-        fact.setESFFilePath("src/test/java/org/lwes/EventFactoryTest.esf");
+        fact.setESFFilePath(getClass().getResource("EventFactoryTest.esf").getPath());
         fact.initialize();
     }
 
     @Test
     public void testEventFactoryInitializeStream()
-            throws EventSystemException, FileNotFoundException {
+            throws EventSystemException, IOException {
         EventFactory fact = new EventFactory();
-        fact.setESFInputStream(new FileInputStream("src/test/java/org/lwes/EventFactoryTest.esf"));
+        fact.setESFInputStream(getClass().getResource("EventFactoryTest.esf").openStream());
         fact.initialize();
     }
 
     @Test
-    public void testEventFactoryCreateEvent() throws EventSystemException {
+    public void testEventFactoryCreateEvent() throws EventSystemException, IOException {
         EventFactory fact = new EventFactory();
-        fact.setESFFile(new File("src/test/java/org/lwes/EventFactoryTest.esf"));
+        fact.setESFInputStream(getClass().getResource("EventFactoryTest.esf").openStream());
         fact.initialize();
 
         Event evt = fact.createEvent("TestEvent");
