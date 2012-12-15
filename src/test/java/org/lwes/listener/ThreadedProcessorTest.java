@@ -4,17 +4,13 @@ package org.lwes.listener;
  * Date: 5/1/12
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.lwes.EventSystemException;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 public class ThreadedProcessorTest {
-
-    private static transient Log log = LogFactory.getLog(ThreadedProcessorTest.class);
 
     @Test(expected = EventSystemException.class)
     public void testNoEnqueuer() {
@@ -39,7 +35,7 @@ public class ThreadedProcessorTest {
         Assert.assertNotNull(tp.getDequeuer());
         tp.setQueueSize(10);
         tp.initialize();
-        LinkedBlockingQueue q = tp.getQueue();
+        LinkedBlockingQueue<QueueElement> q = tp.getQueue();
         Assert.assertNotNull(q);
         Assert.assertEquals(10, q.remainingCapacity());
         tp.shutdown();
@@ -53,7 +49,7 @@ public class ThreadedProcessorTest {
         Assert.assertNotNull(tp.getEnqueuer());
         Assert.assertNotNull(tp.getDequeuer());
         tp.initialize();
-        LinkedBlockingQueue q = tp.getQueue();
+        LinkedBlockingQueue<QueueElement> q = tp.getQueue();
         Assert.assertNotNull(q);
     }
 
@@ -66,7 +62,7 @@ public class ThreadedProcessorTest {
         Assert.assertNotNull(tp.getDequeuer());
         tp.setQueue(new LinkedBlockingQueue<QueueElement>());
         tp.initialize();
-        LinkedBlockingQueue q = tp.getQueue();
+        LinkedBlockingQueue<QueueElement> q = tp.getQueue();
         Assert.assertNotNull(q);
     }
 
