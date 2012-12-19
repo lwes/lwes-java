@@ -310,7 +310,7 @@ public class MapEvent extends DefaultEvent {
     public void clear(String attributeName) {
         final BaseType bt = attributes.remove(attributeName);
         if (bt != null) {
-            bytesStoreSize -= bt.bytesStoreSize(encoding);
+            bytesStoreSize -= (attributeName.length() + 1) + bt.bytesStoreSize(encoding);
         }
     }
 
