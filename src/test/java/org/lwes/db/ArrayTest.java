@@ -12,6 +12,10 @@
 
 package org.lwes.db;
 
+import java.io.File;
+import java.math.BigInteger;
+import java.util.Enumeration;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -20,10 +24,6 @@ import org.lwes.Event;
 import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 import org.lwes.MapEvent;
-
-import java.io.File;
-import java.math.BigInteger;
-import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -48,6 +48,28 @@ public class ArrayTest {
         template = new EventTemplateDB();
         template.setESFFile(new File(ESF));
         template.initialize();
+    }
+
+    @Test
+    public void testArrayWithNulls() {
+
+        EventTemplateDB template = new EventTemplateDB();
+        template.setESFFile(new File(ESF));
+        assertTrue("Template did not initialize", template.initialize());
+
+        Double[] doubleArray = new Double[] {
+            2.1, null, 5.5, 1.1, 3.2
+        };
+
+        Event evt = new MapEvent("TestEvent", true, template);
+        evt.setDoubleArray("doubleObjArr", doubleArray);
+
+        byte[] serializedEvent = evt.serialize();
+        Event evt2 = new MapEvent(serializedEvent, true, template);
+        assertNotNull(evt2);
+        Double[] rtnArray = evt2.getDoubleObjArray("doubleObjArr");
+
+
     }
 
     @Test

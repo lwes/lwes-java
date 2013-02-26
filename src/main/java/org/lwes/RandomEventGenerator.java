@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.lwes.util.IPAddress;
 
 public final class RandomEventGenerator {
@@ -26,7 +26,7 @@ public final class RandomEventGenerator {
 
 
     public Event getRandomEvent(String[] eventNames) {
-        String eventName = eventNames[random.nextInt(eventNames.length-1)];
+        String eventName = eventNames[random.nextInt(eventNames.length - 1)];
         Event event = new MapEvent(eventName);
         return event;
     }
@@ -72,18 +72,25 @@ public final class RandomEventGenerator {
 
     public Object createRandomValue(FieldType type) {
         switch (type) {
+            case NBOOLEAN:
             case BOOLEAN:
                 return random.nextBoolean();
+            case NBYTE:
             case BYTE:
                 return (byte) random.nextInt();
+            case NDOUBLE:
             case DOUBLE:
                 return random.nextDouble();
+            case NFLOAT:
             case FLOAT:
                 return random.nextFloat();
+            case NSHORT:
             case INT16:
                 return (short) random.nextInt();
+            case NINTEGER:
             case INT32:
                 return random.nextInt();
+            case NLONG:
             case INT64:
                 return random.nextLong();
             case IPADDR:
@@ -96,18 +103,27 @@ public final class RandomEventGenerator {
                 return random.nextInt(0x10000);
             case UINT32:
                 return random.nextLong() & 0xffffffffL;
+            case NBIGINT:
             case UINT64:
                 return BigInteger.valueOf(random.nextLong()).subtract(
                         BigInteger.valueOf(Long.MIN_VALUE));
+            case NBOOLEAN_ARRAY:
             case BOOLEAN_ARRAY:
+            case NBYTE_ARRAY:
             case BYTE_ARRAY:
+            case NSHORT_ARRAY:
             case INT16_ARRAY:
+            case NINTEGER_ARRAY:
             case INT32_ARRAY:
+            case NLONG_ARRAY:
             case INT64_ARRAY:
             case UINT16_ARRAY:
             case UINT32_ARRAY:
+            case NBIGINT_ARRAY:
             case UINT64_ARRAY:
+            case NFLOAT_ARRAY:
             case FLOAT_ARRAY:
+            case NDOUBLE_ARRAY:
             case DOUBLE_ARRAY:
             case STRING_ARRAY:
             case IP_ADDR_ARRAY: {
@@ -120,36 +136,42 @@ public final class RandomEventGenerator {
                 // However, Event.set() appears to require certain primitive arrays.
                 // This could go away if the setter became more tolerant.
                 switch (type) {
+                    case NBOOLEAN_ARRAY:
                     case BOOLEAN_ARRAY: {
                         final Boolean[] typedArray = new Boolean[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
                         return ArrayUtils.toPrimitive(typedArray);
                     }
+                    case NBYTE_ARRAY:
                     case BYTE_ARRAY: {
                         final Byte[] typedArray = new Byte[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
                         return ArrayUtils.toPrimitive(typedArray);
                     }
+                    case NFLOAT_ARRAY:
                     case FLOAT_ARRAY: {
                         final Float[] typedArray = new Float[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
                         return ArrayUtils.toPrimitive(typedArray);
                     }
+                    case NDOUBLE_ARRAY:
                     case DOUBLE_ARRAY: {
                         final Double[] typedArray = new Double[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
                         return ArrayUtils.toPrimitive(typedArray);
                     }
+                    case NSHORT_ARRAY:
                     case INT16_ARRAY: {
                         final Short[] typedArray = new Short[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
                         return ArrayUtils.toPrimitive(typedArray);
                     }
+                    case NINTEGER_ARRAY:
                     case INT32_ARRAY:
                     case UINT16_ARRAY: {
                         final Integer[] typedArray = new Integer[objectArray.length];
@@ -157,6 +179,7 @@ public final class RandomEventGenerator {
                                          objectArray.length);
                         return ArrayUtils.toPrimitive(typedArray);
                     }
+                    case NLONG_ARRAY:
                     case INT64_ARRAY:
                     case UINT32_ARRAY: {
                         final Long[] typedArray = new Long[objectArray.length];
@@ -176,6 +199,7 @@ public final class RandomEventGenerator {
                                          objectArray.length);
                         return typedArray;
                     }
+                    case NBIGINT_ARRAY:
                     case UINT64_ARRAY: {
                         final BigInteger[] typedArray = new BigInteger[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,

@@ -60,7 +60,7 @@ public class BaseType {
      * comment describing attribute
      */
     private String comment;
-    
+
     public BaseType() {
     }
 
@@ -95,8 +95,8 @@ public class BaseType {
         this.typeObject = typeObject;
         this.type = FieldType.byToken(typeToken);
         this.defaultValue = defaultValue;
-        if (! typeName.equals(type.name)) {
-            throw new IllegalStateException("Inconsistent type name and token: "+typeName+" vs. "+type.name);
+        if (!typeName.equals(type.name)) {
+            throw new IllegalStateException("Inconsistent type name and token: " + typeName + " vs. " + type.name);
         }
     }
 
@@ -120,21 +120,21 @@ public class BaseType {
                     boolean required,
                     int sizeRestriction,
                     Object defaultValue) {
-        this(type,typeObject,required,sizeRestriction,defaultValue,null);
+        this(type, typeObject, required, sizeRestriction, defaultValue, null);
     }
-    
+
     public BaseType(FieldType type,
                     Object typeObject,
                     boolean required,
                     int sizeRestriction,
                     Object defaultValue,
-		    String comment) {
+                    String comment) {
         this.required = required;
         this.sizeRestriction = sizeRestriction;
         this.type = type;
         this.typeObject = typeObject;
         this.defaultValue = defaultValue;
-	this.comment = comment;
+        this.comment = comment;
     }
 
     public Object getDefaultValue() {
@@ -144,7 +144,7 @@ public class BaseType {
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
     }
-    
+
     public FieldType getType() {
         return type;
     }
@@ -182,7 +182,7 @@ public class BaseType {
     }
 
     public void setTypeObject(Object typeObject) throws NoSuchAttributeTypeException {
-        if (! type.isCompatibleWith(typeObject)) {
+        if (!type.isCompatibleWith(typeObject)) {
             throw new NoSuchAttributeTypeException("Wrong type '" + typeObject.getClass().getName());
         }
         this.typeObject = typeObject;
@@ -210,17 +210,22 @@ public class BaseType {
 
     public int getByteSize(short encoding) {
         switch (type) {
+            case NBOOLEAN:
+            case NBYTE:
             case BOOLEAN:
             case BYTE:
                 return 1;
+            case NSHORT:
             case UINT16:
             case INT16:
                 return 2;
+            case NINTEGER:
             case UINT32:
             case INT32:
             case FLOAT:
             case IPADDR:
                 return 4;
+            case NLONG:
             case INT64:
             case UINT64:
             case DOUBLE:
@@ -238,18 +243,26 @@ public class BaseType {
             }
             case BOOLEAN_ARRAY:
             case BYTE_ARRAY:
+            case NBYTE_ARRAY:
+            case NBOOLEAN_ARRAY:
                 return Array.getLength(typeObject) + 2;
             case INT16_ARRAY:
             case UINT16_ARRAY:
+            case NSHORT_ARRAY:
                 return Array.getLength(typeObject) * 2 + 2;
             case INT32_ARRAY:
             case UINT32_ARRAY:
             case FLOAT_ARRAY:
             case IP_ADDR_ARRAY:
+            case NINTEGER_ARRAY:
+            case NFLOAT_ARRAY:
                 return Array.getLength(typeObject) * 4 + 2;
             case INT64_ARRAY:
+            case NBIGINT_ARRAY:
             case UINT64_ARRAY:
             case DOUBLE_ARRAY:
+            case NDOUBLE_ARRAY:
+            case NLONG_ARRAY:
                 return Array.getLength(typeObject) * 8 + 2;
         }
         throw new IllegalArgumentException("Unknown size of BaseType " + type.name);
@@ -301,7 +314,7 @@ public class BaseType {
                 throw new UnsupportedOperationException("Not yet implemented");
         }
         throw new NoSuchAttributeTypeException("Unknown size of BaseType "
-                + type.name);
+                                               + type.name);
     }
 
     public BaseType cloneBaseType() {
@@ -314,13 +327,12 @@ public class BaseType {
     }
 
     public String getComment() {
-	return comment;
+        return comment;
     }
 
     public void setComment(String comment) {
-	this.comment = comment;
+        this.comment = comment;
     }
-    
-    
-    
+
+
 }

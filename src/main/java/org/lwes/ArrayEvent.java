@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
@@ -311,7 +311,7 @@ public final class ArrayEvent extends DefaultEvent {
         tempState.set(valueIndex);
         return get(type, tempState);
     }
-    
+
     private Object get(FieldType type, DeserializerState state) {
         switch (type) {
             case BOOLEAN:
@@ -468,18 +468,23 @@ public final class ArrayEvent extends DefaultEvent {
         switch (type) {
             case BOOLEAN:
             case BYTE:
+            case NBOOLEAN:
+            case NBYTE:
                 return 1;
             case UINT16:
             case INT16:
+            case NSHORT:
                 return 2;
             case UINT32:
             case INT32:
             case FLOAT:
             case IPADDR:
+            case NINTEGER:
                 return 4;
             case INT64:
             case UINT64:
             case DOUBLE:
+            case NLONG:
                 return 8;
             case STRING:
                 return 2 + deserializeUINT16(valueIndex);
@@ -559,11 +564,11 @@ public final class ArrayEvent extends DefaultEvent {
 
     /**
      * These two ArrayEvent objects swap all of their fields.
-     * 
+     * <p/>
      * Why would one want to do this? If one must set "this" to the value of
      * "event", but it's acceptable to modify "event" in the process, then
      * swap() accomplishes the copy faster than copyFrom(event) can.
-     * 
+     * <p/>
      * Typical events seem to take about 6ms for copyFrom() but only 100ns for
      * swap().  However, if you're not doing enough copies that the performance
      * difference matters, you should probably use copyFrom().
@@ -621,7 +626,7 @@ public final class ArrayEvent extends DefaultEvent {
 
         return true;
     }
-    
+
     /**
      * This method shows detailed information about the internal state of the
      * event, and was designed as a "Detail Formatter" for tracing execution
@@ -638,30 +643,34 @@ public final class ArrayEvent extends DefaultEvent {
             final DeserializerState ds = new DeserializerState();
             ds.set(getValueListIndex());
             while (ds.currentIndex() < length) {
-              String    field;
-              FieldType type;
-              Object    value;
-              try {
-                field = Deserializer.deserializeATTRIBUTEWORD(ds, bytes);
-              } catch(Exception e) {
-                throw new Exception("Error when reading field name: "+e.getMessage());
-              }
-              try {
-                type = FieldType.byToken(Deserializer.deserializeBYTE(ds, bytes));
-              } catch(Exception e) {
-                throw new Exception("Error when reading field name: "+e.getMessage());
-              }
-              try {
-                value = Deserializer.deserializeValue(ds, bytes, type, encoding);
-              } catch(Exception e) {
-                throw new Exception("Error when reading field name: "+e.getMessage());
-              }
-              if (value.getClass().isArray()) {
-                value = Arrays.deepToString(new Object[] { value });
-              }
-              buf.append(String.format("  field \"%s\" (%s): %s\n", field, type, value));
+                String field;
+                FieldType type;
+                Object value;
+                try {
+                    field = Deserializer.deserializeATTRIBUTEWORD(ds, bytes);
+                }
+                catch (Exception e) {
+                    throw new Exception("Error when reading field name: " + e.getMessage());
+                }
+                try {
+                    type = FieldType.byToken(Deserializer.deserializeBYTE(ds, bytes));
+                }
+                catch (Exception e) {
+                    throw new Exception("Error when reading field name: " + e.getMessage());
+                }
+                try {
+                    value = Deserializer.deserializeValue(ds, bytes, type, encoding);
+                }
+                catch (Exception e) {
+                    throw new Exception("Error when reading field name: " + e.getMessage());
+                }
+                if (value.getClass().isArray()) {
+                    value = Arrays.deepToString(new Object[]{value});
+                }
+                buf.append(String.format("  field \"%s\" (%s): %s\n", field, type, value));
             }
-        } catch(Exception e) {
+        }
+        catch (Exception e) {
             buf.append("\nEXCEPTION: ").append(e.getMessage());
         }
         return buf.toString();
@@ -671,7 +680,7 @@ public final class ArrayEvent extends DefaultEvent {
     public Iterator<FieldAccessor> iterator() {
         return new Iterator<FieldAccessor>() {
             private final ArrayEventFieldAccessor accessor = new ArrayEventFieldAccessor();
-            
+
             public boolean hasNext() {
                 return accessor.nextFieldIndex < length;
             }
@@ -689,10 +698,10 @@ public final class ArrayEvent extends DefaultEvent {
 
     private final class ArrayEventFieldAccessor extends DefaultFieldAccessor {
         private transient final DeserializerState accessorTempState = new DeserializerState();
-        private int                               nextFieldIndex    = getValueListIndex(),
+        private int nextFieldIndex = getValueListIndex(),
                 currentFieldIndex = Integer.MIN_VALUE,
                 currentValueIndex = Integer.MIN_VALUE;
-        
+
         public void advance() {
             // Deserialize name,type eagerly; deserialize value lazily. 
             currentFieldIndex = nextFieldIndex;
@@ -704,7 +713,7 @@ public final class ArrayEvent extends DefaultEvent {
             // Remember where the current value starts.
             currentValueIndex = accessorTempState.currentIndex();
             // Remember where the next field (or end of event) is.
-            nextFieldIndex    = currentValueIndex + getValueByteSize(getType(), currentValueIndex);
+            nextFieldIndex = currentValueIndex + getValueByteSize(getType(), currentValueIndex);
         }
 
         @Override

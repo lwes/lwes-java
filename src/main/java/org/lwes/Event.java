@@ -12,9 +12,6 @@
 
 package org.lwes;
 
-import org.lwes.util.CharacterEncoding;
-import org.lwes.util.IPAddress;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -23,6 +20,9 @@ import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.lwes.util.CharacterEncoding;
+import org.lwes.util.IPAddress;
 
 public interface Event extends Iterable<FieldAccessor> {
     static final int MAX_EVENT_NAME_SIZE = 127;
@@ -109,7 +109,13 @@ public interface Event extends Iterable<FieldAccessor> {
     void setIPAddress(String attributeName, InetAddress address);
 
     void setIPAddress(String attributeName, IPAddress address);
-    
+
+    void setShortArray(String attributeName, Short[] value);
+    void setIntegerArray(String attributeName, Integer[] value);
+    void setLongArray(String attributeName, Long[] value);
+    void setDoubleArray(String attributeName, Double[] value);
+    void setFloatArray(String attributeName, Float[] value);
+
     void setEncoding(short encoding);
 
     // GETTERS
@@ -141,6 +147,14 @@ public interface Event extends Iterable<FieldAccessor> {
     BigInteger[] getUInt64Array(String attributeName);
 
     String[] getStringArray(String attributeName);
+
+    Integer[] getIntegerObjArray(String attributeName);
+    Long[] getLongObjArray(String attributeName);
+    Short[] getShortObjArray(String attributeName);
+    Double[] getDoubleObjArray(String attributeName);
+    Boolean[] getBooleanObjArray(String attributeName);
+    Byte[] getByteObjArray(String attributeName);
+    Float[] getFloatObjArray(String attributeName);
 
     byte[] getByteArray(String attributeName);
 
