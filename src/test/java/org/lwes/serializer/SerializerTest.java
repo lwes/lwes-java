@@ -49,6 +49,21 @@ public class SerializerTest {
         Assert.assertTrue(dsbs.get(1));
         Assert.assertTrue(dsbs.get(2));
         Assert.assertFalse(dsbs.get(3));
+
+        bitSet = new BitSet(5);
+        bitSet.set(0);
+        bitSet.set(2);
+
+        ds = new DeserializerState();
+        offset = 0;
+        bytes = new byte[25];
+        Serializer.serializeBitSet(bitSet, bytes, offset);
+        dsbs = Deserializer.deserializeBitSet(ds, bytes);
+        Assert.assertEquals(2, dsbs.cardinality());
+        Assert.assertTrue(dsbs.get(0));
+        Assert.assertFalse(dsbs.get(1));
+        Assert.assertTrue(dsbs.get(2));
+        Assert.assertFalse(dsbs.get(3));
     }
 
     @Test
@@ -58,8 +73,8 @@ public class SerializerTest {
         };
 
         byte[] bytes = new byte[64];
-        Serializer.serializeValue(FieldType.NFLOAT_ARRAY, array, (short) 1, bytes, 0);
-
+        int num = Serializer.serializeValue(FieldType.NFLOAT_ARRAY, array, (short) 1, bytes, 0);
+        Assert.assertEquals(24, num);
         DeserializerState state = new DeserializerState();
         Float[] rtn = (Float[]) Deserializer.deserializeValue(state, bytes, FieldType.NFLOAT_ARRAY, (short) 1);
         Assert.assertNotNull(rtn);

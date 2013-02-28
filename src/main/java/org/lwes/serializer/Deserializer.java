@@ -494,13 +494,18 @@ public class Deserializer {
     public static BitSet deserializeBitSet(DeserializerState myState, byte[] bytes) {
 
         int size = deserializeINT16(myState, bytes);
+        if (log.isDebugEnabled()) {
+            log.debug("BitSet length: "+size);
+        }
         BitSet bitSet = new BitSet(size);
         int offset = myState.currentIndex();
         for (int i = offset; i < (offset + size); i++) {
             bitSet.set((i - offset), bytes[i] == 1);
             myState.incr(1);
         }
-
+        if (log.isDebugEnabled()) {
+            log.debug("BitSet: "+bitSet);
+        }
         return bitSet;
     }
 

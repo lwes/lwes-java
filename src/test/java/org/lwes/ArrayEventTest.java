@@ -9,19 +9,19 @@
  *======================================================================*/
 package org.lwes;
 
-import junit.framework.Assert;
-import org.apache.log4j.Logger;
-import org.junit.Test;
-
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Enumeration;
+
+import org.apache.log4j.Logger;
+import org.junit.Test;
+
+import junit.framework.Assert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public final class ArrayEventTest extends EventTest {
 
@@ -179,6 +179,36 @@ public final class ArrayEventTest extends EventTest {
     public void testInvalidEncodingType() throws EventSystemException {
         final ArrayEvent event = new ArrayEvent("Event");
         event.set("enc", FieldType.INT32, Event.DEFAULT_ENCODING);
+    }
+
+    @Test
+    public void testNullableEvents() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("long[]", FieldType.NLONG_ARRAY, new Long[] { 5000000000l, null, 8675309l });
+        Long[] retrievedArray = evt.getLongObjArray("long[]");
+        for (Long l : retrievedArray) {
+            log.debug("retrieved item: "+l);
+        }
+        evt.set("str", FieldType.STRING, "testing");
+        Assert.assertEquals(5000000000l, retrievedArray[0].longValue());
+        Assert.assertNull(evt.getLongObjArray("long[]")[1]);
+        Assert.assertEquals("testing", evt.getString("str"));
+
+        evt.set("double[]", FieldType.NDOUBLE_ARRAY, new Double[] { 1.23, 1.26, null });
+        Assert.assertEquals(1.23, evt.getDoubleObjArray("double[]")[0]);
+        Assert.assertNull(evt.getDoubleObjArray("double[]")[2]);
+
+        evt.set("float[]", FieldType.NFLOAT_ARRAY, new Float[] { 1.11f, null, 1.12f });
+        Assert.assertEquals(1.11f, evt.getFloatObjArray("float[]")[0]);
+        Assert.assertNull(evt.getFloatObjArray("float[]")[1]);
+
+        evt.set("integer[]", FieldType.NINTEGER_ARRAY, new Integer[] { 5000, null, 12345 });
+        Assert.assertEquals(5000, evt.getIntegerObjArray("integer[]")[0].intValue());
+        Assert.assertNull(evt.getIntegerObjArray("integer[]")[1]);
+
+        evt.set("short[]", FieldType.NSHORT_ARRAY, new Short[] { 5, null, 10 });
+        Assert.assertEquals(5, evt.getShortObjArray("short[]")[0].shortValue());
+        Assert.assertNull(evt.getShortObjArray("short[]")[1]);
     }
 
     @Override

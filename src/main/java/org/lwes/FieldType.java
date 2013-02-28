@@ -107,6 +107,12 @@ public enum FieldType {
         return name;
     }
 
+    public boolean isNullableArray() {
+        return (this == NSHORT_ARRAY || this == NDOUBLE_ARRAY || this == NFLOAT_ARRAY ||
+                this == NBIGINT_ARRAY || this == NBOOLEAN_ARRAY || this == NBYTE_ARRAY ||
+                this == NINTEGER_ARRAY || this == NLONG_ARRAY);
+    }
+
     public boolean isArray() {
         return array;
     }

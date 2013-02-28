@@ -23,12 +23,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.EncodedString;
 
 public final class ArrayEvent extends DefaultEvent {
+
+    private static transient final Log log = LogFactory.getLog(ArrayEvent.class);
 
     private static final int SERIALIZED_ENCODING_LENGTH;
     private byte[] bytes = new byte[MAX_MESSAGE_SIZE];
@@ -362,6 +366,16 @@ public final class ArrayEvent extends DefaultEvent {
                 return Deserializer.deserializeFloatArray(state, bytes);
             case IP_ADDR_ARRAY:
                 return Deserializer.deserializeIPADDRArray(state, bytes);
+            case NLONG_ARRAY:
+                return Deserializer.deserializeNLongArray(state, bytes);
+            case NDOUBLE_ARRAY:
+                return Deserializer.deserializeNDoubleArray(state, bytes);
+            case NFLOAT_ARRAY:
+                return Deserializer.deserializeNFloatArray(state, bytes);
+            case NINTEGER_ARRAY:
+                return Deserializer.deserializeNIntegerArray(state, bytes);
+            case NSHORT_ARRAY:
+                return Deserializer.deserializeNShortArray(state, bytes);
         }
         throw new IllegalStateException("Bad type: " + type);
     }
@@ -435,14 +449,15 @@ public final class ArrayEvent extends DefaultEvent {
                 }
                 else {
                     // Wrong field.  Skip it, the type token, and the value.
-                    tempState.incr(1 + keyLength);
+                    tempState.incr(1 + keyLength); // field name
                     final FieldType type = FieldType.byToken(bytes[tempState.currentIndex()]);
-                    tempState.incr(1);
-                    tempState.incr(getValueByteSize(type, tempState.currentIndex()));
+                    tempState.incr(1); // type token
+                    Deserializer.deserializeValue(tempState, bytes, type, (short) 1);
                 }
             }
             if (tempState.currentIndex() > length) {
-                throw new IllegalStateException("Overran the end of the byte array");
+                throw new IllegalStateException(
+                        "Overran the end of the byte array: " + tempState.currentIndex() + " " + length);
             }
             return -1;
         }
@@ -480,10 +495,12 @@ public final class ArrayEvent extends DefaultEvent {
             case FLOAT:
             case IPADDR:
             case NINTEGER:
+            case NFLOAT:
                 return 4;
             case INT64:
             case UINT64:
             case DOUBLE:
+            case NDOUBLE:
             case NLONG:
                 return 8;
             case STRING:
@@ -512,6 +529,15 @@ public final class ArrayEvent extends DefaultEvent {
             case UINT64_ARRAY:
             case DOUBLE_ARRAY:
                 return 2 + deserializeUINT16(valueIndex) * 8;
+            case NLONG_ARRAY:
+            case NDOUBLE_ARRAY:
+                // length + (num items * 8 bytes) + (bitset length * 2 bytes)
+                return 2 + (deserializeUINT16(valueIndex) * 8) + (deserializeUINT16(valueIndex) * 2);
+            case NINTEGER_ARRAY:
+            case NFLOAT_ARRAY:
+                return 2 + (deserializeUINT16(valueIndex) * 4) + (deserializeUINT16(valueIndex) * 2);
+            case NSHORT_ARRAY:
+                return 2 + (deserializeUINT16(valueIndex) * 2) + (deserializeUINT16(valueIndex) * 2);
         }
         throw new IllegalStateException("Unrecognized type: " + type);
     }

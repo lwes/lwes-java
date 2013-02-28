@@ -493,6 +493,10 @@ public class Serializer {
     }
 
     public static int serializeBitSet(BitSet bitSet, byte[] data, int offset) {
+        if (log.isDebugEnabled()) {
+            log.debug("BitSet: " + bitSet);
+        }
+
         int offsetStart = offset;
         offset += serializeINT16((short) bitSet.length(), data, offset);
         for (int i = 0; i < bitSet.length(); i++) {
@@ -538,7 +542,7 @@ public class Serializer {
         offset += serializeBitSet(bitSet, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
-        offset += tmp.length;
+        offset += tmpOffset;
 
         return (offset - offsetStart);
     }
@@ -571,7 +575,7 @@ public class Serializer {
         offset += serializeBitSet(bitSet, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
-        offset += tmp.length;
+        offset += tmpOffset;
 
         return (offset - offsetStart);
     }
@@ -604,9 +608,10 @@ public class Serializer {
         offset += serializeBitSet(bitSet, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
-        offset += tmp.length;
+        offset += tmpOffset;
 
-        return (offset - offsetStart);    }
+        return (offset - offsetStart);
+    }
 
     public static int serializeNLongArray(Long[] data, byte[] bytes, int offset) {
         int numbytes = 0;
@@ -635,10 +640,12 @@ public class Serializer {
         // Write the bitset first to ease with deserialization
         offset += serializeBitSet(bitSet, bytes, offset);
         // Now write the float values
+        log.debug("write " + tmpOffset + " bytes");
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
-        offset += tmp.length;
+        offset += tmpOffset;
 
-        return (offset - offsetStart);    }
+        return (offset - offsetStart);
+    }
 
     public static int serializeNShortArray(Short[] data, byte[] bytes, int offset) {
         int numbytes = 0;
@@ -668,9 +675,10 @@ public class Serializer {
         offset += serializeBitSet(bitSet, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
-        offset += tmp.length;
+        offset += tmpOffset;
 
-        return (offset - offsetStart);    }
+        return (offset - offsetStart);
+    }
 
     public static int serializeNIntegerArray(Integer[] data, byte[] bytes, int offset) {
         int numbytes = 0;
@@ -700,7 +708,8 @@ public class Serializer {
         offset += serializeBitSet(bitSet, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
-        offset += tmp.length;
+        offset += tmpOffset;
 
-        return (offset - offsetStart);    }
+        return (offset - offsetStart);
+    }
 }
