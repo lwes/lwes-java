@@ -157,6 +157,8 @@ public enum FieldType {
                 return NFLOAT_ARRAY;
             case NSHORT:
                 return NSHORT_ARRAY;
+            case NBOOLEAN:
+                return NBOOLEAN_ARRAY;
             case BOOLEAN_ARRAY:
             case BYTE_ARRAY:
             case DOUBLE_ARRAY:

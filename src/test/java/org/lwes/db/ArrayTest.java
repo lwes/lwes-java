@@ -27,6 +27,7 @@ import org.lwes.MapEvent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -68,7 +69,11 @@ public class ArrayTest {
         Event evt2 = new MapEvent(serializedEvent, true, template);
         assertNotNull(evt2);
         Double[] rtnArray = evt2.getDoubleObjArray("doubleObjArr");
-
+        assertNotNull(rtnArray);
+        assertEquals(2.1, rtnArray[0], 1e-15);
+        assertNull(rtnArray[1]);
+        assertEquals(5.5, rtnArray[2], 1e-15);
+        assertEquals(1.1, rtnArray[3], 1e-15);
 
     }
 

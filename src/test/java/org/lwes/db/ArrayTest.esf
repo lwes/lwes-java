@@ -30,4 +30,5 @@ TestEvent
   Long longObjArr[5];
   Float floatObjArr[5];
   Short shortObjArr[5];
+  Boolean boolObjArr[5];
 }
