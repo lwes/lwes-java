@@ -209,6 +209,12 @@ public final class ArrayEventTest extends EventTest {
         evt.set("short[]", FieldType.NSHORT_ARRAY, new Short[] { 5, null, 10 });
         Assert.assertEquals(5, evt.getShortObjArray("short[]")[0].shortValue());
         Assert.assertNull(evt.getShortObjArray("short[]")[1]);
+
+        evt.set("boolean[]", FieldType.NBOOLEAN_ARRAY, new Boolean[] { true, null, false });
+        Assert.assertTrue(evt.getBooleanObjArray("boolean[]")[0]);
+        Assert.assertNull(evt.getBooleanObjArray("boolean[]")[1]);
+        Assert.assertFalse(evt.getBooleanObjArray("boolean[]")[2]);
+
     }
 
     @Override

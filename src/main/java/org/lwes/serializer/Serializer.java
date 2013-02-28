@@ -475,6 +475,8 @@ public class Serializer {
             case UINT64_ARRAY:
             case NBIGINT_ARRAY:
                 return Serializer.serializeUInt64Array((BigInteger[]) data, bytes, offset);
+            case NBOOLEAN_ARRAY:
+                return Serializer.serializeNBooleanArray((Boolean[]) data, bytes, offset);
             case BOOLEAN_ARRAY:
                 return Serializer.serializeBooleanArray((boolean[]) data, bytes, offset);
             case NBYTE_ARRAY:
@@ -555,7 +557,7 @@ public class Serializer {
         numbytes = serializeINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
-        byte[] tmp = new byte[4 * data.length];
+        byte[] tmp = new byte[data.length];
         int tmpOffset = 0;
 
         // use a bitset to determine which indexes have values and which are null.
@@ -565,6 +567,39 @@ public class Serializer {
         for (Byte s : data) {
             if (s != null) {
                 numbytes = serializeBYTE(s, tmp, tmpOffset);
+                tmpOffset += numbytes;
+                bitSet.set(i);
+            }
+            i++;
+        }
+
+        // Write the bitset first to ease with deserialization
+        offset += serializeBitSet(bitSet, bytes, offset);
+        // Now write the float values
+        System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
+        offset += tmpOffset;
+
+        return (offset - offsetStart);
+    }
+
+    public static int serializeNBooleanArray(Boolean[] data, byte[] bytes, int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+
+        // Number of items in the array
+        numbytes = serializeINT16((short) data.length, bytes, offset);
+        offset += numbytes;
+
+        byte[] tmp = new byte[data.length];
+        int tmpOffset = 0;
+
+        // use a bitset to determine which indexes have values and which are null.
+        // serialize the actual values into a temporary byte array
+        BitSet bitSet = new BitSet(data.length);
+        int i = 0;
+        for (Boolean s : data) {
+            if (s != null) {
+                numbytes = serializeBOOLEAN(s, tmp, tmpOffset);
                 tmpOffset += numbytes;
                 bitSet.set(i);
             }

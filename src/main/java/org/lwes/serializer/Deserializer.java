@@ -494,17 +494,11 @@ public class Deserializer {
     public static BitSet deserializeBitSet(DeserializerState myState, byte[] bytes) {
 
         int size = deserializeINT16(myState, bytes);
-        if (log.isDebugEnabled()) {
-            log.debug("BitSet length: "+size);
-        }
         BitSet bitSet = new BitSet(size);
         int offset = myState.currentIndex();
         for (int i = offset; i < (offset + size); i++) {
             bitSet.set((i - offset), bytes[i] == 1);
             myState.incr(1);
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("BitSet: "+bitSet);
         }
         return bitSet;
     }
@@ -589,8 +583,26 @@ public class Deserializer {
         return rtn;
     }
 
-    public static Object deserializeValue(DeserializerState state, byte[] bytes, FieldType type, short encoding) throws
-                                                                                                                 EventSystemException {
+    public static Boolean[] deserializeNBooleanArray(DeserializerState state, byte[] bytes) {
+        // get the number of items in the array
+        int length = deserializeINT16(state, bytes);    // 2 bytes
+        BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
+        Boolean[] rtn = new Boolean[length];
+        for (int i = 0; i < length; i++) {
+            if (bs.get(i)) {
+                rtn[i] = deserializeBOOLEAN(state, bytes);
+            }
+            else {
+                rtn[i] = null;
+            }
+        }
+        return rtn;
+    }
+
+    public static Object deserializeValue(DeserializerState state,
+                                          byte[] bytes,
+                                          FieldType type,
+                                          short encoding) throws EventSystemException {
         switch (type) {
             case BOOLEAN:
                 return Deserializer.deserializeBOOLEAN(state, bytes);
@@ -650,6 +662,8 @@ public class Deserializer {
                 return Deserializer.deserializeNLongArray(state, bytes);
             case NSHORT_ARRAY:
                 return Deserializer.deserializeNShortArray(state, bytes);
+            case NBOOLEAN_ARRAY:
+                return Deserializer.deserializeNBooleanArray(state, bytes);
         }
         throw new EventSystemException("Unrecognized type: " + type);
     }

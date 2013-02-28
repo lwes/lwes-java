@@ -317,67 +317,7 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     private Object get(FieldType type, DeserializerState state) {
-        switch (type) {
-            case BOOLEAN:
-                return Deserializer.deserializeBOOLEAN(state, bytes);
-            case BYTE:
-                return Deserializer.deserializeBYTE(state, bytes);
-            case UINT16:
-                return Deserializer.deserializeUINT16(state, bytes);
-            case INT16:
-                return Deserializer.deserializeINT16(state, bytes);
-            case UINT32:
-                return Deserializer.deserializeUINT32(state, bytes);
-            case INT32:
-                return Deserializer.deserializeINT32(state, bytes);
-            case FLOAT:
-                return Deserializer.deserializeFLOAT(state, bytes);
-            case UINT64:
-                return Deserializer.deserializeUInt64ToBigInteger(state, bytes);
-            case INT64:
-                return Deserializer.deserializeINT64(state, bytes);
-            case DOUBLE:
-                return Deserializer.deserializeDOUBLE(state, bytes);
-            case STRING:
-                return Deserializer.deserializeSTRING(state, bytes, encoding);
-            case IPADDR:
-                return Deserializer.deserializeIPADDR(state, bytes);
-            case STRING_ARRAY:
-                return Deserializer.deserializeStringArray(state, bytes, encoding);
-            case INT16_ARRAY:
-                return Deserializer.deserializeInt16Array(state, bytes);
-            case INT32_ARRAY:
-                return Deserializer.deserializeInt32Array(state, bytes);
-            case INT64_ARRAY:
-                return Deserializer.deserializeInt64Array(state, bytes);
-            case UINT16_ARRAY:
-                return Deserializer.deserializeUInt16Array(state, bytes);
-            case UINT32_ARRAY:
-                return Deserializer.deserializeUInt32Array(state, bytes);
-            case UINT64_ARRAY:
-                return Deserializer.deserializeUInt64Array(state, bytes);
-            case BOOLEAN_ARRAY:
-                return Deserializer.deserializeBooleanArray(state, bytes);
-            case BYTE_ARRAY:
-                return Deserializer.deserializeByteArray(state, bytes);
-            case DOUBLE_ARRAY:
-                return Deserializer.deserializeDoubleArray(state, bytes);
-            case FLOAT_ARRAY:
-                return Deserializer.deserializeFloatArray(state, bytes);
-            case IP_ADDR_ARRAY:
-                return Deserializer.deserializeIPADDRArray(state, bytes);
-            case NLONG_ARRAY:
-                return Deserializer.deserializeNLongArray(state, bytes);
-            case NDOUBLE_ARRAY:
-                return Deserializer.deserializeNDoubleArray(state, bytes);
-            case NFLOAT_ARRAY:
-                return Deserializer.deserializeNFloatArray(state, bytes);
-            case NINTEGER_ARRAY:
-                return Deserializer.deserializeNIntegerArray(state, bytes);
-            case NSHORT_ARRAY:
-                return Deserializer.deserializeNShortArray(state, bytes);
-        }
-        throw new IllegalStateException("Bad type: " + type);
+        return Deserializer.deserializeValue(state, bytes, type, encoding);
     }
 
     @Override
