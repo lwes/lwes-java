@@ -494,13 +494,40 @@ public class Deserializer {
     public static BitSet deserializeBitSet(DeserializerState myState, byte[] bytes) {
 
         int size = deserializeINT16(myState, bytes);
+        int numBytes = (int) Math.ceil((double) size / 8.0);
         BitSet bitSet = new BitSet(size);
         int offset = myState.currentIndex();
-        for (int i = offset; i < (offset + size); i++) {
-            bitSet.set((i - offset), bytes[i] == 1);
-            myState.incr(1);
+        int index = 0;
+        for (int i = 0; i < numBytes; i++) {
+            int val = bytes[offset + i];
+            for (int j = 0; j < 8; j++) {
+                bitSet.set(index++, ((val & (1 << j)) != 0));
+            }
         }
+        myState.incr(numBytes);
         return bitSet;
+    }
+
+    public static String[] deserializeNStringArray(DeserializerState state,
+                                                   byte[] bytes,
+                                                   short encoding) {
+        int length = deserializeUINT16(state, bytes);
+        log.debug("nstring: length: " + length);
+        BitSet bs = deserializeBitSet(state, bytes);
+        log.debug("bitset: " + bs);
+
+        String[] rtn = new String[length];
+        for (int i = 0; i < length; i++) {
+            if (bs.get(i)) {
+                rtn[i] = deserializeSTRING(state, bytes, encoding);
+                log.debug("rtn[" + i + "] = " + rtn[i]);
+            }
+            else {
+                log.debug(i + " is null");
+                rtn[i] = null;
+            }
+        }
+        return rtn;
     }
 
     public static Float[] deserializeNFloatArray(DeserializerState state, byte[] bytes) {

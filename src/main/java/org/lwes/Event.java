@@ -27,7 +27,7 @@ import org.lwes.util.IPAddress;
 public interface Event extends Iterable<FieldAccessor> {
     static final int MAX_EVENT_NAME_SIZE = 127;
     static final int MAX_FIELD_NAME_SIZE = 255;
-    static final int MAX_MESSAGE_SIZE    = 65507;
+    static final int MAX_MESSAGE_SIZE = 65507;
 
     /**
      * Reserved metadata keywords
@@ -43,16 +43,16 @@ public interface Event extends Iterable<FieldAccessor> {
     static final short ISO_8859_1 = 0;
     static final short UTF_8 = 1;
     static final short DEFAULT_ENCODING = UTF_8;
-    static final CharacterEncoding[] ENCODING_STRINGS = { CharacterEncoding.ISO_8859_1, CharacterEncoding.UTF_8 };
-    
+    static final CharacterEncoding[] ENCODING_STRINGS = {CharacterEncoding.ISO_8859_1, CharacterEncoding.UTF_8};
+
     // SETTERS
-    
+
     void reset();
-    
+
     void clear(String key);
-    
+
     void setEventName(String name);
-    
+
     void set(String key, FieldType type, Object value);
 
     void setInt16Array(String attributeName, short[] value);
@@ -70,6 +70,8 @@ public interface Event extends Iterable<FieldAccessor> {
     void setUInt64Array(String attributeName, BigInteger[] value);
 
     void setStringArray(String attributeName, String[] value);
+
+    void setStringObjArray(String attributeName, String[] value);
 
     void setIPAddressArray(String attributeName, IPAddress[] value);
 
@@ -98,6 +100,7 @@ public interface Event extends Iterable<FieldAccessor> {
     void setInt32(String attributeName, int aNumber);
 
     void setUInt64(String attributeName, BigInteger aNumber);
+
     void setUInt64(String attributeName, long aNumber);
 
     void setInt64(String attributeName, long aNumber);
@@ -111,9 +114,13 @@ public interface Event extends Iterable<FieldAccessor> {
     void setIPAddress(String attributeName, IPAddress address);
 
     void setShortArray(String attributeName, Short[] value);
+
     void setIntegerArray(String attributeName, Integer[] value);
+
     void setLongArray(String attributeName, Long[] value);
+
     void setDoubleArray(String attributeName, Double[] value);
+
     void setFloatArray(String attributeName, Float[] value);
 
     void setEncoding(short encoding);
@@ -121,15 +128,15 @@ public interface Event extends Iterable<FieldAccessor> {
     // GETTERS
 
     String getEventName();
-    
+
     int getNumEventAttributes();
-    
+
     Enumeration<String> getEventAttributeNames();
 
     Set<String> getEventAttributes();
-    
+
     boolean isSet(String attributeName);
-    
+
     FieldType getType(String attributeName);
 
     Object get(String attributeName);
@@ -149,11 +156,17 @@ public interface Event extends Iterable<FieldAccessor> {
     String[] getStringArray(String attributeName);
 
     Integer[] getIntegerObjArray(String attributeName);
+
     Long[] getLongObjArray(String attributeName);
+
     Short[] getShortObjArray(String attributeName);
+
     Double[] getDoubleObjArray(String attributeName);
+
     Boolean[] getBooleanObjArray(String attributeName);
+
     Byte[] getByteObjArray(String attributeName);
+
     Float[] getFloatObjArray(String attributeName);
 
     byte[] getByteArray(String attributeName);
@@ -191,33 +204,35 @@ public interface Event extends Iterable<FieldAccessor> {
     byte[] getIPAddress(String attributeName);
 
     IPAddress getIPAddressObj(String attributeName);
-    
+
     short getEncoding();
-    
+
     // SERIALIZATION
-    
+
     byte[] serialize();
 
     int serialize(byte[] bytes, int offset);
-    
+
     int serialize(DataOutput output) throws IOException;
-    
+
     void deserialize(byte[] bytes);
-    
+
     void deserialize(byte[] bytes, int offset, int length);
-    
+
     void deserialize(DataInput stream, int length) throws IOException;
 
     int getBytesSize();
-    
+
     // MISCELLANEOUS
-    
+
     Event copy();
-    
+
     void copyFrom(Event event);
-    
+
     String toOneLineString();
 
-    /** Some implementations will re-use the FieldAccessor object, so next() may invalidate it. */
+    /**
+     * Some implementations will re-use the FieldAccessor object, so next() may invalidate it.
+     */
     Iterator<FieldAccessor> iterator();
 }

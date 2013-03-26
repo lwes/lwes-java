@@ -62,6 +62,10 @@ public abstract class DefaultEvent implements Event {
         set(attributeName, FieldType.STRING_ARRAY, value);
     }
 
+    public void setStringObjArray(String attributeName, String[] value) throws EventSystemException {
+        set(attributeName, FieldType.NSTRING_ARRAY, value);
+    }
+
     public void setIPAddressArray(String attributeName, IPAddress[] value)
             throws EventSystemException {
         set(attributeName, FieldType.IP_ADDR_ARRAY, value);

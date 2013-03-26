@@ -59,7 +59,8 @@ public enum FieldType {
     NBOOLEAN_ARRAY(0x91, "[LBoolean", new Boolean[0]),
     NBYTE_ARRAY(0x92, "[LByte", new Byte[0]),
     NFLOAT_ARRAY(0x93, "[LFloat", new Float[0]),
-    NDOUBLE_ARRAY(0x94, "[LDouble", new Double[0]);
+    NDOUBLE_ARRAY(0x94, "[LDouble", new Double[0]),
+    NSTRING_ARRAY(0x95, "[LString", new String[0]);
 
     public final byte token;
     public final String name;
@@ -119,6 +120,34 @@ public enum FieldType {
 
     public Object getDefaultValue() {
         return defaultValue;
+    }
+
+    public FieldType getNullableArrayType() {
+        switch (this) {
+            case BOOLEAN:
+                return NBOOLEAN_ARRAY;
+            case BYTE:
+                return NBYTE_ARRAY;
+            case DOUBLE:
+                return NDOUBLE_ARRAY;
+            case FLOAT:
+                return NFLOAT_ARRAY;
+            case INT16:
+                return NSHORT_ARRAY;
+            case INT32:
+                return NINTEGER_ARRAY;
+            case INT64:
+                return NLONG_ARRAY;
+            case UINT16:
+                return NINTEGER_ARRAY;
+            case UINT32:
+                return NLONG_ARRAY;
+            case UINT64:
+                return NBIGINT_ARRAY;
+            case STRING:
+                return NSTRING_ARRAY;
+        }
+        throw new IllegalStateException("Unsupported type: " + this);
     }
 
     public FieldType getArrayType() {

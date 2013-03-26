@@ -15,7 +15,9 @@ package org.lwes.serializer;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +32,7 @@ import org.lwes.util.NumberCodec;
  * rest of the system.
  *
  * @author Anthony Molinaro
+ * @author Frank Maritato
  */
 public class Serializer {
     private static final transient Log log = LogFactory.getLog(Serializer.class);
@@ -489,22 +492,88 @@ public class Serializer {
                 return Serializer.serializeFloatArray((float[]) data, bytes, offset);
             case IP_ADDR_ARRAY:
                 return Serializer.serializeIPADDRArray((IPAddress[]) data, bytes, offset);
+            case NSTRING_ARRAY:
+                return Serializer.serializeNStringArray((String[]) data, bytes, offset, encoding);
         }
 
         throw new IllegalArgumentException("Unknown BaseType token: " + type);
     }
 
+    /**
+     * Pack as many bitset elements into one byte as possible.
+     *
+     * @param bitSet BitSet that indicates which indexes in an array are not null.
+     * @param data the byte array to write the packed version of the bitSet to
+     * @param offset the index to start writing to data
+     * @return the number of bytes written to data
+     */
     public static int serializeBitSet(BitSet bitSet, byte[] data, int offset) {
-        if (log.isDebugEnabled()) {
-            log.debug("BitSet: " + bitSet);
-        }
-
         int offsetStart = offset;
         offset += serializeINT16((short) bitSet.length(), data, offset);
-        for (int i = 0; i < bitSet.length(); i++) {
-            data[offset] = bitSet.get(i) ? (byte) 1 : (byte) 0;
-            offset++;
+        int lastIndex = 0;
+        for (int i = 0, c=0; i < bitSet.length(); i++,c++) {
+            int index = i >>> 3;
+            if (index != lastIndex) {
+                c = 0;
+                lastIndex = index;
+            }
+            if (bitSet.get(i)) {
+                data[offset + index] |= (1 << c);
+            }
         }
+        // Set the offset to how many bits we had to use
+        offset += (int) Math.ceil((double) bitSet.length() / 8.0);
+        return (offset - offsetStart);
+    }
+
+    /**
+     * For serializing arrays that can contain nulls. For strings, we need to figure out how long each string is
+     * in order to create the temporary array to write into
+     *
+     * @param data
+     * @param bytes
+     * @param offset
+     * @return
+     */
+    public static int serializeNStringArray(String[] data, byte[] bytes, int offset, short encoding) {
+        int numbytes = 0;
+        int offsetStart = offset;
+
+        // Number of items in the array
+        numbytes = serializeINT16((short) data.length, bytes, offset);
+        offset += numbytes;
+
+        List<byte[]> tmp = new ArrayList<byte[]>(data.length);
+
+        // use a bitset to determine which indexes have values and which are null.
+        // serialize the actual values into a temporary byte array
+        BitSet bitSet = new BitSet(data.length);
+        int i = 0;
+        for (String s : data) {
+            if (s != null) {
+                byte[] stringBytes = EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]);
+                byte[] tmpArr = new byte[stringBytes.length + 2];
+                serializeUINT16(stringBytes.length, tmpArr, 0);
+                System.arraycopy(stringBytes, 0, tmpArr, 2, stringBytes.length);
+                tmp.add(i, tmpArr);
+                bitSet.set(i);
+            }
+            else {
+                tmp.add(i, null);
+            }
+            i++;
+        }
+
+        // Write the bitset first to ease with deserialization
+        offset += serializeBitSet(bitSet, bytes, offset);
+        // Now write the values
+        for (byte[] a : tmp) {
+            if (a != null) {
+                System.arraycopy(a, 0, bytes, offset, a.length);
+                offset += a.length;
+            }
+        }
+
         return (offset - offsetStart);
     }
 
@@ -675,7 +744,6 @@ public class Serializer {
         // Write the bitset first to ease with deserialization
         offset += serializeBitSet(bitSet, bytes, offset);
         // Now write the float values
-        log.debug("write " + tmpOffset + " bytes");
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
 
