@@ -169,6 +169,8 @@ public interface Event extends Iterable<FieldAccessor> {
 
     Float[] getFloatObjArray(String attributeName);
 
+    String[] getStringObjArray(String attributeName);
+
     byte[] getByteArray(String attributeName);
 
     boolean[] getBooleanArray(String attributeName);
