@@ -103,7 +103,7 @@ public enum FieldType {
     public boolean isNullableArray() {
         return (this == NSHORT_ARRAY || this == NDOUBLE_ARRAY || this == NFLOAT_ARRAY ||
                 this == NBIGINT_ARRAY || this == NBOOLEAN_ARRAY || this == NBYTE_ARRAY ||
-                this == NINTEGER_ARRAY || this == NLONG_ARRAY);
+                this == NINTEGER_ARRAY || this == NLONG_ARRAY || this == NSTRING_ARRAY);
     }
 
     public boolean isArray() {
@@ -243,7 +243,8 @@ public enum FieldType {
                 return UINT64;
             case NBIGINT_ARRAY:
                 return UINT64;
-
+            case NSTRING_ARRAY:
+                return STRING;
         }
         throw new IllegalStateException("Unsupported type: " + this);
     }
