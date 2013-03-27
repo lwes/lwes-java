@@ -215,6 +215,10 @@ public final class ArrayEventTest extends EventTest {
         Assert.assertNull(evt.getBooleanObjArray("boolean[]")[1]);
         Assert.assertFalse(evt.getBooleanObjArray("boolean[]")[2]);
 
+        evt.set("string[]", FieldType.NSTRING_ARRAY, new String[] { "a", null, "bc"});
+        Assert.assertEquals("a", evt.getStringObjArray("string[]")[0]);
+        Assert.assertNull(evt.getStringObjArray("string[]")[1]);
+        Assert.assertEquals("bc", evt.getStringObjArray("string[]")[2]);
     }
 
     @Override
