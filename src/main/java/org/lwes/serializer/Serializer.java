@@ -421,34 +421,26 @@ public class Serializer {
                                      final int offset) {
         switch (type) {
             case BYTE:
-            case NBYTE:
                 return Serializer.serializeBYTE((Byte) data, bytes, offset);
             case BOOLEAN:
-            case NBOOLEAN:
                 return Serializer.serializeBOOLEAN((Boolean) data, bytes, offset);
             case UINT16:
-            case NINTEGER:
                 return Serializer.serializeUINT16((Integer) data, bytes, offset);
             case INT16:
-            case NSHORT:
                 return Serializer.serializeINT16((Short) data, bytes, offset);
             case UINT32:
-            case NLONG:
                 return Serializer.serializeUINT32((Long) data, bytes, offset);
             case INT32:
                 return Serializer.serializeINT32((Integer) data, bytes, offset);
             case UINT64:
-            case NBIGINT:
                 return Serializer.serializeUINT64((BigInteger) data, bytes, offset);
             case INT64:
                 return Serializer.serializeINT64((Long) data, bytes, offset);
             case STRING:
                 return Serializer.serializeSTRING(((String) data), bytes, offset, encoding);
             case DOUBLE:
-            case NDOUBLE:
                 return Serializer.serializeDOUBLE(((Double) data), bytes, offset);
             case FLOAT:
-            case NFLOAT:
                 return Serializer.serializeFLOAT(((Float) data), bytes, offset);
             case IPADDR:
                 return Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
@@ -530,10 +522,11 @@ public class Serializer {
      * For serializing arrays that can contain nulls. For strings, we need to figure out how long each string is
      * in order to create the temporary array to write into
      *
-     * @param data
-     * @param bytes
-     * @param offset
-     * @return
+     * @param data array to serialize
+     * @param bytes byte array to write to
+     * @param offset index in byte array to start at
+     * @param encoding encoding to use for strings
+     * @return number of bytes written
      */
     public static int serializeNStringArray(String[] data, byte[] bytes, int offset, short encoding) {
         int numbytes = 0;
@@ -580,10 +573,10 @@ public class Serializer {
     /**
      * For serializing arrays that can contain nulls, blahblah
      *
-     * @param data
-     * @param bytes
-     * @param offset
-     * @return
+     * @param data array to serialize
+     * @param bytes byte array to write to
+     * @param offset index in byte array to start at
+     * @return number of bytes written
      */
     public static int serializeNFloatArray(Float[] data, byte[] bytes, int offset) {
         int numbytes = 0;
