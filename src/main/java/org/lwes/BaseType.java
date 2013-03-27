@@ -212,9 +212,31 @@ public class BaseType {
         this.sizeRestriction = sizeRestriction;
     }
 
-    public int getByteSize(short encoding) {
-        int count;
-        switch (type) {
+    public int getNullableArrayByteSize(short encoding) {
+        // Size of the array (* n bytes) + 2 bytes for the length number
+        int count = 2 + 2; // start with the length of the array + length of bitset
+        int arrayLen = Array.getLength(typeObject);
+        Object[] objArray = (Object[]) typeObject;
+        count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
+        for (Object o : objArray) {
+            if (o != null) {
+                switch (type.getComponentType()) {
+                    case STRING:
+                        // length of each string in bytes + 2 for the length number
+                        count += EncodedString.getBytes((String) o, Event.ENCODING_STRINGS[encoding]).length + 2;
+                        break;
+                    default:
+                        count += getPrimitiveByteSize(type.getComponentType());
+                        break;
+
+                }
+            }
+        }
+        return count;
+    }
+
+    public int getPrimitiveByteSize(FieldType ft) {
+        switch (ft) {
             case BOOLEAN:
             case BYTE:
                 return 1;
@@ -230,74 +252,49 @@ public class BaseType {
             case UINT64:
             case DOUBLE:
                 return 8;
-            case STRING:
+        }
+        throw new IllegalArgumentException("Unknown size of BaseType " + ft.name);
+    }
+
+    public int getByteSize(short encoding) {
+        if (type.isNullableArray()) {
+            return getNullableArrayByteSize(encoding);
+        }
+        else if (type.isConstantSize()) {
+            return getPrimitiveByteSize(type);
+        }
+        else {
+            switch (type) {
+                case STRING:
                 /* add size of string plus two bytes for the length */
-                return EncodedString.getBytes((String) typeObject, Event.ENCODING_STRINGS[encoding]).length + 2;
-            case STRING_ARRAY: {
-                count = 2; // start with the length of the array
-                String[] anArray = (String[]) typeObject;
-                for (String s : anArray) {
-                    if (s != null) {
-                        count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
+                    return EncodedString.getBytes((String) typeObject,
+                                                  Event.ENCODING_STRINGS[encoding]).length + 2;
+                case STRING_ARRAY: {
+                    int count = 2; // start with the length of the array
+                    String[] anArray = (String[]) typeObject;
+                    for (String s : anArray) {
+                        if (s != null) {
+                            count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
+                        }
                     }
+                    return count;
                 }
-                return count;
+                case BOOLEAN_ARRAY:
+                case BYTE_ARRAY:
+                    return Array.getLength(typeObject) + 2;
+                case INT16_ARRAY:
+                case UINT16_ARRAY:
+                    return Array.getLength(typeObject) * 2 + 2;
+                case INT32_ARRAY:
+                case UINT32_ARRAY:
+                case FLOAT_ARRAY:
+                case IP_ADDR_ARRAY:
+                    return Array.getLength(typeObject) * 4 + 2;
+                case INT64_ARRAY:
+                case UINT64_ARRAY:
+                case DOUBLE_ARRAY:
+                    return Array.getLength(typeObject) * 8 + 2;
             }
-            case BOOLEAN_ARRAY:
-            case BYTE_ARRAY:
-                return Array.getLength(typeObject) + 2;
-            case INT16_ARRAY:
-            case UINT16_ARRAY:
-                return Array.getLength(typeObject) * 2 + 2;
-            case INT32_ARRAY:
-            case UINT32_ARRAY:
-            case FLOAT_ARRAY:
-            case IP_ADDR_ARRAY:
-                return Array.getLength(typeObject) * 4 + 2;
-            case INT64_ARRAY:
-            case UINT64_ARRAY:
-            case DOUBLE_ARRAY:
-                return Array.getLength(typeObject) * 8 + 2;
-            // Nullable arrays down here
-            case NBYTE_ARRAY:
-            case NBOOLEAN_ARRAY:
-                // Size of the array (* 1 byte) + 2 bytes for the length number
-                count = 2 + 2; // start with the length of the array + length of bitset
-                int arrayLen = Array.getLength(typeObject);
-                count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
-                return count + arrayLen;
-            case NINTEGER_ARRAY:
-            case NFLOAT_ARRAY:
-                // Size of the array (* 4 bytes) + 2 bytes for the length number
-                count = 2 + 2; // start with the length of the array + length of bitset
-                arrayLen = Array.getLength(typeObject);
-                count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
-                return count + (arrayLen * 4);
-            case NSHORT_ARRAY:
-                // Size of the array (* 2 bytes) + 2 bytes for the length number
-                count = 2 + 2; // start with the length of the array + length of bitset
-                arrayLen = Array.getLength(typeObject);
-                count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
-                return count + (arrayLen * 2);
-            case NBIGINT_ARRAY:
-            case NDOUBLE_ARRAY:
-            case NLONG_ARRAY:
-                // length of array (2) + length of bitset (2) + bitset length + Size of the array (* 8 byte)
-                count = 2 + 2; // start with the length of the array + length of bitset
-                arrayLen = Array.getLength(typeObject);
-                count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
-                return count + (arrayLen * 8);
-            case NSTRING_ARRAY:
-                count = 2 + 2; // start with the length of the array + length of bitset
-                String[] anArray = (String[]) typeObject;
-                count += (int) Math.ceil((double) anArray.length / 8.0); // number of bytes in the bitset
-                for (String s : anArray) {
-                    if (s != null) {
-                        // length of each string in bytes + 2 for the length number
-                        count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
-                    }
-                }
-                return count;
         }
         throw new IllegalArgumentException("Unknown size of BaseType " + type.name);
     }
