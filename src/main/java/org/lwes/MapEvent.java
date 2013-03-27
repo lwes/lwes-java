@@ -597,6 +597,9 @@ public class MapEvent extends DefaultEvent {
                     case NSHORT_ARRAY:
                         setNShortArray(attribute, Deserializer.deserializeNShortArray(state, bytes));
                         break;
+                    case NSTRING_ARRAY:
+                        setStringObjArray(attribute, Deserializer.deserializeNStringArray(state, bytes, encoding));
+                        break;
                     default:
                         log.warn("Unknown type " + type + " in deserialization");
                 }
