@@ -691,6 +691,8 @@ public class Deserializer {
                 return Deserializer.deserializeNShortArray(state, bytes);
             case NBOOLEAN_ARRAY:
                 return Deserializer.deserializeNBooleanArray(state, bytes);
+            case NSTRING_ARRAY:
+                return Deserializer.deserializeNStringArray(state, bytes, encoding);
         }
         throw new EventSystemException("Unrecognized type: " + type);
     }
