@@ -82,6 +82,7 @@ TOKEN :
 TOKEN :
 {
     < REQ: "required" >
+  | < NULLABLE: "nullable" >
   | < OPT: "optional" >
   | < TRUE: "true" >
   | < FALSE: "false" >
@@ -133,7 +134,7 @@ void eventName() :
 {
   t=<ID>
   {
-    if ( getEventTemplateDB().addEvent(t.image,commentAccumulator.toString()))
+    if (getEventTemplateDB().addEvent(t.image,commentAccumulator.toString()))
     {
       commentAccumulator.setLength(0);
       setCurrentEvent(t.image);
@@ -273,30 +274,49 @@ boolean required() :
     }
 }
 
+boolean nullable() :
+{
+}
+{
+    <NULLABLE>
+    {
+      return true;
+    }
+}
+
 void attribute() :
 {
   FieldType aType;
   String anAttribute;
   int anArraySize = 0;
   boolean required = false;
+  boolean nullable = false;
   Object aDefaultValue = null;
   String aComment = null;
 }
 {
-  (((required = required()) (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";" ( aComment=comment() )* ))
+  (((required = required()) [ (nullable = nullable()) ] (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";" ( aComment=comment() )* ))
 |
-  (aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";"   ( aComment=comment() )*  )  ) {
+  [ (nullable = nullable()) ](aType=type() anAttribute=attributeName() [ "[" anArraySize = integerLiteral() "]" ] [ "=" aDefaultValue = defaultValue() ] ";"   ( aComment=comment() )*  )  ) {
       String evt = getCurrentEvent();
       if ( evt == null ) throw new ParseException("Bad Event");
 
       if (log.isTraceEnabled()) {
         log.trace("Type: "+aType+" attr: "+anAttribute+" size: "+anArraySize);
-        log.trace("Required: "+required);
+        log.trace("Required: "+required+" nullable: "+nullable);
         log.trace("default value: "+aDefaultValue);
       }
 
+      if (nullable && anArraySize == 0) {
+        throw new ParseException("nullable keyword is only valid for arrays");
+      }
+
       if (anArraySize > 0) {
-        aType = aType.getArrayType();
+        if (nullable) {
+          aType = aType.getNullableArrayType();
+        } else {
+          aType = aType.getArrayType();
+        }
       }
 
       if ( !getEventTemplateDB().addEventAttribute(evt,
@@ -305,7 +325,7 @@ void attribute() :
                                                    anArraySize,
                                                    required,
                                                    aDefaultValue,
-						   commentAccumulator.toString()
+						                           commentAccumulator.toString()
 		))
       {
         throw new ParseException("Problem adding attribute "+evt+"("
