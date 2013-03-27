@@ -231,6 +231,10 @@ public abstract class DefaultEvent implements Event {
         return (Boolean[]) get(attributeName);
     }
 
+    public String[] getStringObjArray(String attributeName) {
+        return (String[]) get(attributeName);
+    }
+
     public short[] getInt16Array(String attributeName) {
         return (short[]) get(attributeName);
     }
@@ -341,11 +345,9 @@ public abstract class DefaultEvent implements Event {
     public final byte[] serialize() {
         final byte[] bytes = new byte[getBytesSize()];
         final int length = serialize(bytes, 0);
-        // TODO: for nullable arrays we are also writing a bitset so we will always write more bytes than
-        // expected. What do I do with this check?
-        //if (length != bytes.length) {
-        //    throw new IllegalStateException("Expected to write " + bytes.length + " bytes, but wrote " + length);
-        //}
+        if (length != bytes.length) {
+            throw new IllegalStateException("Expected to write " + bytes.length + " bytes, but wrote " + length);
+        }
         return bytes;
     }
 
