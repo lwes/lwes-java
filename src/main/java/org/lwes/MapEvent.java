@@ -410,7 +410,9 @@ public class MapEvent extends DefaultEvent {
             if (encodingObj != null) {
                 if (encodingType == FieldType.INT16) {
                     encoding = (Short) encodingObj;
-                    log.trace("Character encoding: " + encoding);
+                    if (log.isTraceEnabled()) {
+                        log.trace("Character encoding: " + encoding);
+                    }
                     pos += Serializer.serializeATTRIBUTEWORD(ENCODING, bytes, pos);
                     pos += Serializer.serializeBYTE(encodingType.token, bytes, pos);
                     pos += Serializer.serializeUINT16(encoding, bytes, pos);
@@ -418,7 +420,9 @@ public class MapEvent extends DefaultEvent {
             }
         }
         else {
-            log.warn("Character encoding null in event " + name);
+            if (log.isWarnEnabled()) {
+                log.warn("Character encoding null in event " + name);
+            }
         }
 
         Enumeration<String> e = attributes.keys();
@@ -434,7 +438,9 @@ public class MapEvent extends DefaultEvent {
 
             /* don't try to serialize nulls */
             if (data == null) {
-                log.warn("Attribute " + key + " was null in event " + name);
+                if (log.isWarnEnabled()) {
+                    log.warn("Attribute " + key + " was null in event " + name);
+                }
                 continue;
             }
 
@@ -448,12 +454,10 @@ public class MapEvent extends DefaultEvent {
         } // while(e.hasMoreElements())
 
         final int bytesWritten = pos - offset;
-        // TODO: for nullable arrays we are also writing a bitset so we will always write more bytes than
-        // expected. What do I do with this check?
-        //if (bytesStoreSize != bytesWritten) {
-        //    throw new IllegalStateException(
-        //            "Expected to write " + bytesStoreSize + " bytes, but actually wrote " + bytesWritten);
-        //}
+        if (bytesStoreSize != bytesWritten) {
+            throw new IllegalStateException("Expected to write " + bytesStoreSize +
+                                            " bytes, but actually wrote " + bytesWritten);
+        }
 
         return bytesWritten;
     }
