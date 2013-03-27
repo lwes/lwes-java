@@ -423,25 +423,18 @@ public final class ArrayEvent extends DefaultEvent {
         switch (type) {
             case BOOLEAN:
             case BYTE:
-            case NBOOLEAN:
-            case NBYTE:
                 return 1;
             case UINT16:
             case INT16:
-            case NSHORT:
                 return 2;
             case UINT32:
             case INT32:
             case FLOAT:
             case IPADDR:
-            case NINTEGER:
-            case NFLOAT:
                 return 4;
             case INT64:
             case UINT64:
             case DOUBLE:
-            case NDOUBLE:
-            case NLONG:
                 return 8;
             case STRING:
                 return 2 + deserializeUINT16(valueIndex);
