@@ -28,14 +28,6 @@ public enum FieldType {
     BYTE(0x0A, "byte", (byte) 0),
     FLOAT(0x0B, "float", (float) 0.0),
     DOUBLE(0x0C, "double", 0.0),
-    NSHORT(0x0D, "Short", (short) 0),
-    NINTEGER(0x0E, "Integer", 0),
-    NLONG(0x0F, "Long", 0),
-    NBIGINT(0x10, "BigInt", 0),
-    NDOUBLE(0x11, "Double", 0.0),
-    NFLOAT(0x12, "Float", 0.0),
-    NBYTE(0x13, "Byte", 0),
-    NBOOLEAN(0x14, "Boolean", true),
 
     // Primitive Arrays
     UINT16_ARRAY(0x81, "[Luint16", new short[0]),
@@ -176,18 +168,6 @@ public enum FieldType {
                 return UINT32_ARRAY;
             case UINT64:
                 return UINT64_ARRAY;
-            case NINTEGER:
-                return NINTEGER_ARRAY;
-            case NLONG:
-                return NLONG_ARRAY;
-            case NDOUBLE:
-                return NDOUBLE_ARRAY;
-            case NFLOAT:
-                return NFLOAT_ARRAY;
-            case NSHORT:
-                return NSHORT_ARRAY;
-            case NBOOLEAN:
-                return NBOOLEAN_ARRAY;
             case BOOLEAN_ARRAY:
             case BYTE_ARRAY:
             case DOUBLE_ARRAY:
@@ -220,41 +200,35 @@ public enum FieldType {
             case UINT16:
             case UINT32:
             case UINT64:
-            case NBOOLEAN:
-            case NBYTE:
-            case NDOUBLE:
-            case NFLOAT:
-            case NINTEGER:
-            case NLONG:
                 throw new IllegalStateException(
                         "Only array types provide component types " + this + ".getComponentType() unsupported");
 
             case NBOOLEAN_ARRAY:
-                return NBOOLEAN;
+                return BOOLEAN;
             case BOOLEAN_ARRAY:
                 return BOOLEAN;
             case NBYTE_ARRAY:
-                return NBYTE;
+                return BYTE;
             case BYTE_ARRAY:
                 return BYTE;
             case NDOUBLE_ARRAY:
-                return NDOUBLE;
+                return DOUBLE;
             case DOUBLE_ARRAY:
                 return DOUBLE;
             case NFLOAT_ARRAY:
-                return NFLOAT;
+                return FLOAT;
             case FLOAT_ARRAY:
                 return FLOAT;
             case NSHORT_ARRAY:
-                return NSHORT;
+                return INT16;
             case INT16_ARRAY:
                 return INT16;
             case NINTEGER_ARRAY:
-                return NINTEGER;
+                return INT32;
             case INT32_ARRAY:
                 return INT32;
             case NLONG_ARRAY:
-                return NLONG;
+                return INT64;
             case INT64_ARRAY:
                 return INT64;
             case IP_ADDR_ARRAY:
@@ -268,7 +242,7 @@ public enum FieldType {
             case UINT64_ARRAY:
                 return UINT64;
             case NBIGINT_ARRAY:
-                return NBIGINT;
+                return UINT64;
 
         }
         throw new IllegalStateException("Unsupported type: " + this);

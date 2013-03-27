@@ -14,6 +14,8 @@ package org.lwes;
 
 import java.lang.reflect.Array;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.serializer.StringParser;
 import org.lwes.util.EncodedString;
 
@@ -29,6 +31,8 @@ import org.lwes.util.EncodedString;
  * @author Anthony Molinaro
  */
 public class BaseType {
+
+    private static transient final Log log = LogFactory.getLog(BaseType.class);
 
     /**
      * The FieldType of this field, which provides both ESF name and
@@ -209,23 +213,19 @@ public class BaseType {
     }
 
     public int getByteSize(short encoding) {
+        int count;
         switch (type) {
-            case NBOOLEAN:
-            case NBYTE:
             case BOOLEAN:
             case BYTE:
                 return 1;
-            case NSHORT:
             case UINT16:
             case INT16:
                 return 2;
-            case NINTEGER:
             case UINT32:
             case INT32:
             case FLOAT:
             case IPADDR:
                 return 4;
-            case NLONG:
             case INT64:
             case UINT64:
             case DOUBLE:
@@ -234,7 +234,7 @@ public class BaseType {
                 /* add size of string plus two bytes for the length */
                 return EncodedString.getBytes((String) typeObject, Event.ENCODING_STRINGS[encoding]).length + 2;
             case STRING_ARRAY: {
-                int count = 2; // start with the length of the array
+                count = 2; // start with the length of the array
                 String[] anArray = (String[]) typeObject;
                 for (String s : anArray) {
                     if (s != null) {
@@ -258,26 +258,39 @@ public class BaseType {
             case UINT64_ARRAY:
             case DOUBLE_ARRAY:
                 return Array.getLength(typeObject) * 8 + 2;
-
+            // Nullable arrays down here
             case NBYTE_ARRAY:
             case NBOOLEAN_ARRAY:
                 // Size of the array (* 1 byte) + 2 bytes for the length number
-                return Array.getLength(typeObject) + 2;
+                count = 2 + 2; // start with the length of the array + length of bitset
+                int arrayLen = Array.getLength(typeObject);
+                count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
+                return count + arrayLen;
             case NINTEGER_ARRAY:
             case NFLOAT_ARRAY:
                 // Size of the array (* 4 bytes) + 2 bytes for the length number
-                return Array.getLength(typeObject) * 4 + 2;
+                count = 2 + 2; // start with the length of the array + length of bitset
+                arrayLen = Array.getLength(typeObject);
+                count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
+                return count + (arrayLen * 4);
             case NSHORT_ARRAY:
                 // Size of the array (* 2 bytes) + 2 bytes for the length number
-                return Array.getLength(typeObject) * 2 + 2;
+                count = 2 + 2; // start with the length of the array + length of bitset
+                arrayLen = Array.getLength(typeObject);
+                count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
+                return count + (arrayLen * 2);
             case NBIGINT_ARRAY:
             case NDOUBLE_ARRAY:
             case NLONG_ARRAY:
-                // Size of the array (* 8 byte) + 2 bytes for the length number
-                return Array.getLength(typeObject) * 8 + 2;
+                // length of array (2) + length of bitset (2) + bitset length + Size of the array (* 8 byte)
+                count = 2 + 2; // start with the length of the array + length of bitset
+                arrayLen = Array.getLength(typeObject);
+                count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
+                return count + (arrayLen * 8);
             case NSTRING_ARRAY:
-                int count = 2; // start with the length of the array
+                count = 2 + 2; // start with the length of the array + length of bitset
                 String[] anArray = (String[]) typeObject;
+                count += (int) Math.ceil((double) anArray.length / 8.0); // number of bytes in the bitset
                 for (String s : anArray) {
                     if (s != null) {
                         // length of each string in bytes + 2 for the length number

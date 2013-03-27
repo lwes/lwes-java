@@ -72,25 +72,18 @@ public final class RandomEventGenerator {
 
     public Object createRandomValue(FieldType type) {
         switch (type) {
-            case NBOOLEAN:
             case BOOLEAN:
                 return random.nextBoolean();
-            case NBYTE:
             case BYTE:
                 return (byte) random.nextInt();
-            case NDOUBLE:
             case DOUBLE:
                 return random.nextDouble();
-            case NFLOAT:
             case FLOAT:
                 return random.nextFloat();
-            case NSHORT:
             case INT16:
                 return (short) random.nextInt();
-            case NINTEGER:
             case INT32:
                 return random.nextInt();
-            case NLONG:
             case INT64:
                 return random.nextLong();
             case IPADDR:
@@ -103,7 +96,6 @@ public final class RandomEventGenerator {
                 return random.nextInt(0x10000);
             case UINT32:
                 return random.nextLong() & 0xffffffffL;
-            case NBIGINT:
             case UINT64:
                 return BigInteger.valueOf(random.nextLong()).subtract(
                         BigInteger.valueOf(Long.MIN_VALUE));
