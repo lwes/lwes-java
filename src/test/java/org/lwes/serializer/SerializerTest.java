@@ -34,7 +34,7 @@ public class SerializerTest {
     private static final int N = 100;
 
     @Test
-    public void testSerializeBitSet() {
+    public void testSerializeBitSetOneByte() {
         BitSet bitSet = new BitSet(5);
         bitSet.set(1);
         bitSet.set(2);
@@ -49,21 +49,48 @@ public class SerializerTest {
         Assert.assertTrue(dsbs.get(1));
         Assert.assertTrue(dsbs.get(2));
         Assert.assertFalse(dsbs.get(3));
+    }
 
-        bitSet = new BitSet(5);
+    @Test
+    public void testSerializeBitSetTwoBytes() {
+        BitSet bitSet = new BitSet(15);
         bitSet.set(0);
         bitSet.set(2);
+        bitSet.set(14);
 
-        ds = new DeserializerState();
-        offset = 0;
-        bytes = new byte[25];
+        DeserializerState ds = new DeserializerState();
+        int offset = 0;
+        byte[] bytes = new byte[25];
         Serializer.serializeBitSet(bitSet, bytes, offset);
-        dsbs = Deserializer.deserializeBitSet(ds, bytes);
-        Assert.assertEquals(2, dsbs.cardinality());
+
+        BitSet dsbs = Deserializer.deserializeBitSet(ds, bytes);
+        Assert.assertEquals(3, dsbs.cardinality());
         Assert.assertTrue(dsbs.get(0));
         Assert.assertFalse(dsbs.get(1));
         Assert.assertTrue(dsbs.get(2));
         Assert.assertFalse(dsbs.get(3));
+        Assert.assertTrue(dsbs.get(14));
+    }
+
+    @Test
+    public void testSerializeNBooleanArray() {
+        Boolean[] array = new Boolean[]{
+                true, false, null, false, null, true
+        };
+        byte[] bytes = new byte[64];
+        int num = Serializer.serializeNBooleanArray(array, bytes, 0);
+        // length + bitSet_len + bitSet + values
+        // 2 + 2 + 1 + 4
+        Assert.assertEquals(9, num);
+        DeserializerState state = new DeserializerState();
+        Boolean[] rtn = Deserializer.deserializeNBooleanArray(state, bytes);
+        Assert.assertNotNull(rtn);
+        Assert.assertTrue(rtn[0]);
+        Assert.assertFalse(rtn[1]);
+        Assert.assertNull(rtn[2]);
+        Assert.assertFalse(rtn[3]);
+        Assert.assertNull(rtn[4]);
+        Assert.assertTrue(rtn[5]);
     }
 
     @Test
@@ -74,7 +101,7 @@ public class SerializerTest {
 
         byte[] bytes = new byte[64];
         int num = Serializer.serializeValue(FieldType.NFLOAT_ARRAY, array, (short) 1, bytes, 0);
-        Assert.assertEquals(24, num);
+        Assert.assertEquals(17, num);
         DeserializerState state = new DeserializerState();
         Float[] rtn = (Float[]) Deserializer.deserializeValue(state, bytes, FieldType.NFLOAT_ARRAY, (short) 1);
         Assert.assertNotNull(rtn);
@@ -177,6 +204,28 @@ public class SerializerTest {
         Assert.assertNull(dsShorts[1]);
         Assert.assertEquals(13, (short) dsShorts[2]);
         Assert.assertEquals(31, (short) dsShorts[3]);
+    }
+
+    @Test
+    public void testSerializeNStringArray() {
+        String[] array = new String[]{"test", null, "two", "three"};
+
+        byte[] bytes = new byte[30];
+        int offset = 0;
+        short encoding = 1;
+        int numbytes = Serializer.serializeNStringArray(array,
+                                                        bytes,
+                                                        offset,
+                                                        encoding);
+        assertEquals("Number of bytes serialized incorrect", 23, numbytes);
+        DeserializerState state = new DeserializerState();
+        String[] a = Deserializer.deserializeNStringArray(state, bytes, encoding);
+        assertNotNull(a);
+        assertEquals("wrong number of elements", 4, a.length);
+        int index = 0;
+        for (String s : a) {
+            assertEquals("String array element wrong", array[index++], s);
+        }
     }
 
     @Test
