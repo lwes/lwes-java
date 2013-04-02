@@ -455,8 +455,15 @@ public class MapEvent extends DefaultEvent {
 
         final int bytesWritten = pos - offset;
         if (bytesStoreSize != bytesWritten) {
+            String formatted = null;
+            try {
+                formatted = toString();
+            } catch(Exception ex) {
+                formatted = "<unprintable>";
+            }
             throw new IllegalStateException("Expected to write " + bytesStoreSize +
-                                            " bytes, but actually wrote " + bytesWritten);
+                                            " bytes, but actually wrote " + bytesWritten
+                                            +" for "+formatted);
         }
 
         return bytesWritten;
