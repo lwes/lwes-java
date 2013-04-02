@@ -137,7 +137,8 @@ public class RandomEventTest {
             case IP_ADDR_ARRAY:
             case STRING_ARRAY:
             case NUINT64_ARRAY:
-              return (Object[]) object;
+            case NINT16_ARRAY:
+                return (Object[]) object;
             default:
                 throw new IllegalStateException("Unsupported type: " + type);
         }

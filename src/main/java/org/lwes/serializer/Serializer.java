@@ -447,10 +447,12 @@ public class Serializer {
             case STRING_ARRAY:
                 return Serializer.serializeStringArray
                         (((String[]) data), bytes, offset, encoding);
-            case NUINT32_ARRAY:
-                return Serializer.serializeNIntegerArray((Integer[]) data, bytes, offset);
             case NUINT16_ARRAY:
+            case NINT32_ARRAY:
+                return Serializer.serializeNIntegerArray((Integer[]) data, bytes, offset);
+            case NINT16_ARRAY:
                 return Serializer.serializeNShortArray((Short[]) data, bytes, offset);
+            case NUINT32_ARRAY:
             case NINT64_ARRAY:
                 return Serializer.serializeNLongArray((Long[]) data, bytes, offset);
             case NDOUBLE_ARRAY:
@@ -487,6 +489,7 @@ public class Serializer {
                 return Serializer.serializeIPADDRArray((IPAddress[]) data, bytes, offset);
             case NSTRING_ARRAY:
                 return Serializer.serializeNStringArray((String[]) data, bytes, offset, encoding);
+
         }
 
         throw new IllegalArgumentException("Unknown BaseType token: " + type);
