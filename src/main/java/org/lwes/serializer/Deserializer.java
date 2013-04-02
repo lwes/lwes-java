@@ -610,6 +610,27 @@ public class Deserializer {
         return rtn;
     }
 
+    public static BigInteger[] deserializeNBigIntegerArray(DeserializerState state,
+                                                           byte[] bytes) {
+        int length = deserializeUINT16(state, bytes);
+        log.debug("nbigint: length: " + length);
+        BitSet bs = deserializeBitSet(state, bytes);
+        log.debug("bitset: " + bs);
+
+        BigInteger[] rtn = new BigInteger[length];
+        for (int i = 0; i < length; i++) {
+            if (bs.get(i)) {
+                rtn[i] = deserializeUInt64ToBigInteger(state, bytes);
+                log.debug("rtn[" + i + "] = " + rtn[i]);
+            }
+            else {
+                log.debug(i + " is null");
+                rtn[i] = null;
+            }
+        }
+        return rtn;
+    }
+
     public static Boolean[] deserializeNBooleanArray(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
         int length = deserializeINT16(state, bytes);    // 2 bytes
@@ -626,37 +647,27 @@ public class Deserializer {
         return rtn;
     }
 
-    public static Byte[] deserializeNByteArray(DeserializerState state, byte[] bytes) {
-        // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
-        BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
+    public static Byte[] deserializeNByteArray(DeserializerState state,
+                                               byte[] bytes) {
+        int length = deserializeUINT16(state, bytes);
+        log.debug("nbigint: length: " + length);
+        BitSet bs = deserializeBitSet(state, bytes);
+        log.debug("bitset: " + bs);
+
         Byte[] rtn = new Byte[length];
         for (int i = 0; i < length; i++) {
             if (bs.get(i)) {
                 rtn[i] = deserializeBYTE(state, bytes);
+                log.debug("rtn[" + i + "] = " + rtn[i]);
             }
             else {
+                log.debug(i + " is null");
                 rtn[i] = null;
             }
         }
         return rtn;
     }
-    public static BigInteger[] deserializeNBigIntegerArray(DeserializerState state, byte[] bytes) {
-        // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
-        BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
-        BigInteger[] rtn = new BigInteger[length];
-        for (int i = 0; i < length; i++) {
-            if (bs.get(i)) {
-                rtn[i] = deserializeUInt64ToBigInteger(state, bytes);
-            }
-            else {
-                rtn[i] = null;
-            }
-        }
-        return rtn;
-    }
-    
+
     public static Object deserializeValue(DeserializerState state,
                                           byte[] bytes,
                                           FieldType type,
@@ -724,10 +735,10 @@ public class Deserializer {
                 return Deserializer.deserializeNBooleanArray(state, bytes);
             case NSTRING_ARRAY:
                 return Deserializer.deserializeNStringArray(state, bytes, encoding);
-            case NBYTE_ARRAY:
-                return Deserializer.deserializeNByteArray(state, bytes);
             case NBIGINT_ARRAY:
-                return Deserializer.deserializeNBigIntegerArray(state, bytes);
+              return Deserializer.deserializeNBigIntegerArray(state, bytes);
+            case NBYTE_ARRAY:
+              return Deserializer.deserializeNByteArray(state, bytes);
         }
         throw new EventSystemException("Unrecognized type: " + type);
     }

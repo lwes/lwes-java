@@ -117,6 +117,7 @@ public final class RandomEventGenerator {
             case FLOAT_ARRAY:
             case NDOUBLE_ARRAY:
             case DOUBLE_ARRAY:
+            case NSTRING_ARRAY:
             case STRING_ARRAY:
             case IP_ADDR_ARRAY: {
                 final int arrayLength = minArrayValueLength +
@@ -133,35 +134,35 @@ public final class RandomEventGenerator {
                         final Boolean[] typedArray = new Boolean[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return ArrayUtils.toPrimitive(typedArray);
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
                     case NBYTE_ARRAY:
                     case BYTE_ARRAY: {
                         final Byte[] typedArray = new Byte[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return ArrayUtils.toPrimitive(typedArray);
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
                     case NFLOAT_ARRAY:
                     case FLOAT_ARRAY: {
                         final Float[] typedArray = new Float[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return ArrayUtils.toPrimitive(typedArray);
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
                     case NDOUBLE_ARRAY:
                     case DOUBLE_ARRAY: {
                         final Double[] typedArray = new Double[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return ArrayUtils.toPrimitive(typedArray);
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
                     case NSHORT_ARRAY:
                     case INT16_ARRAY: {
                         final Short[] typedArray = new Short[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return ArrayUtils.toPrimitive(typedArray);
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
                     case NINTEGER_ARRAY:
                     case INT32_ARRAY:
@@ -169,7 +170,7 @@ public final class RandomEventGenerator {
                         final Integer[] typedArray = new Integer[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return ArrayUtils.toPrimitive(typedArray);
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
                     case NLONG_ARRAY:
                     case INT64_ARRAY:
@@ -177,26 +178,27 @@ public final class RandomEventGenerator {
                         final Long[] typedArray = new Long[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return ArrayUtils.toPrimitive(typedArray);
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
                     case IP_ADDR_ARRAY: {
                         final IPAddress[] typedArray = new IPAddress[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return typedArray;
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : typedArray;
                     }
+                    case NSTRING_ARRAY:
                     case STRING_ARRAY: {
                         final String[] typedArray = new String[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return typedArray;
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : typedArray;
                     }
                     case NBIGINT_ARRAY:
                     case UINT64_ARRAY: {
                         final BigInteger[] typedArray = new BigInteger[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return typedArray;
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : typedArray;
                     }
                     default:
                         return objectArray;
@@ -204,6 +206,15 @@ public final class RandomEventGenerator {
             }
         }
         throw new IllegalArgumentException("Unexpected type: " + type);
+    }
+
+    private Object[] clearRandomElements(Object[] array) {
+      for (int i=0; i<array.length; ++i) {
+        if (random.nextDouble() < 0.05) {
+          array[i] = null;
+        }
+      }
+      return array;
     }
 
     private String createRandomString(int minLength, int maxLength) {
