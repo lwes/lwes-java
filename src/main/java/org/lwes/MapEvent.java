@@ -513,7 +513,7 @@ public class MapEvent extends DefaultEvent {
                     }
                 }
 
-                Deserializer.deserializeValue(state, bytes, type, encoding);
+                set(attribute, type, Deserializer.deserializeValue(state, bytes, type, encoding));
             }
             if (bytesStoreSize != state.currentIndex() - offset &&
                 (type != FieldType.NDOUBLE_ARRAY && type != FieldType.NFLOAT_ARRAY &&
