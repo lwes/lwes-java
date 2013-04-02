@@ -512,18 +512,14 @@ public class Deserializer {
                                                    byte[] bytes,
                                                    short encoding) {
         int length = deserializeUINT16(state, bytes);
-        log.debug("nstring: length: " + length);
         BitSet bs = deserializeBitSet(state, bytes);
-        log.debug("bitset: " + bs);
 
         String[] rtn = new String[length];
         for (int i = 0; i < length; i++) {
             if (bs.get(i)) {
                 rtn[i] = deserializeSTRING(state, bytes, encoding);
-                log.debug("rtn[" + i + "] = " + rtn[i]);
             }
             else {
-                log.debug(i + " is null");
                 rtn[i] = null;
             }
         }
@@ -613,18 +609,14 @@ public class Deserializer {
     public static BigInteger[] deserializeNBigIntegerArray(DeserializerState state,
                                                            byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        log.debug("nbigint: length: " + length);
         BitSet bs = deserializeBitSet(state, bytes);
-        log.debug("bitset: " + bs);
 
         BigInteger[] rtn = new BigInteger[length];
         for (int i = 0; i < length; i++) {
             if (bs.get(i)) {
                 rtn[i] = deserializeUInt64ToBigInteger(state, bytes);
-                log.debug("rtn[" + i + "] = " + rtn[i]);
             }
             else {
-                log.debug(i + " is null");
                 rtn[i] = null;
             }
         }
@@ -650,18 +642,14 @@ public class Deserializer {
     public static Byte[] deserializeNByteArray(DeserializerState state,
                                                byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
-        log.debug("nbigint: length: " + length);
         BitSet bs = deserializeBitSet(state, bytes);
-        log.debug("bitset: " + bs);
 
         Byte[] rtn = new Byte[length];
         for (int i = 0; i < length; i++) {
             if (bs.get(i)) {
                 rtn[i] = deserializeBYTE(state, bytes);
-                log.debug("rtn[" + i + "] = " + rtn[i]);
             }
             else {
-                log.debug(i + " is null");
                 rtn[i] = null;
             }
         }
