@@ -1,6 +1,5 @@
 package org.lwes;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +11,11 @@ import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class RandomEventTests {
+public class RandomEventTest {
     private final int N = 1000; // number of trials
     private final List<Class<? extends Event>> eventClasses = new ArrayList<Class<? extends Event>>();
 
-    public RandomEventTests() {
+    public RandomEventTest() {
         // To test another Event implementation, add it here.
         eventClasses.add(MapEvent.class);
         eventClasses.add(ArrayEvent.class);
@@ -111,34 +110,34 @@ public class RandomEventTests {
     private static Object[] toObject(FieldType type, Object object) {
         switch (type) {
             case BOOLEAN_ARRAY:
-            case NBOOLEAN_ARRAY:
                 return ArrayUtils.toObject((boolean[]) object);
             case BYTE_ARRAY:
-            case NBYTE_ARRAY:
                 return ArrayUtils.toObject((byte[]) object);
             case DOUBLE_ARRAY:
-            case NDOUBLE_ARRAY:
                 return ArrayUtils.toObject((double[]) object);
             case FLOAT_ARRAY:
-            case NFLOAT_ARRAY:
                 return ArrayUtils.toObject((float[]) object);
             case INT16_ARRAY:
-            case NSHORT_ARRAY:
                 return ArrayUtils.toObject((short[]) object);
             case INT32_ARRAY:
             case UINT16_ARRAY:
-            case NINTEGER_ARRAY:
                 return ArrayUtils.toObject((int[]) object);
             case INT64_ARRAY:
             case UINT32_ARRAY:
-            case NLONG_ARRAY:
                 return ArrayUtils.toObject((long[]) object);
+            case NBOOLEAN_ARRAY:
+            case NBYTE_ARRAY:
+            case NDOUBLE_ARRAY:
+            case NFLOAT_ARRAY:
+            case NSHORT_ARRAY:
+            case NINTEGER_ARRAY:
+            case NLONG_ARRAY:
+            case NSTRING_ARRAY:
             case UINT64_ARRAY:
             case IP_ADDR_ARRAY:
             case STRING_ARRAY:
-                return (Object[]) object;
             case NBIGINT_ARRAY:
-                return (BigInteger[]) object;
+              return (Object[]) object;
             default:
                 throw new IllegalStateException("Unsupported type: " + type);
         }
