@@ -520,109 +520,13 @@ public class MapEvent extends DefaultEvent {
                     }
                 }
 
-                switch (type) {
-                    case BOOLEAN:
-                        setBoolean(attribute, Deserializer.deserializeBOOLEAN(state, bytes));
-                        break;
-                    case BYTE:
-                        setByte(attribute, Deserializer.deserializeBYTE(state, bytes));
-                        break;
-                    case UINT16:
-                        setUInt16(attribute, Deserializer.deserializeUINT16(state, bytes));
-                        break;
-                    case INT16:
-                        setInt16(attribute, Deserializer.deserializeINT16(state, bytes));
-                        break;
-                    case UINT32:
-                        setUInt32(attribute, Deserializer.deserializeUINT32(state, bytes));
-                        break;
-                    case INT32:
-                        setInt32(attribute, Deserializer.deserializeINT32(state, bytes));
-                        break;
-                    case FLOAT:
-                        setFloat(attribute, Deserializer.deserializeFLOAT(state, bytes));
-                        break;
-                    case UINT64:
-                        setUInt64(attribute, Deserializer.deserializeUInt64ToBigInteger(state, bytes));
-                        break;
-                    case INT64:
-                        setInt64(attribute, Deserializer.deserializeINT64(state, bytes));
-                        break;
-                    case DOUBLE:
-                        setDouble(attribute, Deserializer.deserializeDOUBLE(state, bytes));
-                        break;
-                    case STRING:
-                        setString(attribute, Deserializer.deserializeSTRING(state, bytes, encoding));
-                        break;
-                    case IPADDR:
-                        setIPAddress(attribute, Deserializer.deserializeIPADDR(state, bytes));
-                        break;
-                    case STRING_ARRAY:
-                        setStringArray(attribute, Deserializer.deserializeStringArray(state, bytes, encoding));
-                        break;
-                    case INT16_ARRAY:
-                        setInt16Array(attribute, Deserializer.deserializeInt16Array(state, bytes));
-                        break;
-                    case INT32_ARRAY:
-                        setInt32Array(attribute, Deserializer.deserializeInt32Array(state, bytes));
-                        break;
-                    case INT64_ARRAY:
-                        setInt64Array(attribute, Deserializer.deserializeInt64Array(state, bytes));
-                        break;
-                    case UINT16_ARRAY:
-                        setUInt16Array(attribute, Deserializer.deserializeUInt16Array(state, bytes));
-                        break;
-                    case UINT32_ARRAY:
-                        setUInt32Array(attribute, Deserializer.deserializeUInt32Array(state, bytes));
-                        break;
-                    case UINT64_ARRAY:
-                        setUInt64Array(attribute, Deserializer.deserializeUInt64Array(state, bytes));
-                        break;
-                    case BOOLEAN_ARRAY:
-                        setBooleanArray(attribute, Deserializer.deserializeBooleanArray(state, bytes));
-                        break;
-                    case BYTE_ARRAY:
-                        setByteArray(attribute, Deserializer.deserializeByteArray(state, bytes));
-                        break;
-                    case DOUBLE_ARRAY:
-                        setDoubleArray(attribute, Deserializer.deserializeDoubleArray(state, bytes));
-                        break;
-                    case FLOAT_ARRAY:
-                        setFloatArray(attribute, Deserializer.deserializeFloatArray(state, bytes));
-                        break;
-                    case IP_ADDR_ARRAY:
-                        setIPAddressArray(attribute, Deserializer.deserializeIPADDRArray(state, bytes));
-                        break;
-                    case NDOUBLE_ARRAY:
-                        setNDoubleArray(attribute, Deserializer.deserializeNDoubleArray(state, bytes));
-                        break;
-                    case NFLOAT_ARRAY:
-                        setNFloatArray(attribute, Deserializer.deserializeNFloatArray(state, bytes));
-                        break;
-                    case NINTEGER_ARRAY:
-                        setNIntegerArray(attribute, Deserializer.deserializeNIntegerArray(state, bytes));
-                        break;
-                    case NLONG_ARRAY:
-                        setNLongArray(attribute, Deserializer.deserializeNLongArray(state, bytes));
-                        break;
-                    case NSHORT_ARRAY:
-                        setNShortArray(attribute, Deserializer.deserializeNShortArray(state, bytes));
-                        break;
-                    case NSTRING_ARRAY:
-                        setStringObjArray(attribute, Deserializer.deserializeNStringArray(state, bytes, encoding));
-                        break;
-                    default:
-                        log.warn("Unknown type " + type + " in deserialization");
-                }
+                set(attribute, type, Deserializer.deserializeValue(state, bytes, type, encoding));
             }
-            if (bytesStoreSize != state.currentIndex() - offset &&
-                (type != FieldType.NDOUBLE_ARRAY && type != FieldType.NFLOAT_ARRAY &&
-                 type != FieldType.NSHORT_ARRAY && type != FieldType.NLONG_ARRAY &&
-                 type != FieldType.NINTEGER_ARRAY)) {
+            if (bytesStoreSize != state.currentIndex() - offset) {
                 throw new EventSystemException("Deserializing " + type + " field " + attribute +
                                                " resulted in incorrect cache of serialized size");
             }
-        } // for (int i =0 ...
+        }
 
         if (bytesStoreSize != length) {
             throw new EventSystemException(
