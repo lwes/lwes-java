@@ -184,21 +184,21 @@ public final class RandomEventGenerator {
                         final IPAddress[] typedArray = new IPAddress[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return typedArray;
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : typedArray;
                     }
                     case NSTRING_ARRAY:
                     case STRING_ARRAY: {
                         final String[] typedArray = new String[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return typedArray;
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : typedArray;
                     }
                     case NBIGINT_ARRAY:
                     case UINT64_ARRAY: {
                         final BigInteger[] typedArray = new BigInteger[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
-                        return typedArray;
+                        return type.isNullableArray() ? clearRandomElements(typedArray) : typedArray;
                     }
                     default:
                         return objectArray;
