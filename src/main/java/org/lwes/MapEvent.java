@@ -515,14 +515,11 @@ public class MapEvent extends DefaultEvent {
 
                 set(attribute, type, Deserializer.deserializeValue(state, bytes, type, encoding));
             }
-            if (bytesStoreSize != state.currentIndex() - offset &&
-                (type != FieldType.NDOUBLE_ARRAY && type != FieldType.NFLOAT_ARRAY &&
-                 type != FieldType.NSHORT_ARRAY && type != FieldType.NLONG_ARRAY &&
-                 type != FieldType.NINTEGER_ARRAY && type != FieldType.NSTRING_ARRAY)) {
+            if (bytesStoreSize != state.currentIndex() - offset) {
                 throw new EventSystemException("Deserializing " + type + " field " + attribute +
                                                " resulted in incorrect cache of serialized size");
             }
-        } // for (int i =0 ...
+        }
 
         if (bytesStoreSize != length) {
             throw new EventSystemException(
