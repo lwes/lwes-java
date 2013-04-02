@@ -16,7 +16,7 @@ public class FieldTypeTest {
 
     @Test
     public void testIsNullableArray() {
-        Assert.assertTrue(FieldType.NLONG_ARRAY.isNullableArray());
+        Assert.assertTrue(FieldType.NINT64_ARRAY.isNullableArray());
         Assert.assertFalse(FieldType.UINT64_ARRAY.isNullableArray());
     }
 

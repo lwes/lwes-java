@@ -713,17 +713,17 @@ public class Deserializer {
                 return Deserializer.deserializeNDoubleArray(state, bytes);
             case NFLOAT_ARRAY:
                 return Deserializer.deserializeNFloatArray(state, bytes);
-            case NINTEGER_ARRAY:
+            case NUINT32_ARRAY:
                 return Deserializer.deserializeNIntegerArray(state, bytes);
-            case NLONG_ARRAY:
+            case NINT64_ARRAY:
                 return Deserializer.deserializeNLongArray(state, bytes);
-            case NSHORT_ARRAY:
+            case NUINT16_ARRAY:
                 return Deserializer.deserializeNShortArray(state, bytes);
             case NBOOLEAN_ARRAY:
                 return Deserializer.deserializeNBooleanArray(state, bytes);
             case NSTRING_ARRAY:
                 return Deserializer.deserializeNStringArray(state, bytes, encoding);
-            case NBIGINT_ARRAY:
+            case NUINT64_ARRAY:
               return Deserializer.deserializeNBigIntegerArray(state, bytes);
             case NBYTE_ARRAY:
               return Deserializer.deserializeNByteArray(state, bytes);

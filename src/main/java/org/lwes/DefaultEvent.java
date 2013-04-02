@@ -88,15 +88,15 @@ public abstract class DefaultEvent implements Event {
     }
 
     public void setShortArray(String attributeName, Short[] value) throws EventSystemException {
-        set(attributeName, FieldType.NSHORT_ARRAY, value);
+        set(attributeName, FieldType.NUINT16_ARRAY, value);
     }
 
     public void setIntegerArray(String attributeName, Integer[] value) throws EventSystemException {
-        set(attributeName, FieldType.NINTEGER_ARRAY, value);
+        set(attributeName, FieldType.NUINT32_ARRAY, value);
     }
 
     public void setLongArray(String attributeName, Long[] value) throws EventSystemException {
-        set(attributeName, FieldType.NLONG_ARRAY, value);
+        set(attributeName, FieldType.NINT64_ARRAY, value);
     }
 
     public void setBooleanArray(String attributeName, Boolean[] value) throws EventSystemException {
@@ -180,15 +180,15 @@ public abstract class DefaultEvent implements Event {
     }
 
     public void setNShortArray(String attribute, Short[] values) {
-        set(attribute, FieldType.NSHORT_ARRAY, values);
+        set(attribute, FieldType.NUINT16_ARRAY, values);
     }
 
     public void setNLongArray(String attribute, Long[] values) {
-        set(attribute, FieldType.NLONG_ARRAY, values);
+        set(attribute, FieldType.NINT64_ARRAY, values);
     }
 
     public void setNIntegerArray(String attribute, Integer[] values) {
-        set(attribute, FieldType.NINTEGER_ARRAY, values);
+        set(attribute, FieldType.NUINT32_ARRAY, values);
     }
 
     public void setNFloatArray(String attribute, Float[] values) {

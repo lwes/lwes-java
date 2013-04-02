@@ -103,15 +103,15 @@ public final class RandomEventGenerator {
             case BOOLEAN_ARRAY:
             case NBYTE_ARRAY:
             case BYTE_ARRAY:
-            case NSHORT_ARRAY:
+            case NUINT16_ARRAY:
             case INT16_ARRAY:
-            case NINTEGER_ARRAY:
+            case NUINT32_ARRAY:
             case INT32_ARRAY:
-            case NLONG_ARRAY:
+            case NINT64_ARRAY:
             case INT64_ARRAY:
             case UINT16_ARRAY:
             case UINT32_ARRAY:
-            case NBIGINT_ARRAY:
+            case NUINT64_ARRAY:
             case UINT64_ARRAY:
             case NFLOAT_ARRAY:
             case FLOAT_ARRAY:
@@ -157,14 +157,14 @@ public final class RandomEventGenerator {
                                          objectArray.length);
                         return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
-                    case NSHORT_ARRAY:
+                    case NUINT16_ARRAY:
                     case INT16_ARRAY: {
                         final Short[] typedArray = new Short[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,
                                          objectArray.length);
                         return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
-                    case NINTEGER_ARRAY:
+                    case NUINT32_ARRAY:
                     case INT32_ARRAY:
                     case UINT16_ARRAY: {
                         final Integer[] typedArray = new Integer[objectArray.length];
@@ -172,7 +172,7 @@ public final class RandomEventGenerator {
                                          objectArray.length);
                         return type.isNullableArray() ? clearRandomElements(typedArray) : ArrayUtils.toPrimitive(typedArray);
                     }
-                    case NLONG_ARRAY:
+                    case NINT64_ARRAY:
                     case INT64_ARRAY:
                     case UINT32_ARRAY: {
                         final Long[] typedArray = new Long[objectArray.length];
@@ -193,7 +193,7 @@ public final class RandomEventGenerator {
                                          objectArray.length);
                         return type.isNullableArray() ? clearRandomElements(typedArray) : typedArray;
                     }
-                    case NBIGINT_ARRAY:
+                    case NUINT64_ARRAY:
                     case UINT64_ARRAY: {
                         final BigInteger[] typedArray = new BigInteger[objectArray.length];
                         System.arraycopy(objectArray, 0, typedArray, 0,

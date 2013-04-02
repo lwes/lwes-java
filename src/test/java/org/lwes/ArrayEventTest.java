@@ -184,7 +184,7 @@ public final class ArrayEventTest extends EventTest {
     @Test
     public void testNullableEvents() {
         Event evt = new ArrayEvent("Event");
-        evt.set("long[]", FieldType.NLONG_ARRAY, new Long[] { 5000000000l, null, 8675309l });
+        evt.set("long[]", FieldType.NINT64_ARRAY, new Long[] { 5000000000l, null, 8675309l });
         Long[] retrievedArray = evt.getLongObjArray("long[]");
         for (Long l : retrievedArray) {
             log.debug("retrieved item: "+l);
@@ -202,11 +202,11 @@ public final class ArrayEventTest extends EventTest {
         Assert.assertEquals(1.11f, evt.getFloatObjArray("float[]")[0]);
         Assert.assertNull(evt.getFloatObjArray("float[]")[1]);
 
-        evt.set("integer[]", FieldType.NINTEGER_ARRAY, new Integer[] { 5000, null, 12345 });
+        evt.set("integer[]", FieldType.NUINT32_ARRAY, new Integer[] { 5000, null, 12345 });
         Assert.assertEquals(5000, evt.getIntegerObjArray("integer[]")[0].intValue());
         Assert.assertNull(evt.getIntegerObjArray("integer[]")[1]);
 
-        evt.set("short[]", FieldType.NSHORT_ARRAY, new Short[] { 5, null, 10 });
+        evt.set("short[]", FieldType.NUINT16_ARRAY, new Short[] { 5, null, 10 });
         Assert.assertEquals(5, evt.getShortObjArray("short[]")[0].shortValue());
         Assert.assertNull(evt.getShortObjArray("short[]")[1]);
 

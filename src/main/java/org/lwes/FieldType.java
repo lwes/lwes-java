@@ -36,23 +36,26 @@ public enum FieldType {
     INT32_ARRAY(0x84, "[Lint32", new long[0]),
     STRING_ARRAY(0x85, "[Lstring", new String[0]),
     IP_ADDR_ARRAY(0x86, "[Lip_addr", new IPAddress[0]),
-    INT64_ARRAY(0x87, "[Lint64", new BigInteger[0]),
-    UINT64_ARRAY(0x88, "[Luint64", new long[0]),
+    INT64_ARRAY(0x87, "[Lint64", new long[0]),
+    UINT64_ARRAY(0x88, "[Luint64", new BigInteger[0]),
     BOOLEAN_ARRAY(0x89, "[Lboolean", new boolean[0]),
     BYTE_ARRAY(0x8A, "[Lbyte", new byte[0]),
     FLOAT_ARRAY(0x8B, "[Lfloat", new float[0]),
     DOUBLE_ARRAY(0x8C, "[Ldouble", new double[0]),
 
     // Nullable, object backed arrays
-    NSHORT_ARRAY(0x8D, "[LShort", new Short[0]),
-    NINTEGER_ARRAY(0x8E, "[LInteger", new Integer[0]),
-    NLONG_ARRAY(0x8F, "[LLong", new Long[0]),
-    NBIGINT_ARRAY(0x90, "[LBigInt", new BigInteger[0]),
-    NBOOLEAN_ARRAY(0x91, "[LBoolean", new Boolean[0]),
-    NBYTE_ARRAY(0x92, "[LByte", new Byte[0]),
-    NFLOAT_ARRAY(0x93, "[LFloat", new Float[0]),
-    NDOUBLE_ARRAY(0x94, "[LDouble", new Double[0]),
-    NSTRING_ARRAY(0x95, "[LString", new String[0]);
+    NUINT16_ARRAY(0x8D, "[LNuint16", new Short[0]),
+    NINT16_ARRAY(0x8E, "[LNint16", new Integer[0]),
+    NUINT32_ARRAY(0x8F, "[LNuint32", new Integer[0]),
+    NINT32_ARRAY(0x90, "[LNint32", new Long[0]),
+    NSTRING_ARRAY(0x91, "[LString", new String[0]),
+    // N_IP_ADDR_ARRAY not implemented... 0x92
+    NINT64_ARRAY(0x93, "[LNint64", new Long[0]),
+    NUINT64_ARRAY(0x94, "[LNuint64", new BigInteger[0]),
+    NBOOLEAN_ARRAY(0x95, "[LBoolean", new Boolean[0]),
+    NBYTE_ARRAY(0x96, "[LByte", new Byte[0]),
+    NFLOAT_ARRAY(0x97, "[LFloat", new Float[0]),
+    NDOUBLE_ARRAY(0x98, "[LDouble", new Double[0]);
 
     public final byte token;
     public final String name;
@@ -101,9 +104,9 @@ public enum FieldType {
     }
 
     public boolean isNullableArray() {
-        return (this == NSHORT_ARRAY || this == NDOUBLE_ARRAY || this == NFLOAT_ARRAY ||
-                this == NBIGINT_ARRAY || this == NBOOLEAN_ARRAY || this == NBYTE_ARRAY ||
-                this == NINTEGER_ARRAY || this == NLONG_ARRAY || this == NSTRING_ARRAY);
+        return (this == NUINT16_ARRAY || this == NDOUBLE_ARRAY || this == NFLOAT_ARRAY ||
+                this == NUINT64_ARRAY || this == NBOOLEAN_ARRAY || this == NBYTE_ARRAY ||
+                this == NUINT32_ARRAY || this == NINT64_ARRAY || this == NSTRING_ARRAY);
     }
 
     public boolean isArray() {
@@ -125,17 +128,17 @@ public enum FieldType {
             case FLOAT:
                 return NFLOAT_ARRAY;
             case INT16:
-                return NSHORT_ARRAY;
+                return NUINT16_ARRAY;
             case INT32:
-                return NINTEGER_ARRAY;
+                return NUINT32_ARRAY;
             case INT64:
-                return NLONG_ARRAY;
+                return NINT64_ARRAY;
             case UINT16:
-                return NINTEGER_ARRAY;
+                return NUINT32_ARRAY;
             case UINT32:
-                return NLONG_ARRAY;
+                return NINT64_ARRAY;
             case UINT64:
-                return NBIGINT_ARRAY;
+                return NUINT64_ARRAY;
             case STRING:
                 return NSTRING_ARRAY;
         }
@@ -219,15 +222,15 @@ public enum FieldType {
                 return FLOAT;
             case FLOAT_ARRAY:
                 return FLOAT;
-            case NSHORT_ARRAY:
+            case NUINT16_ARRAY:
                 return INT16;
             case INT16_ARRAY:
                 return INT16;
-            case NINTEGER_ARRAY:
+            case NUINT32_ARRAY:
                 return INT32;
             case INT32_ARRAY:
                 return INT32;
-            case NLONG_ARRAY:
+            case NINT64_ARRAY:
                 return INT64;
             case INT64_ARRAY:
                 return INT64;
@@ -241,7 +244,7 @@ public enum FieldType {
                 return UINT32;
             case UINT64_ARRAY:
                 return UINT64;
-            case NBIGINT_ARRAY:
+            case NUINT64_ARRAY:
                 return UINT64;
             case NSTRING_ARRAY:
                 return STRING;

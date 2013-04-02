@@ -447,11 +447,11 @@ public class Serializer {
             case STRING_ARRAY:
                 return Serializer.serializeStringArray
                         (((String[]) data), bytes, offset, encoding);
-            case NINTEGER_ARRAY:
+            case NUINT32_ARRAY:
                 return Serializer.serializeNIntegerArray((Integer[]) data, bytes, offset);
-            case NSHORT_ARRAY:
+            case NUINT16_ARRAY:
                 return Serializer.serializeNShortArray((Short[]) data, bytes, offset);
-            case NLONG_ARRAY:
+            case NINT64_ARRAY:
                 return Serializer.serializeNLongArray((Long[]) data, bytes, offset);
             case NDOUBLE_ARRAY:
                 return Serializer.serializeNDoubleArray((Double[]) data, bytes, offset);
@@ -468,8 +468,9 @@ public class Serializer {
             case UINT32_ARRAY:
                 return Serializer.serializeUInt32Array((long[]) data, bytes, offset);
             case UINT64_ARRAY:
-            case NBIGINT_ARRAY:
                 return Serializer.serializeUInt64Array((BigInteger[]) data, bytes, offset);
+            case NUINT64_ARRAY:
+                return Serializer.serializeNBigIntegerArray((BigInteger []) data, bytes, offset);
             case NBOOLEAN_ARRAY:
                 return Serializer.serializeNBooleanArray((Boolean[]) data, bytes, offset);
             case BOOLEAN_ARRAY:
@@ -794,6 +795,39 @@ public class Serializer {
         for (Integer s : data) {
             if (s != null) {
                 numbytes = serializeINT32(s, tmp, tmpOffset);
+                tmpOffset += numbytes;
+                bitSet.set(i);
+            }
+            i++;
+        }
+
+        // Write the bitset first to ease with deserialization
+        offset += serializeBitSet(bitSet, bytes, offset);
+        // Now write the float values
+        System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
+        offset += tmpOffset;
+
+        return (offset - offsetStart);
+    }
+
+    public static int serializeNBigIntegerArray(BigInteger[] data, byte[] bytes, int offset) {
+        int numbytes = 0;
+        int offsetStart = offset;
+
+        // Number of items in the array
+        numbytes = serializeINT16((short) data.length, bytes, offset);
+        offset += numbytes;
+
+        byte[] tmp = new byte[8 * data.length];
+        int tmpOffset = 0;
+
+        // use a bitset to determine which indexes have values and which are null.
+        // serialize the actual values into a temporary byte array
+        BitSet bitSet = new BitSet(data.length);
+        int i = 0;
+        for (BigInteger s : data) {
+            if (s != null) {
+                numbytes = serializeUINT64(s, tmp, tmpOffset);
                 tmpOffset += numbytes;
                 bitSet.set(i);
             }

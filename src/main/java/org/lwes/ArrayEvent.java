@@ -462,14 +462,14 @@ public final class ArrayEvent extends DefaultEvent {
             case UINT64_ARRAY:
             case DOUBLE_ARRAY:
                 return 2 + deserializeUINT16(valueIndex) * 8;
-            case NLONG_ARRAY:
+            case NINT64_ARRAY:
             case NDOUBLE_ARRAY:
                 // length + (num items * 8 bytes) + (bitset length * 2 bytes)
                 return 2 + (deserializeUINT16(valueIndex) * 8) + (deserializeUINT16(valueIndex) * 2);
-            case NINTEGER_ARRAY:
+            case NUINT32_ARRAY:
             case NFLOAT_ARRAY:
                 return 2 + (deserializeUINT16(valueIndex) * 4) + (deserializeUINT16(valueIndex) * 2);
-            case NSHORT_ARRAY:
+            case NUINT16_ARRAY:
                 return 2 + (deserializeUINT16(valueIndex) * 2) + (deserializeUINT16(valueIndex) * 2);
         }
         throw new IllegalStateException("Unrecognized type: " + type);

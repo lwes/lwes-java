@@ -12,6 +12,7 @@
 
 package org.lwes.serializer;
 
+import java.math.BigInteger;
 import java.util.BitSet;
 import java.util.Random;
 
@@ -70,6 +71,32 @@ public class SerializerTest {
         Assert.assertTrue(dsbs.get(2));
         Assert.assertFalse(dsbs.get(3));
         Assert.assertTrue(dsbs.get(14));
+    }
+    @Test
+    public void testSerializeNBigIntegerArray() {
+        BigInteger[] array = new BigInteger[]{
+                new BigInteger("888888"),
+                new BigInteger("0980398012830"),
+                null,
+                new BigInteger("90238109283"),
+                null,
+                new BigInteger("9812398123")
+        };
+        byte[] bytes = new byte[64];
+        int num = Serializer.serializeValue(FieldType.NUINT64_ARRAY, array, (short) 0, bytes, 0);
+
+        // length + bitSet_len + bitSet + values
+        // 2 + 2 + 1 + (8*4)
+        Assert.assertEquals(37, num);
+        DeserializerState state = new DeserializerState();
+        BigInteger[] rtn = Deserializer.deserializeNBigIntegerArray(state, bytes);
+        Assert.assertNotNull(rtn);
+        Assert.assertEquals(new BigInteger("888888"), rtn[0]);
+        Assert.assertEquals(new BigInteger("0980398012830"),rtn[1]);
+        Assert.assertNull(rtn[2]);
+        Assert.assertEquals(new BigInteger("90238109283"),rtn[3]);
+        Assert.assertNull(rtn[4]);
+        Assert.assertEquals(new BigInteger("9812398123"), rtn[5]);
     }
 
     @Test

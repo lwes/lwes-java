@@ -129,14 +129,14 @@ public class RandomEventTest {
             case NBYTE_ARRAY:
             case NDOUBLE_ARRAY:
             case NFLOAT_ARRAY:
-            case NSHORT_ARRAY:
-            case NINTEGER_ARRAY:
-            case NLONG_ARRAY:
+            case NUINT16_ARRAY:
+            case NUINT32_ARRAY:
+            case NINT64_ARRAY:
             case NSTRING_ARRAY:
             case UINT64_ARRAY:
             case IP_ADDR_ARRAY:
             case STRING_ARRAY:
-            case NBIGINT_ARRAY:
+            case NUINT64_ARRAY:
               return (Object[]) object;
             default:
                 throw new IllegalStateException("Unsupported type: " + type);
