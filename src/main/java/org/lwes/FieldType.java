@@ -10,8 +10,10 @@
 package org.lwes;
 
 import java.math.BigInteger;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.lwes.util.IPAddress;
 
@@ -63,6 +65,7 @@ public enum FieldType {
     private final Object defaultValue;
     private static final FieldType[] TYPES_BY_TOKEN = new FieldType[256];
     private static final Map<String, FieldType> TYPES_BY_NAME = new HashMap<String, FieldType>();
+    private static final Map<FieldType, FieldType> COMPONENTS = new EnumMap<FieldType, FieldType>(FieldType.class);
 
     private FieldType(int token, String name) {
         this(token, name, null);
@@ -79,6 +82,15 @@ public enum FieldType {
         for (FieldType type : values()) {
             TYPES_BY_TOKEN[type.token & 0xff] = type;
             TYPES_BY_NAME.put(type.name, type);
+            
+            if (type.name().endsWith("_ARRAY")) {
+              // This will fail if our naming becomes inconsistent or a type starts with N.
+              String name = type.name();
+              name = name.replace("_ARRAY", "");
+              name = name.replaceFirst("^N", "");
+              name = name.replace("IP_ADDR", "IPADDR");  // due to formatting inconsistency
+              COMPONENTS.put(type, valueOf(name));
+            }
         }
     }
 
@@ -147,112 +159,26 @@ public enum FieldType {
     }
 
     public FieldType getArrayType() {
-        switch (this) {
-            case BOOLEAN:
-                return BOOLEAN_ARRAY;
-            case BYTE:
-                return BYTE_ARRAY;
-            case DOUBLE:
-                return DOUBLE_ARRAY;
-            case FLOAT:
-                return FLOAT_ARRAY;
-            case INT16:
-                return INT16_ARRAY;
-            case INT32:
-                return INT32_ARRAY;
-            case INT64:
-                return INT64_ARRAY;
-            case IPADDR:
-                return IP_ADDR_ARRAY;
-            case STRING:
-                return STRING_ARRAY;
-            case UINT16:
-                return UINT16_ARRAY;
-            case UINT32:
-                return UINT32_ARRAY;
-            case UINT64:
-                return UINT64_ARRAY;
-            case BOOLEAN_ARRAY:
-            case BYTE_ARRAY:
-            case DOUBLE_ARRAY:
-            case FLOAT_ARRAY:
-            case INT16_ARRAY:
-            case INT32_ARRAY:
-            case INT64_ARRAY:
-            case IP_ADDR_ARRAY:
-            case STRING_ARRAY:
-            case UINT16_ARRAY:
-            case UINT32_ARRAY:
-            case UINT64_ARRAY:
-                throw new IllegalStateException(
-                        "Multidimensional arrays are not supported; " + this + ".getArrayType() unsupported");
+        for (Entry<FieldType,FieldType> entry : COMPONENTS.entrySet()) {
+          if (this == entry.getValue()) {
+            return entry.getKey();
+          }
         }
-        throw new IllegalStateException("Unsupported type: " + this);
+        if (COMPONENTS.containsKey(this)) {
+          throw new IllegalStateException(
+              "Multidimensional arrays are not supported; " + this + ".getArrayType() unsupported");
+        } else {
+          throw new IllegalStateException("Unsupported type: " + this);
+        }
     }
 
     public FieldType getComponentType() {
-        switch (this) {
-            case BOOLEAN:
-            case BYTE:
-            case DOUBLE:
-            case FLOAT:
-            case INT16:
-            case INT32:
-            case INT64:
-            case IPADDR:
-            case STRING:
-            case UINT16:
-            case UINT32:
-            case UINT64:
-                throw new IllegalStateException(
-                        "Only array types provide component types " + this + ".getComponentType() unsupported");
-
-            case NBOOLEAN_ARRAY:
-                return BOOLEAN;
-            case BOOLEAN_ARRAY:
-                return BOOLEAN;
-            case NBYTE_ARRAY:
-                return BYTE;
-            case BYTE_ARRAY:
-                return BYTE;
-            case NDOUBLE_ARRAY:
-                return DOUBLE;
-            case DOUBLE_ARRAY:
-                return DOUBLE;
-            case NFLOAT_ARRAY:
-                return FLOAT;
-            case FLOAT_ARRAY:
-                return FLOAT;
-            case NUINT16_ARRAY:
-                return UINT16;
-            case INT16_ARRAY:
-                return INT16;
-            case NUINT32_ARRAY:
-                return INT32;
-            case INT32_ARRAY:
-                return INT32;
-            case NINT64_ARRAY:
-                return INT64;
-            case INT64_ARRAY:
-                return INT64;
-            case IP_ADDR_ARRAY:
-                return IPADDR;
-            case STRING_ARRAY:
-                return STRING;
-            case UINT16_ARRAY:
-                return UINT16;
-            case UINT32_ARRAY:
-                return UINT32;
-            case UINT64_ARRAY:
-                return UINT64;
-            case NUINT64_ARRAY:
-                return UINT64;
-            case NSTRING_ARRAY:
-                return STRING;
-            case NINT16_ARRAY:
-                return INT16;
-        }
-        throw new IllegalStateException("Unsupported type: " + this);
+      final FieldType component = COMPONENTS.get(this);
+      if (component == null) {
+        throw new IllegalStateException(
+            "Only array types provide component types " + this + ".getComponentType() unsupported");
+      }
+      return component;
     }
 
     public boolean isConstantSize() {
