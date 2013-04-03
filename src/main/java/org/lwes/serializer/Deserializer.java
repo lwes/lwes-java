@@ -410,11 +410,11 @@ public class Deserializer {
         try {
             len = deserializeUINT16(myState, bytes);
 
-            if (log.isDebugEnabled()) {
-                log.debug("Datagram Bytes: " +
+            if (log.isTraceEnabled()) {
+                log.trace("Datagram Bytes: " +
                           NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-                log.debug("String Length: " + len);
-                log.debug("State: " + myState);
+                log.trace("String Length: " + len);
+                log.trace("State: " + myState);
             }
 
             aString = EncodedString.bytesToString(bytes, myState.currentIndex(), len,

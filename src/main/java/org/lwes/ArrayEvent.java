@@ -280,7 +280,9 @@ public final class ArrayEvent extends DefaultEvent {
         final SortedSet<String> fields = new TreeSet<String>();
         for (tempState.set(getValueListIndex()); tempState.currentIndex() < length; ) {
             fields.add(Deserializer.deserializeATTRIBUTEWORD(tempState, bytes));
+            log.debug(fields);
             final FieldType type = FieldType.byToken(Deserializer.deserializeBYTE(tempState, bytes));
+            log.debug(type.toString());
             tempState.incr(getValueByteSize(type, tempState.currentIndex()));
         }
         if (tempState.currentIndex() > length) {

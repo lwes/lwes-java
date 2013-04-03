@@ -6,9 +6,13 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.util.IPAddress;
 
 public final class RandomEventGenerator {
+    private static final transient Log log = LogFactory.getLog(RandomEventGenerator.class);
+
     private final Random random;
     public int minEventNameLength = 1, maxEventNameLength = 20;
     public int minFieldCount = 0, maxFieldCount = 20;
@@ -44,7 +48,9 @@ public final class RandomEventGenerator {
     public void fillRandomField(Event event) {
         final FieldType type = FieldType.values()[random.nextInt(FieldType.values().length)];
         final Object value = createRandomValue(type);
-        event.set(createRandomString(minFieldNameLength, maxFieldNameLength), type, value);
+        String name = createRandomString(minFieldNameLength, maxFieldNameLength);
+        log.debug("setting: "+name+" type "+ type+" to "+value);
+        event.set(name, type, value);
     }
 
     public void fillRandomFields(Event event, Map<String, BaseType> fields, int num, boolean chanceForFail) {

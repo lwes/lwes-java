@@ -268,6 +268,15 @@ public final class ArrayEventTest extends EventTest {
     }
 
     @Test
+    public void testNByte() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("byte[]", FieldType.NBYTE_ARRAY, new Byte[]{0x32, null, 0x33});
+        Assert.assertEquals(0x32, evt.getByteObjArray("byte[]")[0].byteValue());
+        Assert.assertNull(evt.getByteObjArray("byte[]")[1]);
+        Assert.assertEquals(0x33, evt.getByteObjArray("byte[]")[2].byteValue());
+    }
+
+    @Test
     public void testNIntegrated() {
         Event evt = new ArrayEvent("Event");
 
@@ -276,9 +285,18 @@ public final class ArrayEventTest extends EventTest {
         Assert.assertEquals(5000000000l, retrievedArray[0].longValue());
         Assert.assertNull(evt.getLongObjArray("nint64[]")[1]);
 
+        evt.set("nint16[]", FieldType.NINT16_ARRAY, new Short[]{5000, null, 8675});
+        Assert.assertEquals(5000, evt.getShortObjArray("nint16[]")[0].shortValue());
+        Assert.assertNull(evt.getShortObjArray("nint16[]")[1]);
+
         evt.set("nuint32[]", FieldType.NUINT32_ARRAY, new Long[]{5000l, null, 12345l});
         Assert.assertEquals(5000, evt.getLongObjArray("nuint32[]")[0].longValue());
         Assert.assertNull(evt.getLongObjArray("nuint32[]")[1]);
+
+        evt.set("byte[]", FieldType.NBYTE_ARRAY, new Byte[]{0x32, null, 0x33});
+        Assert.assertEquals(0x32, evt.getByteObjArray("byte[]")[0].byteValue());
+        Assert.assertNull(evt.getByteObjArray("byte[]")[1]);
+        Assert.assertEquals(0x33, evt.getByteObjArray("byte[]")[2].byteValue());
 
         evt.set("float[]", FieldType.NFLOAT_ARRAY, new Float[]{1.11f, null, 1.12f});
         Assert.assertEquals(1.11f, evt.getFloatObjArray("float[]")[0]);
