@@ -14,6 +14,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Enumeration;
@@ -462,17 +463,22 @@ public final class ArrayEvent extends DefaultEvent {
             case UINT64_ARRAY:
             case DOUBLE_ARRAY:
                 return 2 + deserializeUINT16(valueIndex) * 8;
-            case NINT64_ARRAY:
-            case NDOUBLE_ARRAY:
-                // length + (num items * 8 bytes) + (bitset length * 2 bytes)
-                return 2 + (deserializeUINT16(valueIndex) * 8) + (deserializeUINT16(valueIndex) * 2);
-            case NUINT32_ARRAY:
-            case NFLOAT_ARRAY:
-                return 2 + (deserializeUINT16(valueIndex) * 4) + (deserializeUINT16(valueIndex) * 2);
-            case NUINT16_ARRAY:
-                return 2 + (deserializeUINT16(valueIndex) * 2) + (deserializeUINT16(valueIndex) * 2);
+            default:
+                // TODO -- need to get size of arrays that could have nulls...
+                // array_len + bitset_len + bitset + array
+                int size = 2;
+                DeserializerState ds = new DeserializerState();
+                ds.incr(valueIndex+2);
+                BitSet bs = Deserializer.deserializeBitSet(ds, bytes);
+                size += Math.ceil(bs.length()/8.0);
+                for (int i=0; i<bs.length(); i++) {
+                    if (bs.get(i)) {
+                        size += BaseType.getPrimitiveByteSize(type.getComponentType());
+                    }
+                }
+                return size;
         }
-        throw new IllegalStateException("Unrecognized type: " + type);
+        //throw new IllegalStateException("Unrecognized type: " + type);
     }
 
     /**

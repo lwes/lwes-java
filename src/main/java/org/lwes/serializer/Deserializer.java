@@ -714,19 +714,21 @@ public class Deserializer {
             case NFLOAT_ARRAY:
                 return Deserializer.deserializeNFloatArray(state, bytes);
             case NUINT32_ARRAY:
-                return Deserializer.deserializeNIntegerArray(state, bytes);
             case NINT64_ARRAY:
                 return Deserializer.deserializeNLongArray(state, bytes);
+            case NINT32_ARRAY:
             case NUINT16_ARRAY:
-                return Deserializer.deserializeNShortArray(state, bytes);
+                return Deserializer.deserializeNIntegerArray(state, bytes);
             case NBOOLEAN_ARRAY:
                 return Deserializer.deserializeNBooleanArray(state, bytes);
             case NSTRING_ARRAY:
                 return Deserializer.deserializeNStringArray(state, bytes, encoding);
             case NUINT64_ARRAY:
-              return Deserializer.deserializeNBigIntegerArray(state, bytes);
+                return Deserializer.deserializeNBigIntegerArray(state, bytes);
             case NBYTE_ARRAY:
-              return Deserializer.deserializeNByteArray(state, bytes);
+                return Deserializer.deserializeNByteArray(state, bytes);
+            case NINT16_ARRAY:
+                return Deserializer.deserializeNShortArray(state, bytes);
         }
         throw new EventSystemException("Unrecognized type: " + type);
     }

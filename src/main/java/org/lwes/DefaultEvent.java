@@ -235,6 +235,10 @@ public abstract class DefaultEvent implements Event {
         return (String[]) get(attributeName);
     }
 
+    public BigInteger[] getBigIntegerObjArray(String attributeName) {
+        return (BigInteger[]) get(attributeName);
+    }
+
     public short[] getInt16Array(String attributeName) {
         return (short[]) get(attributeName);
     }

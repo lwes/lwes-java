@@ -96,7 +96,7 @@ public final class ArrayEventTest extends EventTest {
 
         System.gc();
     }
-            
+
     @Test
     public void testGettersSetters() {
         Event evt = new ArrayEvent("Event");
@@ -128,39 +128,39 @@ public final class ArrayEventTest extends EventTest {
         evt.set("uint64", FieldType.UINT64, new BigInteger("10000000000000"));
         Assert.assertEquals(new BigInteger("10000000000000"), evt.getUInt64("uint64"));
     }
-    
+
     @Test
     public void testArrayGettersSetters() {
         Event evt = new ArrayEvent("Event");
 
-        evt.set("int32[]", FieldType.INT32_ARRAY, new int[] {10});
+        evt.set("int32[]", FieldType.INT32_ARRAY, new int[]{10});
         Assert.assertEquals(10, evt.getInt32Array("int32[]")[0]);
 
-        evt.set("boolean[]", FieldType.BOOLEAN_ARRAY, new boolean[] {true});
+        evt.set("boolean[]", FieldType.BOOLEAN_ARRAY, new boolean[]{true});
         Assert.assertTrue(evt.getBooleanArray("boolean[]")[0]);
 
-        evt.set("byte[]", FieldType.BYTE_ARRAY, new byte[] {Byte.parseByte("32")});
+        evt.set("byte[]", FieldType.BYTE_ARRAY, new byte[]{Byte.parseByte("32")});
         Assert.assertEquals(32, evt.getByteArray("byte[]")[0]);
 
-        evt.set("double[]", FieldType.DOUBLE_ARRAY, new double[] {5.0});
+        evt.set("double[]", FieldType.DOUBLE_ARRAY, new double[]{5.0});
         Assert.assertEquals(5.0, evt.getDoubleArray("double[]")[0]);
 
-        evt.set("float[]", FieldType.FLOAT_ARRAY, new float[] {1.2f});
+        evt.set("float[]", FieldType.FLOAT_ARRAY, new float[]{1.2f});
         Assert.assertEquals(1.2f, evt.getFloatArray("float[]")[0]);
 
-        evt.set("int16[]", FieldType.INT16_ARRAY, new short[] {(short) 10});
+        evt.set("int16[]", FieldType.INT16_ARRAY, new short[]{(short) 10});
         Assert.assertEquals(10, evt.getInt16Array("int16[]")[0]);
 
-        evt.set("uint16[]", FieldType.UINT16_ARRAY, new int[] {10});
+        evt.set("uint16[]", FieldType.UINT16_ARRAY, new int[]{10});
         Assert.assertEquals(10, evt.getUInt16Array("uint16[]")[0]);
 
-        evt.set("uint32[]", FieldType.UINT32_ARRAY, new long[] {10l});
+        evt.set("uint32[]", FieldType.UINT32_ARRAY, new long[]{10l});
         Assert.assertEquals(10, evt.getUInt32Array("uint32[]")[0]);
 
-        evt.set("int64[]", FieldType.INT64_ARRAY, new long[] {10l});
+        evt.set("int64[]", FieldType.INT64_ARRAY, new long[]{10l});
         Assert.assertEquals(10, evt.getInt64Array("int64[]")[0]);
 
-        evt.set("uint64[]", FieldType.UINT64_ARRAY, new BigInteger[] {new BigInteger("10000000000000")});
+        evt.set("uint64[]", FieldType.UINT64_ARRAY, new BigInteger[]{new BigInteger("10000000000000")});
         Assert.assertEquals(new BigInteger("10000000000000"), evt.getUInt64Array("uint64[]")[0]);
     }
 
@@ -168,10 +168,10 @@ public final class ArrayEventTest extends EventTest {
     public void testStringArray() {
         Event evt = new ArrayEvent("Event");
 
-        evt.set("string[]", FieldType.STRING_ARRAY, new String[] {"value"});
+        evt.set("string[]", FieldType.STRING_ARRAY, new String[]{"value"});
         Assert.assertEquals("value", evt.getStringArray("string[]")[0]);
 
-        evt.set("int64[]", FieldType.INT64_ARRAY, new long[] {10l});
+        evt.set("int64[]", FieldType.INT64_ARRAY, new long[]{10l});
         Assert.assertEquals(10, evt.getInt64Array("int64[]")[0]);
     }
 
@@ -182,43 +182,108 @@ public final class ArrayEventTest extends EventTest {
     }
 
     @Test
-    public void testNullableEvents() {
+    public void testNInt64() {
         Event evt = new ArrayEvent("Event");
-        evt.set("long[]", FieldType.NINT64_ARRAY, new Long[] { 5000000000l, null, 8675309l });
+        evt.set("long[]", FieldType.NINT64_ARRAY, new Long[]{5000000000l, null, 8675309l});
         Long[] retrievedArray = evt.getLongObjArray("long[]");
-        for (Long l : retrievedArray) {
-            log.debug("retrieved item: "+l);
-        }
-        evt.set("str", FieldType.STRING, "testing");
         Assert.assertEquals(5000000000l, retrievedArray[0].longValue());
         Assert.assertNull(evt.getLongObjArray("long[]")[1]);
-        Assert.assertEquals("testing", evt.getString("str"));
+    }
 
-        evt.set("double[]", FieldType.NDOUBLE_ARRAY, new Double[] { 1.23, 1.26, null });
+    @Test
+    public void testNDouble() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("double[]", FieldType.NDOUBLE_ARRAY, new Double[]{1.23, 1.26, null});
         Assert.assertEquals(1.23, evt.getDoubleObjArray("double[]")[0]);
         Assert.assertNull(evt.getDoubleObjArray("double[]")[2]);
+    }
 
-        evt.set("float[]", FieldType.NFLOAT_ARRAY, new Float[] { 1.11f, null, 1.12f });
+    @Test
+    public void testNFloat() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("float[]", FieldType.NFLOAT_ARRAY, new Float[]{1.11f, null, 1.12f});
         Assert.assertEquals(1.11f, evt.getFloatObjArray("float[]")[0]);
         Assert.assertNull(evt.getFloatObjArray("float[]")[1]);
+    }
 
-        evt.set("integer[]", FieldType.NUINT32_ARRAY, new Integer[] { 5000, null, 12345 });
-        Assert.assertEquals(5000, evt.getIntegerObjArray("integer[]")[0].intValue());
-        Assert.assertNull(evt.getIntegerObjArray("integer[]")[1]);
-
-        evt.set("short[]", FieldType.NUINT16_ARRAY, new Short[] { 5, null, 10 });
+    @Test
+    public void testNInt16() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("short[]", FieldType.NINT16_ARRAY, new Short[]{5, null, 10});
         Assert.assertEquals(5, evt.getShortObjArray("short[]")[0].shortValue());
         Assert.assertNull(evt.getShortObjArray("short[]")[1]);
+    }
 
-        evt.set("boolean[]", FieldType.NBOOLEAN_ARRAY, new Boolean[] { true, null, false });
+    @Test
+    public void testNUint16() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("int[]", FieldType.NUINT16_ARRAY, new Integer[]{5, null, 10});
+        Assert.assertEquals(5, evt.getIntegerObjArray("int[]")[0].intValue());
+        Assert.assertNull(evt.getIntegerObjArray("int[]")[1]);
+    }
+
+    @Test
+    public void testNInt32() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("int[]", FieldType.NINT32_ARRAY, new Integer[]{5, null, 10});
+        Assert.assertEquals(5, evt.getIntegerObjArray("int[]")[0].intValue());
+        Assert.assertNull(evt.getIntegerObjArray("int[]")[1]);
+    }
+
+    @Test
+    public void testNUint32() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("long[]", FieldType.NUINT32_ARRAY, new Long[]{5000l, null, 12345l});
+        Assert.assertEquals(5000, evt.getLongObjArray("long[]")[0].longValue());
+        Assert.assertNull(evt.getLongObjArray("long[]")[1]);
+    }
+
+    @Test
+    public void testNUint64() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("biginteger[]", FieldType.NUINT64_ARRAY,
+                new BigInteger[]{
+                        new BigInteger("5"), null, new BigInteger("10")
+                });
+        Assert.assertEquals(5, evt.getBigIntegerObjArray("biginteger[]")[0].intValue());
+        Assert.assertNull(evt.getBigIntegerObjArray("biginteger[]")[1]);
+    }
+
+    @Test
+    public void testNBoolean() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("boolean[]", FieldType.NBOOLEAN_ARRAY, new Boolean[]{true, null, false});
         Assert.assertTrue(evt.getBooleanObjArray("boolean[]")[0]);
         Assert.assertNull(evt.getBooleanObjArray("boolean[]")[1]);
         Assert.assertFalse(evt.getBooleanObjArray("boolean[]")[2]);
+    }
 
-        evt.set("string[]", FieldType.NSTRING_ARRAY, new String[] { "a", null, "bc"});
+    @Test
+    public void testNString() {
+        Event evt = new ArrayEvent("Event");
+        evt.set("string[]", FieldType.NSTRING_ARRAY, new String[]{"a", null, "bc"});
         Assert.assertEquals("a", evt.getStringObjArray("string[]")[0]);
         Assert.assertNull(evt.getStringObjArray("string[]")[1]);
         Assert.assertEquals("bc", evt.getStringObjArray("string[]")[2]);
+    }
+
+    @Test
+    public void testNIntegrated() {
+        Event evt = new ArrayEvent("Event");
+
+        evt.set("nint64[]", FieldType.NINT64_ARRAY, new Long[]{5000000000l, null, 8675309l});
+        Long[] retrievedArray = evt.getLongObjArray("nint64[]");
+        Assert.assertEquals(5000000000l, retrievedArray[0].longValue());
+        Assert.assertNull(evt.getLongObjArray("nint64[]")[1]);
+
+        evt.set("nuint32[]", FieldType.NUINT32_ARRAY, new Long[]{5000l, null, 12345l});
+        Assert.assertEquals(5000, evt.getLongObjArray("nuint32[]")[0].longValue());
+        Assert.assertNull(evt.getLongObjArray("nuint32[]")[1]);
+
+        evt.set("float[]", FieldType.NFLOAT_ARRAY, new Float[]{1.11f, null, 1.12f});
+        Assert.assertEquals(1.11f, evt.getFloatObjArray("float[]")[0]);
+        Assert.assertNull(evt.getFloatObjArray("float[]")[1]);
+
     }
 
     @Override

@@ -235,19 +235,19 @@ public class BaseType {
         return count;
     }
 
-    public int getPrimitiveByteSize(FieldType ft) {
+    public static int getPrimitiveByteSize(FieldType ft) {
         switch (ft) {
             case BOOLEAN:
             case BYTE:
                 return 1;
-            case UINT16:
             case INT16:
                 return 2;
-            case UINT32:
+            case UINT16:
             case INT32:
             case FLOAT:
             case IPADDR:
                 return 4;
+            case UINT32:
             case INT64:
             case UINT64:
             case DOUBLE:
