@@ -505,11 +505,11 @@ public class Serializer {
      * @param offset the index to start writing to data
      * @return the number of bytes written to data
      */
-    public static int serializeBitSet(BitSet bitSet, byte[] data, int offset) {
+    public static int serializeBitSet(BitSet bitSet, int arrayLength, byte[] data, int offset) {
         int offsetStart = offset;
-        offset += serializeINT16((short) bitSet.length(), data, offset);
+        offset += serializeINT16((short) arrayLength, data, offset);
         int lastIndex = 0;
-        for (int i = 0, c=0; i < bitSet.length(); i++,c++) {
+        for (int i = 0, c=0; i < arrayLength; i++,c++) {
             int index = i >>> 3;
             if (index != lastIndex) {
                 c = 0;
@@ -520,7 +520,7 @@ public class Serializer {
             }
         }
         // Set the offset to how many bits we had to use
-        offset += (int) Math.ceil((double) bitSet.length() / 8.0);
+        offset += (int) Math.ceil((double) arrayLength / 8.0);
         return (offset - offsetStart);
     }
 
@@ -564,7 +564,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the values
         for (byte[] a : tmp) {
             if (a != null) {
@@ -609,7 +609,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
@@ -642,7 +642,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
@@ -675,7 +675,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
@@ -708,7 +708,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
@@ -741,7 +741,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
@@ -774,7 +774,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
@@ -807,7 +807,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
@@ -840,7 +840,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
@@ -873,7 +873,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;
@@ -906,7 +906,7 @@ public class Serializer {
         }
 
         // Write the bitset first to ease with deserialization
-        offset += serializeBitSet(bitSet, bytes, offset);
+        offset += serializeBitSet(bitSet, data.length, bytes, offset);
         // Now write the float values
         System.arraycopy(tmp, 0, bytes, offset, tmpOffset);
         offset += tmpOffset;

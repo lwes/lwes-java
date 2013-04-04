@@ -41,7 +41,7 @@ public class SerializerTest {
         DeserializerState ds = new DeserializerState();
         int offset = 0;
         byte[] bytes = new byte[25];
-        Serializer.serializeBitSet(bitSet, bytes, offset);
+        Serializer.serializeBitSet(bitSet, 1, bytes, offset);
         BitSet dsbs = Deserializer.deserializeBitSet(ds, bytes);
         Assert.assertFalse(dsbs.get(0));
     }
@@ -55,7 +55,7 @@ public class SerializerTest {
         DeserializerState ds = new DeserializerState();
         int offset = 0;
         byte[] bytes = new byte[25];
-        Serializer.serializeBitSet(bitSet, bytes, offset);
+        Serializer.serializeBitSet(bitSet, 5, bytes, offset);
         BitSet dsbs = Deserializer.deserializeBitSet(ds, bytes);
         Assert.assertEquals(2, dsbs.cardinality());
         Assert.assertFalse(dsbs.get(0));
@@ -74,7 +74,7 @@ public class SerializerTest {
         DeserializerState ds = new DeserializerState();
         int offset = 0;
         byte[] bytes = new byte[25];
-        Serializer.serializeBitSet(bitSet, bytes, offset);
+        Serializer.serializeBitSet(bitSet, 15, bytes, offset);
 
         BitSet dsbs = Deserializer.deserializeBitSet(ds, bytes);
         Assert.assertEquals(3, dsbs.cardinality());

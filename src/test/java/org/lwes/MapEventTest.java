@@ -17,6 +17,22 @@ public class MapEventTest extends EventTest {
     private static transient Log log = LogFactory.getLog(MapEventTest.class);
 
     @Test
+    public void mapEventWithFullNINT32_ARRAY() {
+        final MapEvent event = new MapEvent();
+        event.set("nint32[]", FieldType.NINT32_ARRAY, new Integer[] { 3 });
+        System.out.println(event);
+        event.serialize();
+    }
+
+    @Test
+    public void mapEventWithNINT32_ARRAY() {
+        final MapEvent event = new MapEvent();
+        event.set("nint32[]", FieldType.NINT32_ARRAY, new Integer[] { null });
+        System.out.println(event);
+        event.serialize();
+    }
+
+    @Test
     public void testNullableArrays() {
         Event evt = new MapEvent("Event");
 
