@@ -11,9 +11,11 @@ package org.lwes;
 
 import java.math.BigInteger;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.lwes.util.IPAddress;
 
@@ -64,8 +66,9 @@ public enum FieldType {
     private final boolean array;
     private final Object defaultValue;
     private static final FieldType[] TYPES_BY_TOKEN = new FieldType[256];
-    private static final Map<String, FieldType> TYPES_BY_NAME = new HashMap<String, FieldType>();
-    private static final Map<FieldType, FieldType> COMPONENTS = new EnumMap<FieldType, FieldType>(FieldType.class);
+    private static final Map<String, FieldType>    TYPES_BY_NAME;
+    private static final Map<FieldType, FieldType> COMPONENTS;
+    private static final Set<FieldType>            NULLABLE_ARRAY_TYPES;
 
     private FieldType(int token, String name) {
         this(token, name, null);
@@ -79,6 +82,9 @@ public enum FieldType {
     }
 
     static {
+        TYPES_BY_NAME        = new HashMap<String, FieldType>();
+        COMPONENTS           = new EnumMap<FieldType, FieldType>(FieldType.class);
+        NULLABLE_ARRAY_TYPES = EnumSet.noneOf(FieldType.class);
         for (FieldType type : values()) {
             TYPES_BY_TOKEN[type.token & 0xff] = type;
             TYPES_BY_NAME.put(type.name, type);
@@ -90,6 +96,10 @@ public enum FieldType {
               name = name.replaceFirst("^N", "");
               name = name.replace("IP_ADDR", "IPADDR");  // due to formatting inconsistency
               COMPONENTS.put(type, valueOf(name));
+              
+              if (type.name().startsWith("N")) {
+                NULLABLE_ARRAY_TYPES.add(type);
+              }
             }
         }
     }
@@ -116,10 +126,7 @@ public enum FieldType {
     }
 
     public boolean isNullableArray() {
-        return (this == NUINT16_ARRAY || this == NDOUBLE_ARRAY || this == NFLOAT_ARRAY ||
-                this == NUINT64_ARRAY || this == NBOOLEAN_ARRAY || this == NBYTE_ARRAY ||
-                this == NUINT32_ARRAY || this == NINT64_ARRAY || this == NSTRING_ARRAY ||
-                this == NINT16_ARRAY || this == NINT32_ARRAY);
+        return NULLABLE_ARRAY_TYPES.contains(this);
     }
 
     public boolean isArray() {
@@ -131,36 +138,22 @@ public enum FieldType {
     }
 
     public FieldType getNullableArrayType() {
-        switch (this) {
-            case BOOLEAN:
-                return NBOOLEAN_ARRAY;
-            case BYTE:
-                return NBYTE_ARRAY;
-            case DOUBLE:
-                return NDOUBLE_ARRAY;
-            case FLOAT:
-                return NFLOAT_ARRAY;
-            case INT16:
-                return NUINT16_ARRAY;
-            case INT32:
-                return NUINT32_ARRAY;
-            case INT64:
-                return NINT64_ARRAY;
-            case UINT16:
-                return NUINT32_ARRAY;
-            case UINT32:
-                return NINT64_ARRAY;
-            case UINT64:
-                return NUINT64_ARRAY;
-            case STRING:
-                return NSTRING_ARRAY;
+      for (Entry<FieldType,FieldType> entry : COMPONENTS.entrySet()) {
+        if (this == entry.getValue() && entry.getKey().isNullableArray()) {
+          return entry.getKey();
         }
+      }
+      if (COMPONENTS.containsKey(this)) {
+        throw new IllegalStateException(
+            "Multidimensional arrays are not supported; " + this + ".getArrayType() unsupported");
+      } else {
         throw new IllegalStateException("Unsupported type: " + this);
+      }
     }
 
     public FieldType getArrayType() {
         for (Entry<FieldType,FieldType> entry : COMPONENTS.entrySet()) {
-          if (this == entry.getValue()) {
+          if (this == entry.getValue() && ! entry.getKey().isNullableArray()) {
             return entry.getKey();
           }
         }
