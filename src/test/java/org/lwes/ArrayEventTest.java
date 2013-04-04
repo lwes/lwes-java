@@ -285,6 +285,10 @@ public final class ArrayEventTest extends EventTest {
         Assert.assertEquals(5000000000l, retrievedArray[0].longValue());
         Assert.assertNull(evt.getLongObjArray("nint64[]")[1]);
 
+        evt.set("nuint16[]", FieldType.NUINT16_ARRAY, new Integer[]{5000, null, 8675});
+        Assert.assertEquals(5000, evt.getIntegerObjArray("nuint16[]")[0].intValue());
+        Assert.assertNull(evt.getIntegerObjArray("nuint16[]")[1]);
+
         evt.set("nint16[]", FieldType.NINT16_ARRAY, new Short[]{5000, null, 8675});
         Assert.assertEquals(5000, evt.getShortObjArray("nint16[]")[0].shortValue());
         Assert.assertNull(evt.getShortObjArray("nint16[]")[1]);

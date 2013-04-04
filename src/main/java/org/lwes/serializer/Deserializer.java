@@ -558,30 +558,14 @@ public class Deserializer {
         return rtn;
     }
 
-    public static Long[] deserializeNLongArray(DeserializerState state, byte[] bytes) {
-        // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
-        BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
-        Long[] rtn = new Long[length];
-        for (int i = 0; i < length; i++) {
-            if (bs.get(i)) {
-                rtn[i] = deserializeINT64(state, bytes);
-            }
-            else {
-                rtn[i] = null;
-            }
-        }
-        return rtn;
-    }
-
-    public static Integer[] deserializeNIntegerArray(DeserializerState state, byte[] bytes) {
+    public static Integer[] deserializeNUInt16Array(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
         int length = deserializeINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
         Integer[] rtn = new Integer[length];
         for (int i = 0; i < length; i++) {
             if (bs.get(i)) {
-                rtn[i] = deserializeINT32(state, bytes);
+                rtn[i] = deserializeUINT16(state, bytes);
             }
             else {
                 rtn[i] = null;
@@ -590,7 +574,7 @@ public class Deserializer {
         return rtn;
     }
 
-    public static Short[] deserializeNShortArray(DeserializerState state, byte[] bytes) {
+    public static Short[] deserializeNInt16Array(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
         int length = deserializeINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
@@ -606,8 +590,40 @@ public class Deserializer {
         return rtn;
     }
 
-    public static BigInteger[] deserializeNBigIntegerArray(DeserializerState state,
-                                                           byte[] bytes) {
+    public static Long[] deserializeNUInt32Array(DeserializerState state, byte[] bytes) {
+        // get the number of items in the array
+        int length = deserializeINT16(state, bytes);    // 2 bytes
+        BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
+        Long[] rtn = new Long[length];
+        for (int i = 0; i < length; i++) {
+            if (bs.get(i)) {
+                rtn[i] = deserializeUINT32(state, bytes);
+            }
+            else {
+                rtn[i] = null;
+            }
+        }
+        return rtn;
+    }
+
+    public static Integer[] deserializeNInt32Array(DeserializerState state, byte[] bytes) {
+        // get the number of items in the array
+        int length = deserializeINT16(state, bytes);    // 2 bytes
+        BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
+        Integer[] rtn = new Integer[length];
+        for (int i = 0; i < length; i++) {
+            if (bs.get(i)) {
+                rtn[i] = deserializeINT32(state, bytes);
+            }
+            else {
+                rtn[i] = null;
+            }
+        }
+        return rtn;
+    }
+
+    public static BigInteger[] deserializeNUInt64Array(DeserializerState state,
+                                                       byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
         BitSet bs = deserializeBitSet(state, bytes);
 
@@ -615,6 +631,22 @@ public class Deserializer {
         for (int i = 0; i < length; i++) {
             if (bs.get(i)) {
                 rtn[i] = deserializeUInt64ToBigInteger(state, bytes);
+            }
+            else {
+                rtn[i] = null;
+            }
+        }
+        return rtn;
+    }
+
+    public static Long[] deserializeNInt64Array(DeserializerState state, byte[] bytes) {
+        // get the number of items in the array
+        int length = deserializeINT16(state, bytes);    // 2 bytes
+        BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
+        Long[] rtn = new Long[length];
+        for (int i = 0; i < length; i++) {
+            if (bs.get(i)) {
+                rtn[i] = deserializeINT64(state, bytes);
             }
             else {
                 rtn[i] = null;
@@ -713,22 +745,24 @@ public class Deserializer {
                 return Deserializer.deserializeNDoubleArray(state, bytes);
             case NFLOAT_ARRAY:
                 return Deserializer.deserializeNFloatArray(state, bytes);
-            case NUINT32_ARRAY:
-            case NINT64_ARRAY:
-                return Deserializer.deserializeNLongArray(state, bytes);
-            case NINT32_ARRAY:
+            case NINT16_ARRAY:
+                return Deserializer.deserializeNInt16Array(state, bytes);
             case NUINT16_ARRAY:
-                return Deserializer.deserializeNIntegerArray(state, bytes);
+                return Deserializer.deserializeNUInt16Array(state, bytes);
+            case NUINT32_ARRAY:
+                return Deserializer.deserializeNUInt32Array(state, bytes);
+            case NINT64_ARRAY:
+                return Deserializer.deserializeNInt64Array(state, bytes);
+            case NINT32_ARRAY:
+                return Deserializer.deserializeNInt32Array(state, bytes);
             case NBOOLEAN_ARRAY:
                 return Deserializer.deserializeNBooleanArray(state, bytes);
             case NSTRING_ARRAY:
                 return Deserializer.deserializeNStringArray(state, bytes, encoding);
             case NUINT64_ARRAY:
-                return Deserializer.deserializeNBigIntegerArray(state, bytes);
+                return Deserializer.deserializeNUInt64Array(state, bytes);
             case NBYTE_ARRAY:
                 return Deserializer.deserializeNByteArray(state, bytes);
-            case NINT16_ARRAY:
-                return Deserializer.deserializeNShortArray(state, bytes);
         }
         throw new EventSystemException("Unrecognized type: " + type);
     }

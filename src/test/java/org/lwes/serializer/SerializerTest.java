@@ -35,6 +35,18 @@ public class SerializerTest {
     private static final int N = 100;
 
     @Test
+    public void testSerializeBitSetOneNullMember() {
+        BitSet bitSet = new BitSet(1);
+
+        DeserializerState ds = new DeserializerState();
+        int offset = 0;
+        byte[] bytes = new byte[25];
+        Serializer.serializeBitSet(bitSet, bytes, offset);
+        BitSet dsbs = Deserializer.deserializeBitSet(ds, bytes);
+        Assert.assertFalse(dsbs.get(0));
+    }
+
+    @Test
     public void testSerializeBitSetOneByte() {
         BitSet bitSet = new BitSet(5);
         bitSet.set(1);
@@ -72,6 +84,23 @@ public class SerializerTest {
         Assert.assertFalse(dsbs.get(3));
         Assert.assertTrue(dsbs.get(14));
     }
+
+    @Test
+    public void testSerializeOneInt32NullArray() {
+        Integer[] array = new Integer[]{
+                null
+        };
+
+        byte[] bytes = new byte[2 + (4 * array.length) + 2 + (2 * array.length)];
+        int offset = 0;
+        Serializer.serializeNInt32Array(array, bytes, offset);
+        DeserializerState state = new DeserializerState();
+        Integer[] dsIntegers = Deserializer.deserializeNInt32Array(state, bytes);
+        Assert.assertNotNull(dsIntegers);
+        Assert.assertEquals(1, dsIntegers.length);
+        Assert.assertNull(dsIntegers[0]);
+    }
+
     @Test
     public void testSerializeNBigIntegerArray() {
         BigInteger[] array = new BigInteger[]{
@@ -89,12 +118,12 @@ public class SerializerTest {
         // 2 + 2 + 1 + (8*4)
         Assert.assertEquals(37, num);
         DeserializerState state = new DeserializerState();
-        BigInteger[] rtn = Deserializer.deserializeNBigIntegerArray(state, bytes);
+        BigInteger[] rtn = Deserializer.deserializeNUInt64Array(state, bytes);
         Assert.assertNotNull(rtn);
         Assert.assertEquals(new BigInteger("888888"), rtn[0]);
-        Assert.assertEquals(new BigInteger("0980398012830"),rtn[1]);
+        Assert.assertEquals(new BigInteger("0980398012830"), rtn[1]);
         Assert.assertNull(rtn[2]);
-        Assert.assertEquals(new BigInteger("90238109283"),rtn[3]);
+        Assert.assertEquals(new BigInteger("90238109283"), rtn[3]);
         Assert.assertNull(rtn[4]);
         Assert.assertEquals(new BigInteger("9812398123"), rtn[5]);
     }
@@ -184,9 +213,9 @@ public class SerializerTest {
 
         byte[] bytes = new byte[64];
         int offset = 0;
-        Serializer.serializeNLongArray(array, bytes, offset);
+        Serializer.serializeNInt64Array(array, bytes, offset);
         DeserializerState state = new DeserializerState();
-        Long[] dsLongs = Deserializer.deserializeNLongArray(state, bytes);
+        Long[] dsLongs = Deserializer.deserializeNInt64Array(state, bytes);
         Assert.assertNotNull(dsLongs);
         Assert.assertEquals(4, dsLongs.length);
         Assert.assertEquals(123456l, (long) dsLongs[0]);
@@ -203,9 +232,9 @@ public class SerializerTest {
 
         byte[] bytes = new byte[2 + (4 * array.length) + 2 + (2 * array.length)];
         int offset = 0;
-        Serializer.serializeNIntegerArray(array, bytes, offset);
+        Serializer.serializeNInt32Array(array, bytes, offset);
         DeserializerState state = new DeserializerState();
-        Integer[] dsIntegers = Deserializer.deserializeNIntegerArray(state, bytes);
+        Integer[] dsIntegers = Deserializer.deserializeNInt32Array(state, bytes);
         Assert.assertNotNull(dsIntegers);
         Assert.assertEquals(4, dsIntegers.length);
         Assert.assertEquals(12, (int) dsIntegers[0]);
@@ -222,9 +251,9 @@ public class SerializerTest {
 
         byte[] bytes = new byte[2 + (4 * array.length) + 2 + (2 * array.length)];
         int offset = 0;
-        Serializer.serializeNShortArray(array, bytes, offset);
+        Serializer.serializeNInt16Array(array, bytes, offset);
         DeserializerState state = new DeserializerState();
-        Short[] dsShorts = Deserializer.deserializeNShortArray(state, bytes);
+        Short[] dsShorts = Deserializer.deserializeNInt16Array(state, bytes);
         Assert.assertNotNull(dsShorts);
         Assert.assertEquals(4, dsShorts.length);
         Assert.assertEquals(12, (short) dsShorts[0]);
