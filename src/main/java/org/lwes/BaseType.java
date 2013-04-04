@@ -235,25 +235,10 @@ public class BaseType {
         return count;
     }
 
+    /** @use FieldType.getConstantSize() */
+    @Deprecated
     public static int getPrimitiveByteSize(FieldType ft) {
-        switch (ft) {
-            case BOOLEAN:
-            case BYTE:
-                return 1;
-            case UINT16:
-            case INT16:
-                return 2;
-            case UINT32:
-            case INT32:
-            case FLOAT:
-            case IPADDR:
-                return 4;
-            case INT64:
-            case UINT64:
-            case DOUBLE:
-                return 8;
-        }
-        throw new IllegalArgumentException("Unknown size of BaseType " + ft.name);
+        return ft.getConstantSize();
     }
 
     public int getByteSize(short encoding) {
