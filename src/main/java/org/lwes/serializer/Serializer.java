@@ -507,7 +507,7 @@ public class Serializer {
      */
     public static int serializeBitSet(BitSet bitSet, int arrayLength, byte[] data, int offset) {
         int offsetStart = offset;
-        offset += serializeINT16((short) arrayLength, data, offset);
+        offset += serializeUINT16((short) arrayLength, data, offset);
         int lastIndex = 0;
         for (int i = 0, c=0; i < arrayLength; i++,c++) {
             int index = i >>> 3;
@@ -539,7 +539,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         List<byte[]> tmp = new ArrayList<byte[]>(data.length);
@@ -589,7 +589,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[4 * data.length];
@@ -622,7 +622,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[data.length];
@@ -655,7 +655,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[data.length];
@@ -688,7 +688,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[8 * data.length];
@@ -721,7 +721,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[2 * data.length];
@@ -754,7 +754,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[2 * data.length];
@@ -787,7 +787,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[4 * data.length];
@@ -820,7 +820,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[4 * data.length];
@@ -853,7 +853,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[8 * data.length];
@@ -886,7 +886,7 @@ public class Serializer {
         int offsetStart = offset;
 
         // Number of items in the array
-        numbytes = serializeINT16((short) data.length, bytes, offset);
+        numbytes = serializeUINT16((short) data.length, bytes, offset);
         offset += numbytes;
 
         byte[] tmp = new byte[8 * data.length];

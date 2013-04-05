@@ -493,7 +493,7 @@ public class Deserializer {
 
     public static BitSet deserializeBitSet(DeserializerState myState, byte[] bytes) {
 
-        int size = deserializeINT16(myState, bytes);
+        int size = deserializeUINT16(myState, bytes);
         int numBytes = (int) Math.ceil((double) size / 8.0);
         BitSet bitSet = new BitSet(size);
         int offset = myState.currentIndex();
@@ -528,7 +528,7 @@ public class Deserializer {
 
     public static Float[] deserializeNFloatArray(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
+        int length = deserializeUINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
         Float[] rtn = new Float[length];
         for (int i = 0; i < length; i++) {
@@ -544,7 +544,7 @@ public class Deserializer {
 
     public static Double[] deserializeNDoubleArray(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
+        int length = deserializeUINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
         Double[] rtn = new Double[length];
         for (int i = 0; i < length; i++) {
@@ -560,7 +560,7 @@ public class Deserializer {
 
     public static Integer[] deserializeNUInt16Array(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
+        int length = deserializeUINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
         Integer[] rtn = new Integer[length];
         for (int i = 0; i < length; i++) {
@@ -576,7 +576,7 @@ public class Deserializer {
 
     public static Short[] deserializeNInt16Array(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
+        int length = deserializeUINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
         Short[] rtn = new Short[length];
         for (int i = 0; i < length; i++) {
@@ -592,7 +592,7 @@ public class Deserializer {
 
     public static Long[] deserializeNUInt32Array(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
+        int length = deserializeUINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
         Long[] rtn = new Long[length];
         for (int i = 0; i < length; i++) {
@@ -608,7 +608,7 @@ public class Deserializer {
 
     public static Integer[] deserializeNInt32Array(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
+        int length = deserializeUINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
         Integer[] rtn = new Integer[length];
         for (int i = 0; i < length; i++) {
@@ -641,7 +641,7 @@ public class Deserializer {
 
     public static Long[] deserializeNInt64Array(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
+        int length = deserializeUINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
         Long[] rtn = new Long[length];
         for (int i = 0; i < length; i++) {
@@ -657,7 +657,7 @@ public class Deserializer {
 
     public static Boolean[] deserializeNBooleanArray(DeserializerState state, byte[] bytes) {
         // get the number of items in the array
-        int length = deserializeINT16(state, bytes);    // 2 bytes
+        int length = deserializeUINT16(state, bytes);    // 2 bytes
         BitSet bs = deserializeBitSet(state, bytes);    // 2 bytes * length worst case
         Boolean[] rtn = new Boolean[length];
         for (int i = 0; i < length; i++) {
