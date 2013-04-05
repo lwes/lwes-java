@@ -69,6 +69,7 @@ public enum FieldType {
     private static final Map<String, FieldType>    TYPES_BY_NAME;
     private static final Map<FieldType, FieldType> COMPONENTS;
     private static final Set<FieldType>            NULLABLE_ARRAY_TYPES;
+    private static final Map<FieldType,Integer>    CONSTANT_SIZES;
 
     private FieldType(int token, String name) {
         this(token, name, null);
@@ -85,6 +86,7 @@ public enum FieldType {
         TYPES_BY_NAME        = new HashMap<String, FieldType>();
         COMPONENTS           = new EnumMap<FieldType, FieldType>(FieldType.class);
         NULLABLE_ARRAY_TYPES = EnumSet.noneOf(FieldType.class);
+        CONSTANT_SIZES       = new EnumMap<FieldType,Integer>(FieldType.class);
         for (FieldType type : values()) {
             TYPES_BY_TOKEN[type.token & 0xff] = type;
             TYPES_BY_NAME.put(type.name, type);
@@ -102,6 +104,17 @@ public enum FieldType {
               }
             }
         }
+        CONSTANT_SIZES.put(BOOLEAN, 1);
+        CONSTANT_SIZES.put(BYTE,    1);
+        CONSTANT_SIZES.put(INT16,   2);
+        CONSTANT_SIZES.put(UINT16,  2);
+        CONSTANT_SIZES.put(FLOAT,   4);
+        CONSTANT_SIZES.put(INT32,   4);
+        CONSTANT_SIZES.put(IPADDR,  4);
+        CONSTANT_SIZES.put(UINT32,  4);
+        CONSTANT_SIZES.put(INT64,   8);
+        CONSTANT_SIZES.put(UINT64,  8);
+        CONSTANT_SIZES.put(DOUBLE,  8);
     }
 
     public static FieldType byToken(byte token) {
@@ -175,22 +188,15 @@ public enum FieldType {
     }
 
     public boolean isConstantSize() {
-        switch (this) {
-            case BOOLEAN:
-            case BYTE:
-            case DOUBLE:
-            case FLOAT:
-            case INT16:
-            case INT32:
-            case INT64:
-            case IPADDR:
-            case UINT16:
-            case UINT32:
-            case UINT64:
-                return true;
-            default:
-                return false;
+      return CONSTANT_SIZES.containsKey(this);
+  }
+
+    public int getConstantSize() {
+        final Integer size = CONSTANT_SIZES.get(this);
+        if (size == null) {
+            throw new IllegalStateException("Type "+this+" does not have a constant size");
         }
+        return size;
     }
 
     public boolean isCompatibleWith(Object value) {

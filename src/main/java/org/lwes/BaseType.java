@@ -226,7 +226,7 @@ public class BaseType {
                         count += EncodedString.getBytes((String) o, Event.ENCODING_STRINGS[encoding]).length + 2;
                         break;
                     default:
-                        count += getPrimitiveByteSize(type.getComponentType());
+                        count += type.getComponentType().getConstantSize();
                         break;
 
                 }
@@ -235,33 +235,12 @@ public class BaseType {
         return count;
     }
 
-    public static int getPrimitiveByteSize(FieldType ft) {
-        switch (ft) {
-            case BOOLEAN:
-            case BYTE:
-                return 1;
-            case UINT16:
-            case INT16:
-                return 2;
-            case UINT32:
-            case INT32:
-            case FLOAT:
-            case IPADDR:
-                return 4;
-            case INT64:
-            case UINT64:
-            case DOUBLE:
-                return 8;
-        }
-        throw new IllegalArgumentException("Unknown size of BaseType " + ft.name);
-    }
-
     public int getByteSize(short encoding) {
         if (type.isNullableArray()) {
             return getNullableArrayByteSize(encoding);
         }
         else if (type.isConstantSize()) {
-            return getPrimitiveByteSize(type);
+            return type.getConstantSize();
         }
         else {
             switch (type) {
