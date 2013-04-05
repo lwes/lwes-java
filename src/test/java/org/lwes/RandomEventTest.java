@@ -143,6 +143,7 @@ public class RandomEventTest {
             case STRING_ARRAY:
             case NUINT64_ARRAY:
             case NINT16_ARRAY:
+            case NINT32_ARRAY:
                 return (Object[]) object;
             default:
                 throw new IllegalStateException("Unsupported type: " + type);
