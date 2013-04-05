@@ -1,6 +1,7 @@
 package org.lwes;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -49,7 +50,7 @@ public final class RandomEventGenerator {
         final FieldType type = FieldType.values()[random.nextInt(FieldType.values().length)];
         final Object value = createRandomValue(type);
         String name = createRandomString(minFieldNameLength, maxFieldNameLength);
-        log.debug("setting: "+name+" type "+ type+" to "+value);
+        log.debug("setting: "+name+" type "+ type+" to "+Arrays.deepToString(new Object[] { value }));
         event.set(name, type, value);
     }
 
@@ -113,6 +114,7 @@ public final class RandomEventGenerator {
             case NINT16_ARRAY:
             case INT16_ARRAY:
             case NUINT32_ARRAY:
+            case NINT32_ARRAY:
             case INT32_ARRAY:
             case NINT64_ARRAY:
             case INT64_ARRAY:

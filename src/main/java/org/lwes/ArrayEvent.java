@@ -466,19 +466,20 @@ public final class ArrayEvent extends DefaultEvent {
             case DOUBLE_ARRAY:
                 return 2 + deserializeUINT16(valueIndex) * 8;
             default:
-                // TODO -- need to get size of arrays that could have nulls...
                 // array_len + bitset_len + bitset + array
-                int size = 2;
                 DeserializerState ds = new DeserializerState();
-                ds.incr(valueIndex+2);
+                ds.incr(valueIndex+2); // array length
                 BitSet bs = Deserializer.deserializeBitSet(ds, bytes);
-                size += Math.ceil(bs.length()/8.0);
-                for (int i=0; i<bs.length(); i++) {
-                    if (bs.get(i)) {
-                        size += BaseType.getPrimitiveByteSize(type.getComponentType());
+                if (type.getComponentType().isConstantSize()) {
+                    ds.incr(type.getComponentType().getConstantSize() * bs.cardinality());
+                } else {
+                    // If the field is not constant-width, we must walk it.  If there are N
+                    // bits set in the BitSet, consume N objects of the component type.
+                    for (int i=0, n=bs.cardinality(); i<n; i++) {
+                        ds.incr(getValueByteSize(type.getComponentType(), ds.currentIndex()));
                     }
                 }
-                return size;
+                return ds.currentIndex() - valueIndex;
         }
         //throw new IllegalStateException("Unrecognized type: " + type);
     }
