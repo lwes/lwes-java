@@ -226,7 +226,7 @@ public class BaseType {
                         count += EncodedString.getBytes((String) o, Event.ENCODING_STRINGS[encoding]).length + 2;
                         break;
                     default:
-                        count += getPrimitiveByteSize(type.getComponentType());
+                        count += type.getComponentType().getConstantSize();
                         break;
 
                 }
@@ -235,18 +235,12 @@ public class BaseType {
         return count;
     }
 
-    /** @use FieldType.getConstantSize() */
-    @Deprecated
-    public static int getPrimitiveByteSize(FieldType ft) {
-        return ft.getConstantSize();
-    }
-
     public int getByteSize(short encoding) {
         if (type.isNullableArray()) {
             return getNullableArrayByteSize(encoding);
         }
         else if (type.isConstantSize()) {
-            return getPrimitiveByteSize(type);
+            return type.getConstantSize();
         }
         else {
             switch (type) {
