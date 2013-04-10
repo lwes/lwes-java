@@ -465,7 +465,17 @@ public final class ArrayEvent extends DefaultEvent {
             case UINT64_ARRAY:
             case DOUBLE_ARRAY:
                 return 2 + deserializeUINT16(valueIndex) * 8;
-            default:
+            case NBOOLEAN_ARRAY:
+            case NBYTE_ARRAY:
+            case NDOUBLE_ARRAY:
+            case NFLOAT_ARRAY:
+            case NINT16_ARRAY:
+            case NINT32_ARRAY:
+            case NINT64_ARRAY:
+            case NSTRING_ARRAY:
+            case NUINT16_ARRAY:
+            case NUINT32_ARRAY:
+            case NUINT64_ARRAY:
                 // array_len + bitset_len + bitset + array
                 DeserializerState ds = new DeserializerState();
                 ds.incr(valueIndex+2); // array length
@@ -481,7 +491,7 @@ public final class ArrayEvent extends DefaultEvent {
                 }
                 return ds.currentIndex() - valueIndex;
         }
-        //throw new IllegalStateException("Unrecognized type: " + type);
+        throw new IllegalStateException("Unrecognized type: " + type);
     }
 
     /**
