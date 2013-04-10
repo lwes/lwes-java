@@ -422,7 +422,7 @@ public final class ArrayEvent extends DefaultEvent {
         return (((bytes[index] & 0xff) << 8) | (bytes[index + 1] & 0xff));
     }
 
-    private int getValueByteSize(FieldType type, int valueIndex) {
+    public int getValueByteSize(FieldType type, int valueIndex) {
         switch (type) {
             case BOOLEAN:
             case BYTE:

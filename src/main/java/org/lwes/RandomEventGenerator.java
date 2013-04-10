@@ -17,7 +17,7 @@ public final class RandomEventGenerator {
     private final Random random;
     public int minEventNameLength = 1, maxEventNameLength = 20;
     public int minFieldCount = 0, maxFieldCount = 20;
-    public int minFieldNameLength = 1, maxFieldNameLength = 20;
+    public int minFieldNameLength = 2, maxFieldNameLength = 20;
     public int minStringValueLength = 0, maxStringValueLength = 30;
     public int minArrayValueLength = 0, maxArrayValueLength = 20;
 
@@ -47,7 +47,7 @@ public final class RandomEventGenerator {
     }
 
     public void fillRandomField(Event event) {
-        final FieldType type = FieldType.values()[random.nextInt(FieldType.values().length)];
+        final FieldType type = FieldType.fixedValues()[random.nextInt(FieldType.fixedValues().length)];
         final Object value = createRandomValue(type);
         String name = createRandomString(minFieldNameLength, maxFieldNameLength);
         log.debug("setting: "+name+" type "+ type+" to "+Arrays.deepToString(new Object[] { value }));

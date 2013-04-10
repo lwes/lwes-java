@@ -302,10 +302,55 @@ public final class ArrayEventTest extends EventTest {
         Assert.assertNull(evt.getByteObjArray("byte[]")[1]);
         Assert.assertEquals(0x33, evt.getByteObjArray("byte[]")[2].byteValue());
 
+        evt.set("Double[]", FieldType.NDOUBLE_ARRAY, new Double[]{
+                0.15392470038762496, null, 0.8454572482640883, 0.4266316445138164, 0.9235260958754714
+        });
+        Assert.assertEquals(0.15392470038762496, evt.getDoubleObjArray("Double[]")[0]);
+        Assert.assertNull(evt.getDoubleObjArray("Double[]")[1]);
+
+        evt.set("revjhdttokuc", FieldType.STRING,
+                "kzukphbcbghywpklojzauzmyapwdmmqctcxeoqbvzwzltdzanksdxzfkrgvkemsbiqxnjqdivsszxetvytxocrukyqiu");
+        Assert.assertEquals(
+                "kzukphbcbghywpklojzauzmyapwdmmqctcxeoqbvzwzltdzanksdxzfkrgvkemsbiqxnjqdivsszxetvytxocrukyqiu",
+                evt.getString("revjhdttokuc"));
+
         evt.set("float[]", FieldType.NFLOAT_ARRAY, new Float[]{1.11f, null, 1.12f});
         Assert.assertEquals(1.11f, evt.getFloatObjArray("float[]")[0]);
         Assert.assertNull(evt.getFloatObjArray("float[]")[1]);
 
+        evt.serialize();
+    }
+
+    @Test
+    public void testResettingField() {
+        ArrayEvent evt = new ArrayEvent("Event");
+        Short[] ar = new Short[]{1, null, 2};
+
+        evt.set("nint16[]", FieldType.NINT16_ARRAY, ar);
+        Assert.assertEquals(1, evt.getShortObjArray("nint16[]")[0].shortValue());
+        Assert.assertNull(evt.getShortObjArray("nint16[]")[1]);
+
+        evt.set("nint16[]", FieldType.NINT16_ARRAY, new Short[]{null});
+        log.debug("value: " + evt.getShortObjArray("nint16[]")[0]);
+        Assert.assertNull(evt.getShortObjArray("nint16[]")[0]);
+
+        evt.serialize();
+    }
+
+    @Test
+    public void testStringReset() {
+        ArrayEvent evt = new ArrayEvent("Event");
+        evt.set("a", FieldType.STRING, "zzzzzz");
+        Assert.assertEquals("zzzzzz", evt.get("a"));
+        evt.set("a", FieldType.STRING, "ab");
+        Assert.assertEquals("ab", evt.get("a"));
+
+        evt.set("b", FieldType.STRING_ARRAY, new String[]{"a", "b"});
+        Assert.assertEquals("b", evt.getStringArray("b")[1]);
+        evt.set("b", FieldType.STRING_ARRAY, new String[]{"a", "b", "c"});
+        Assert.assertEquals("c", evt.getStringArray("b")[2]);
+
+        evt.serialize();
     }
 
     @Override
