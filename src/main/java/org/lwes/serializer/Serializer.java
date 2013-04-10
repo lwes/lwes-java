@@ -509,7 +509,8 @@ public class Serializer {
         int offsetStart = offset;
         offset += serializeUINT16((short) arrayLength, data, offset);
         int lastIndex = 0;
-        for (int i = 0, c=0; i < arrayLength; i++,c++) {
+        final int paddedBitSetLength = 8 * (int) Math.ceil(arrayLength/ 8.0);
+        for (int i = 0, c=0; i < paddedBitSetLength; i++,c++) {
             int index = i >>> 3;
             if (index != lastIndex) {
                 c = 0;
@@ -517,10 +518,13 @@ public class Serializer {
             }
             if (bitSet.get(i)) {
                 data[offset + index] |= (1 << c);
+            } else {
+                data[offset + index] &= ~(1 << c);
             }
         }
         // Set the offset to how many bits we had to use
-        offset += (int) Math.ceil((double) arrayLength / 8.0);
+        offset += (int) Math.ceil(arrayLength / 8.0);
+        assert Deserializer.deserializeBitSet(new DeserializerState(offsetStart), data).equals(bitSet);
         return (offset - offsetStart);
     }
 
