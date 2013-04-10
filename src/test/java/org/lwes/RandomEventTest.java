@@ -46,7 +46,6 @@ public class RandomEventTest {
 
             // Ensure that the random events are equal.
             for (int i = 1; i < E; ++i) {
-                log.debug(randomEvents[0].getEventName());
                 assertEquals(randomEvents[0], randomEvents[i]);
             }
 

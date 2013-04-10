@@ -50,7 +50,10 @@ public final class RandomEventGenerator {
         final FieldType type = FieldType.fixedValues()[random.nextInt(FieldType.fixedValues().length)];
         final Object value = createRandomValue(type);
         String name = createRandomString(minFieldNameLength, maxFieldNameLength);
-        log.debug("setting: "+name+" type "+ type+" to "+Arrays.deepToString(new Object[] { value }));
+        if (log.isDebugEnabled()) {
+            log.debug("setting: " + name + " type " + type + " to " +
+                      Arrays.deepToString(new Object[]{value}));
+        }
         event.set(name, type, value);
     }
 

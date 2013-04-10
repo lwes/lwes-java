@@ -331,7 +331,6 @@ public final class ArrayEventTest extends EventTest {
         Assert.assertNull(evt.getShortObjArray("nint16[]")[1]);
 
         evt.set("nint16[]", FieldType.NINT16_ARRAY, new Short[]{null});
-        log.debug("value: " + evt.getShortObjArray("nint16[]")[0]);
         Assert.assertNull(evt.getShortObjArray("nint16[]")[0]);
 
         evt.serialize();
