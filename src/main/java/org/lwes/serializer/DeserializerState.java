@@ -30,6 +30,14 @@ public class DeserializerState
 	}
 
 	/**
+	 * Constructor
+	 */
+	public DeserializerState(int i)
+	{
+		index = i;
+	}
+
+	/**
 	 * Increments the index into a byte array, by a specified amount
 	 * and returns the new index value.
 	 * 
