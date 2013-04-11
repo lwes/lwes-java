@@ -49,7 +49,10 @@ public final class RandomEventGenerator {
     public void fillRandomField(Event event) {
         final FieldType type = FieldType.fixedValues()[random.nextInt(FieldType.fixedValues().length)];
         final Object value = createRandomValue(type);
-        String name = createRandomString(minFieldNameLength, maxFieldNameLength);
+        String name;
+        do {
+          name = createRandomString(minFieldNameLength, maxFieldNameLength);
+        } while ("enc".equals(name)); // avoid colliding with the special ENCODING field
         if (log.isDebugEnabled()) {
             log.debug("setting: " + name + " type " + type + " to " +
                       Arrays.deepToString(new Object[]{value}));
