@@ -67,22 +67,33 @@ public class EventTemplateDB {
      * System Attributes
      */
     private Map<String, Map<String, BaseType>> events = null;
-    private Map<String,String> eventComments = null;
+    private Map<String, String> eventComments = null;
     private Map<FieldType, BaseType> knownTypes = null;
     private Map<String, BaseType> reservedWords = null;
     private String metaInfoComments = null;
+
+    // To reduce memory footprint, set to false
+    private boolean storeComments = true;
 
     /**
      * This is the EventTemplateDB constructor.
      */
     public EventTemplateDB() {
         events = new ConcurrentHashMap<String, Map<String, BaseType>>();
-	eventComments = new ConcurrentHashMap<String,String>();
+        eventComments = new ConcurrentHashMap<String, String>();
         knownTypes = new ConcurrentHashMap<FieldType, BaseType>();
         reservedWords = new ConcurrentHashMap<String, BaseType>();
         for (FieldType type : FieldType.values()) {
             knownTypes.put(type, new BaseType(type, type.getDefaultValue()));
         }
+    }
+
+    public boolean isStoreComments() {
+        return storeComments;
+    }
+
+    public void setStoreComments(boolean storeComments) {
+        this.storeComments = storeComments;
     }
 
     /**
@@ -140,7 +151,7 @@ public class EventTemplateDB {
             }
             else if (getESFFile() != null) {
                 parser = new ESFParser(
-                    new java.io.FileInputStream(getESFFile()));
+                        new java.io.FileInputStream(getESFFile()));
             }
             else {
                 return false;
@@ -171,21 +182,21 @@ public class EventTemplateDB {
         return true;
     }
 
-   /**
+    /**
      * Add an Event to the EventTemplateDB
      *
      * @param anEventName the name of the Event to add
      * @return true if the event was added, false if it was not
      */
     public boolean addEvent(String anEventName) {
-	return addEvent(anEventName,null);
+        return addEvent(anEventName, null);
     }
-    
+
     /**
      * Add an Event to the EventTemplateDB
      *
      * @param anEventName the name of the Event to add
-     * @param comment a comment associated with the event
+     * @param comment     a comment associated with the event
      * @return true if the event was added, false if it was not
      */
     public synchronized boolean addEvent(String anEventName, String comment) {
@@ -195,7 +206,7 @@ public class EventTemplateDB {
 
         try {
             if (anEventName.equals(META_EVENT_INFO)) {
-		addMetaComment(comment);
+                addMetaComment(comment);
                 return true;
             }
 
@@ -217,9 +228,9 @@ public class EventTemplateDB {
             }
 
             events.put(anEventName, evtHash);
-	    if(comment!=null){
-		eventComments.put(anEventName,comment);
-	    }
+            if (comment != null && storeComments) {
+                eventComments.put(anEventName, comment);
+            }
         }
         catch (Exception e) {
             log.warn("Error adding event to EventTemplateDB", e);
@@ -254,11 +265,11 @@ public class EventTemplateDB {
                                                   Integer size,
                                                   boolean required,
                                                   Object defaultValue) {
-	return addEventAttribute(anEventName,anAttributeName,anAttributeType,
-		size,required,defaultValue, null) ;
-	
+        return addEventAttribute(anEventName, anAttributeName, anAttributeType,
+                                 size, required, defaultValue, null);
+
     }
-    
+
     /**
      * Add an attribute to an Event in the EventTemplateDB
      *
@@ -276,7 +287,7 @@ public class EventTemplateDB {
                                                   Integer size,
                                                   boolean required,
                                                   Object defaultValue,
-						  String comment) {
+                                                  String comment) {
 
         if (anEventName == null || anAttributeName == null || anAttributeType == null) {
             return false;
@@ -288,9 +299,12 @@ public class EventTemplateDB {
                     BaseType bt = knownTypes.get(anAttributeType).cloneBaseType();
                     bt.setRequired(required);
                     bt.setSizeRestriction(size);
-		    bt.setComment(comment);
+                    bt.setComment(comment);
                     if (defaultValue != null) {
-                        bt.setDefaultValue(canonicalizeDefaultValue(anEventName, anAttributeName, anAttributeType, defaultValue));
+                        bt.setDefaultValue(canonicalizeDefaultValue(anEventName,
+                                                                    anAttributeName,
+                                                                    anAttributeType,
+                                                                    defaultValue));
                     }
                     reservedWords.put(anAttributeName, bt);
                     return true;
@@ -317,10 +331,13 @@ public class EventTemplateDB {
                 if (checkForType(anAttributeType)) {
                     BaseType bt = knownTypes.get(anAttributeType).cloneBaseType();
                     bt.setRequired(required);
-		    bt.setComment(comment);
+                    bt.setComment(comment);
                     bt.setSizeRestriction(size);
                     if (defaultValue != null) {
-                        bt.setDefaultValue(canonicalizeDefaultValue(anEventName, anAttributeName, bt.getType(), defaultValue));
+                        bt.setDefaultValue(canonicalizeDefaultValue(anEventName,
+                                                                    anAttributeName,
+                                                                    bt.getType(),
+                                                                    defaultValue));
                     }
                     evtHash.put(anAttributeName, bt);
                     return true;
@@ -349,16 +366,19 @@ public class EventTemplateDB {
     /**
      * This method checks the type and range of a default value (from the ESF).
      * It returns the desired form, if allowed.
-     * 
+     *
      * @param type     which controls the desired object type of the value
      * @param esfValue which should be converted to fit 'type'
      * @return a value suitable for storing in a BaseType of this 'type'
      * @throws EventSystemException if the value is not acceptable for the type.
      */
     @SuppressWarnings("cast")
-    private Object canonicalizeDefaultValue(String eventName, String attributeName, FieldType type, Object esfValue) throws EventSystemException {
+    private Object canonicalizeDefaultValue(String eventName,
+                                            String attributeName,
+                                            FieldType type,
+                                            Object esfValue) throws EventSystemException {
         try {
-            switch(type) {
+            switch (type) {
                 case BOOLEAN:
                     return (Boolean) esfValue;
                 case BYTE:
@@ -372,15 +392,20 @@ public class EventTemplateDB {
                     return ((Number) esfValue).intValue();
                 case UINT16:
                     checkRange(eventName, attributeName, esfValue, 0, 0x10000);
-                    return ((Number) esfValue).intValue()  & 0xffff;
+                    return ((Number) esfValue).intValue() & 0xffff;
                 case UINT32:
                     checkRange(eventName, attributeName, esfValue, 0, 0x100000000L);
                     return ((Number) esfValue).longValue() & 0xffffffff;
-                case FLOAT:   return ((Number) esfValue).floatValue();
-                case DOUBLE:  return ((Number) esfValue).doubleValue();
-                case STRING:  return ((String) esfValue);
-                case INT64:   {
-                    if (esfValue instanceof Long) return esfValue;
+                case FLOAT:
+                    return ((Number) esfValue).floatValue();
+                case DOUBLE:
+                    return ((Number) esfValue).doubleValue();
+                case STRING:
+                    return ((String) esfValue);
+                case INT64: {
+                    if (esfValue instanceof Long) {
+                        return esfValue;
+                    }
                     final BigInteger bi = (BigInteger) esfValue;
                     if (bi.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0 ||
                         bi.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
@@ -391,10 +416,13 @@ public class EventTemplateDB {
                     return bi.longValue();
                 }
                 case UINT64: {
-                    if (esfValue instanceof BigInteger) return esfValue;
+                    if (esfValue instanceof BigInteger) {
+                        return esfValue;
+                    }
                     return BigInteger.valueOf(((Number) esfValue).longValue());
                 }
-                case IPADDR:  return ((IPAddress) esfValue);
+                case IPADDR:
+                    return ((IPAddress) esfValue);
                 case BOOLEAN_ARRAY:
                 case BYTE_ARRAY:
                 case DOUBLE_ARRAY:
@@ -410,14 +438,18 @@ public class EventTemplateDB {
                     throw new EventSystemException("Unsupported default value type " + type);
             }
             throw new EventSystemException("Unrecognized type " + type + " for value " + esfValue);
-        } catch(ClassCastException e) {
-            throw new EventSystemException("Type "+type+" had an inappropriate default value "+esfValue);
+        }
+        catch (ClassCastException e) {
+            throw new EventSystemException("Type " + type + " had an inappropriate default value " + esfValue);
         }
     }
 
-    private void checkRange(String eventName, String attributeName, Object value, long min, long max) throws EventSystemException {
+    private void checkRange(String eventName, String attributeName, Object value, long min, long max) throws
+                                                                                                      EventSystemException {
         final Number number = (Number) value;
-        if (min <= number.longValue() && number.longValue() <= max) return;
+        if (min <= number.longValue() && number.longValue() <= max) {
+            return;
+        }
         throw new EventSystemException(String.format(
                 "Field %s.%s value %d outside allowed range [%d,%d]",
                 eventName, attributeName, value, min, max));
@@ -428,14 +460,19 @@ public class EventTemplateDB {
      */
     @Deprecated
     public boolean addEventAttribute(String anEventName,
-            String anAttributeName,
-            String anAttributeType,
-            Integer size,
-            boolean required,
-            Object defaultValue) {
-        return addEventAttribute(anEventName, anAttributeName, FieldType.byName(anAttributeType), size, required, defaultValue);
+                                     String anAttributeName,
+                                     String anAttributeType,
+                                     Integer size,
+                                     boolean required,
+                                     Object defaultValue) {
+        return addEventAttribute(anEventName,
+                                 anAttributeName,
+                                 FieldType.byName(anAttributeType),
+                                 size,
+                                 required,
+                                 defaultValue);
     }
-    
+
     /**
      * Returns an enumeration of all defined events
      *
@@ -446,19 +483,23 @@ public class EventTemplateDB {
     }
 
     public String getEventComment(String event) {
-	if(eventComments.containsKey(event)) {
-	    return eventComments.get(event);
-	} else {
-	    return null;
-	}
+        if (eventComments.containsKey(event)) {
+            return eventComments.get(event);
+        }
+        else {
+            return null;
+        }
     }
-    
+
     public void setEventComment(String event, String comment) {
-	eventComments.put(event, comment);
+        if (storeComments) {
+            eventComments.put(event, comment);
+        }
     }
-    
+
     /**
      * More useful than getting an Enumeration<String>
+     *
      * @return Set<String>
      */
     public Set<String> getEventNameSet() {
@@ -472,9 +513,9 @@ public class EventTemplateDB {
      * @return true if the type exists in the DB, false otherwise
      */
     public boolean checkForType(FieldType type) {
-        return type==null ? false : knownTypes.containsKey(type);
+        return type == null ? false : knownTypes.containsKey(type);
     }
-    
+
     public boolean checkForType(String aTypeName) {
         return checkForType(FieldType.byName(aTypeName));
     }
@@ -488,7 +529,9 @@ public class EventTemplateDB {
                              String attributeName,
                              BaseType attributeValue) throws EventAttributeSizeException {
 
-        if (!attributeValue.getType().isArray()) return;
+        if (!attributeValue.getType().isArray()) {
+            return;
+        }
 
         Map<String, BaseType> evtMap = events.get(eventName);
         if (evtMap == null) {
@@ -502,7 +545,7 @@ public class EventTemplateDB {
         }
 
         final int maximumAllowedSize = attrBaseType.getSizeRestriction();
-        final int observedSize       = Array.getLength(attributeValue.getTypeObject());
+        final int observedSize = Array.getLength(attributeValue.getTypeObject());
         if (log.isTraceEnabled()) {
             log.trace("sizeToCheck: " + observedSize + " size: " + maximumAllowedSize);
         }
@@ -622,7 +665,7 @@ public class EventTemplateDB {
      */
     @Deprecated
     public boolean checkTypeForAttribute(String anEventName,
-            String anAttributeName, String anAttributeType) {
+                                         String anAttributeName, String anAttributeType) {
         return checkTypeForAttribute(anEventName, anAttributeName, FieldType.byName(anAttributeType));
     }
 
@@ -731,7 +774,7 @@ public class EventTemplateDB {
         sb.append("<tr><th>" + META_EVENT_INFO
                   + "</th><th>Type</th><th>Name</th></tr>\n");
         for (String key : reservedWords.keySet()) {
-            BaseType  tv   = reservedWords.get(key);
+            BaseType tv = reservedWords.get(key);
             FieldType type = tv.getType();
             sb.append("<tr><td></td><td>").append(type).append("</td><td>").append(key).append("</td></tr>\n");
         }
@@ -740,14 +783,14 @@ public class EventTemplateDB {
             if (EventKey != null) {
                 Map<String, BaseType> event = events.get(EventKey);
                 for (Enumeration<String> att = Collections.enumeration(event.keySet()); att
-                    .hasMoreElements(); ) {
+                        .hasMoreElements(); ) {
                     String key = att.nextElement();
                     BaseType tv = event.get(key);
                     FieldType type = tv.getType();
                     sb.append("<tr><td></td><td>")
-                        .append(type)
-                        .append("</td><td>")
-                        .append(key).append("</td></tr>\n");
+                      .append(type)
+                      .append("</td><td>")
+                      .append(key).append("</td></tr>\n");
                 }
             }
         }
@@ -776,7 +819,7 @@ public class EventTemplateDB {
         Arrays.sort(reservedKeys);
 
         for (i = 0; i < reservedKeys.length; ++i) {
-            BaseType  tv   = reservedWords.get(reservedKeys[i]);
+            BaseType tv = reservedWords.get(reservedKeys[i]);
             FieldType type = tv.getType();
             sb.append("\t").append(type).append(" ").append(reservedKeys[i]).append(";\n");
         }
@@ -836,13 +879,13 @@ public class EventTemplateDB {
      * @throws ValidationExceptions A list of validation errors
      */
     public void validate(Event event) throws ValidationExceptions {
-      validate(event,null);
+        validate(event, null);
     }
 
     /**
      * This method can be used to validate an event after it has been created.
      *
-     * @param event the event to validate
+     * @param event          the event to validate
      * @param excludedFields a pattern to determine which fields to ignore when validating
      * @throws ValidationExceptions A list of validation errors
      */
@@ -852,54 +895,67 @@ public class EventTemplateDB {
 
         final Map<String, BaseType> eventTypes = events.get(eventName);
         if (eventTypes == null) {
-            throw new ValidationExceptions(new NoSuchEventException("Event " + eventName + " does not exist in event definition"));
+            throw new ValidationExceptions(new NoSuchEventException(
+                    "Event " + eventName + " does not exist in event definition"));
         }
-        
+
         for (FieldAccessor field : event) {
             final String fieldName = field.getName();
-            if (excludedFields != null && excludedFields.matcher(fieldName).matches()) continue;
-            
-            final BaseType baseType = eventTypes.get(fieldName);
-            if (baseType == null) {
-                if (ve==null) ve = new ValidationExceptions(eventName);
-                ve.addException(new NoSuchAttributeException("Attribute " + fieldName + " does not exist for event " + eventName));
+            if (excludedFields != null && excludedFields.matcher(fieldName).matches()) {
                 continue;
             }
-            
+
+            final BaseType baseType = eventTypes.get(fieldName);
+            if (baseType == null) {
+                if (ve == null) {
+                    ve = new ValidationExceptions(eventName);
+                }
+                ve.addException(new NoSuchAttributeException(
+                        "Attribute " + fieldName + " does not exist for event " + eventName));
+                continue;
+            }
+
             if (baseType.getType() != field.getType()) {
-                if (ve==null) ve = new ValidationExceptions(eventName);
+                if (ve == null) {
+                    ve = new ValidationExceptions(eventName);
+                }
                 ve.addException(new NoSuchAttributeTypeException(
-                        "Wrong type "+field.getType()+" for field "+eventName+"."
-                        +fieldName+"; should be "+baseType.getType()));
+                        "Wrong type " + field.getType() + " for field " + eventName + "."
+                        + fieldName + "; should be " + baseType.getType()));
                 continue;
             }
         }
-        
-        for (Entry<String,BaseType> entry : eventTypes.entrySet()) {
-            final String   key = entry.getKey();
-            if (excludedFields != null && excludedFields.matcher(key).matches()) continue;
+
+        for (Entry<String, BaseType> entry : eventTypes.entrySet()) {
+            final String key = entry.getKey();
+            if (excludedFields != null && excludedFields.matcher(key).matches()) {
+                continue;
+            }
             if (entry.getValue().isRequired()) {
                 if (!event.isSet(key)) {
-                    if (ve==null) ve = new ValidationExceptions(eventName);
+                    if (ve == null) {
+                        ve = new ValidationExceptions(eventName);
+                    }
                     ve.addException(new AttributeRequiredException(key));
                 }
             }
         }
 
-        if (ve!=null) {
+        if (ve != null) {
             throw ve;
         }
     }
 
     private void addMetaComment(String comment) {
-	if(metaInfoComments == null) {
-	    metaInfoComments = comment;
-	} else {
-	    metaInfoComments = metaInfoComments.concat(comment);
-	}
+        if (metaInfoComments == null) {
+            metaInfoComments = comment;
+        }
+        else {
+            metaInfoComments = metaInfoComments.concat(comment);
+        }
     }
-    
+
     public String getMetaComment() {
-	return metaInfoComments;
+        return metaInfoComments;
     }
 }

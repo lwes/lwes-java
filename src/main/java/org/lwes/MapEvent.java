@@ -310,7 +310,7 @@ public class MapEvent extends DefaultEvent {
     public void clear(String attributeName) {
         final BaseType bt = attributes.remove(attributeName);
         if (bt != null) {
-            bytesStoreSize -= bt.bytesStoreSize(encoding);
+            bytesStoreSize -= (attributeName.length() + 1) + bt.bytesStoreSize(encoding);
         }
     }
 
@@ -410,7 +410,9 @@ public class MapEvent extends DefaultEvent {
             if (encodingObj != null) {
                 if (encodingType == FieldType.INT16) {
                     encoding = (Short) encodingObj;
-                    log.trace("Character encoding: " + encoding);
+                    if (log.isTraceEnabled()) {
+                        log.trace("Character encoding: " + encoding);
+                    }
                     pos += Serializer.serializeATTRIBUTEWORD(ENCODING, bytes, pos);
                     pos += Serializer.serializeBYTE(encodingType.token, bytes, pos);
                     pos += Serializer.serializeUINT16(encoding, bytes, pos);
@@ -418,7 +420,9 @@ public class MapEvent extends DefaultEvent {
             }
         }
         else {
-            log.warn("Character encoding null in event " + name);
+            if (log.isWarnEnabled()) {
+                log.warn("Character encoding null in event " + name);
+            }
         }
 
         Enumeration<String> e = attributes.keys();
@@ -434,7 +438,9 @@ public class MapEvent extends DefaultEvent {
 
             /* don't try to serialize nulls */
             if (data == null) {
-                log.warn("Attribute " + key + " was null in event " + name);
+                if (log.isWarnEnabled()) {
+                    log.warn("Attribute " + key + " was null in event " + name);
+                }
                 continue;
             }
 
@@ -442,13 +448,22 @@ public class MapEvent extends DefaultEvent {
             pos += Serializer.serializeBYTE(type.token, bytes, pos);
             pos += Serializer.serializeValue(type, data, encoding, bytes, pos);
 
-            log.trace("Serialized attribute " + key);
+            if (log.isTraceEnabled()) {
+                log.trace("Serialized attribute " + key);
+            }
         } // while(e.hasMoreElements())
 
         final int bytesWritten = pos - offset;
         if (bytesStoreSize != bytesWritten) {
-            throw new IllegalStateException(
-                    "Expected to write " + bytesStoreSize + " bytes, but actually wrote " + bytesWritten);
+            String formatted = null;
+            try {
+                formatted = toString();
+            } catch(Exception ex) {
+                formatted = "<unprintable>";
+            }
+            throw new IllegalStateException("Expected to write " + bytesStoreSize +
+                                            " bytes, but actually wrote " + bytesWritten
+                                            +" for "+formatted);
         }
 
         return bytesWritten;
@@ -505,88 +520,13 @@ public class MapEvent extends DefaultEvent {
                     }
                 }
 
-                switch (type) {
-                    case BOOLEAN:
-                        setBoolean(attribute, Deserializer.deserializeBOOLEAN(state, bytes));
-                        break;
-                    case BYTE:
-                        setByte(attribute, Deserializer.deserializeBYTE(state, bytes));
-                        break;
-                    case UINT16:
-                        setUInt16(attribute, Deserializer.deserializeUINT16(state, bytes));
-                        break;
-                    case INT16:
-                        setInt16(attribute, Deserializer.deserializeINT16(state, bytes));
-                        break;
-                    case UINT32:
-                        setUInt32(attribute, Deserializer.deserializeUINT32(state, bytes));
-                        break;
-                    case INT32:
-                        setInt32(attribute, Deserializer.deserializeINT32(state, bytes));
-                        break;
-                    case FLOAT:
-                        setFloat(attribute, Deserializer.deserializeFLOAT(state, bytes));
-                        break;
-                    case UINT64:
-                        setUInt64(attribute, Deserializer.deserializeUInt64ToBigInteger(state, bytes));
-                        break;
-                    case INT64:
-                        setInt64(attribute, Deserializer.deserializeINT64(state, bytes));
-                        break;
-                    case DOUBLE:
-                        setDouble(attribute, Deserializer.deserializeDOUBLE(state, bytes));
-                        break;
-                    case STRING:
-                        setString(attribute, Deserializer.deserializeSTRING(state, bytes, encoding));
-                        break;
-                    case IPADDR:
-                        setIPAddress(attribute, Deserializer.deserializeIPADDR(state, bytes));
-                        break;
-                    case STRING_ARRAY:
-                        setStringArray(attribute, Deserializer.deserializeStringArray(state, bytes, encoding));
-                        break;
-                    case INT16_ARRAY:
-                        setInt16Array(attribute, Deserializer.deserializeInt16Array(state, bytes));
-                        break;
-                    case INT32_ARRAY:
-                        setInt32Array(attribute, Deserializer.deserializeInt32Array(state, bytes));
-                        break;
-                    case INT64_ARRAY:
-                        setInt64Array(attribute, Deserializer.deserializeInt64Array(state, bytes));
-                        break;
-                    case UINT16_ARRAY:
-                        setUInt16Array(attribute, Deserializer.deserializeUInt16Array(state, bytes));
-                        break;
-                    case UINT32_ARRAY:
-                        setUInt32Array(attribute, Deserializer.deserializeUInt32Array(state, bytes));
-                        break;
-                    case UINT64_ARRAY:
-                        setUInt64Array(attribute, Deserializer.deserializeUInt64Array(state, bytes));
-                        break;
-                    case BOOLEAN_ARRAY:
-                        setBooleanArray(attribute, Deserializer.deserializeBooleanArray(state, bytes));
-                        break;
-                    case BYTE_ARRAY:
-                        setByteArray(attribute, Deserializer.deserializeByteArray(state, bytes));
-                        break;
-                    case DOUBLE_ARRAY:
-                        setDoubleArray(attribute, Deserializer.deserializeDoubleArray(state, bytes));
-                        break;
-                    case FLOAT_ARRAY:
-                        setFloatArray(attribute, Deserializer.deserializeFloatArray(state, bytes));
-                        break;
-                    case IP_ADDR_ARRAY:
-                        setIPAddressArray(attribute, Deserializer.deserializeIPADDRArray(state, bytes));
-                        break;
-                    default:
-                        log.warn("Unknown type " + type + " in deserialization");
-                }
+                set(attribute, type, Deserializer.deserializeValue(state, bytes, type, encoding));
             }
             if (bytesStoreSize != state.currentIndex() - offset) {
                 throw new EventSystemException("Deserializing " + type + " field " + attribute +
                                                " resulted in incorrect cache of serialized size");
             }
-        } // for (int i =0 ...
+        }
 
         if (bytesStoreSize != length) {
             throw new EventSystemException(
@@ -623,7 +563,7 @@ public class MapEvent extends DefaultEvent {
      * This method can be used to validate an event after it has been created.
      *
      * @throws ValidationExceptions A list of validation errors
-     * use {@link EventTemplateDB#validate(Event)}
+     *                              use {@link EventTemplateDB#validate(Event)}
      */
     @Deprecated
     public void validate() throws ValidationExceptions {

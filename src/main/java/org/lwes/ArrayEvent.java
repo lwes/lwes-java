@@ -14,6 +14,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Enumeration;
@@ -22,13 +23,17 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.EncodedString;
 
 public final class ArrayEvent extends DefaultEvent {
+
+    private static transient final Log log = LogFactory.getLog(ArrayEvent.class);
 
     private static final int SERIALIZED_ENCODING_LENGTH;
     private byte[] bytes = new byte[MAX_MESSAGE_SIZE];
@@ -311,59 +316,9 @@ public final class ArrayEvent extends DefaultEvent {
         tempState.set(valueIndex);
         return get(type, tempState);
     }
-    
+
     private Object get(FieldType type, DeserializerState state) {
-        switch (type) {
-            case BOOLEAN:
-                return Deserializer.deserializeBOOLEAN(state, bytes);
-            case BYTE:
-                return Deserializer.deserializeBYTE(state, bytes);
-            case UINT16:
-                return Deserializer.deserializeUINT16(state, bytes);
-            case INT16:
-                return Deserializer.deserializeINT16(state, bytes);
-            case UINT32:
-                return Deserializer.deserializeUINT32(state, bytes);
-            case INT32:
-                return Deserializer.deserializeINT32(state, bytes);
-            case FLOAT:
-                return Deserializer.deserializeFLOAT(state, bytes);
-            case UINT64:
-                return Deserializer.deserializeUInt64ToBigInteger(state, bytes);
-            case INT64:
-                return Deserializer.deserializeINT64(state, bytes);
-            case DOUBLE:
-                return Deserializer.deserializeDOUBLE(state, bytes);
-            case STRING:
-                return Deserializer.deserializeSTRING(state, bytes, encoding);
-            case IPADDR:
-                return Deserializer.deserializeIPADDR(state, bytes);
-            case STRING_ARRAY:
-                return Deserializer.deserializeStringArray(state, bytes, encoding);
-            case INT16_ARRAY:
-                return Deserializer.deserializeInt16Array(state, bytes);
-            case INT32_ARRAY:
-                return Deserializer.deserializeInt32Array(state, bytes);
-            case INT64_ARRAY:
-                return Deserializer.deserializeInt64Array(state, bytes);
-            case UINT16_ARRAY:
-                return Deserializer.deserializeUInt16Array(state, bytes);
-            case UINT32_ARRAY:
-                return Deserializer.deserializeUInt32Array(state, bytes);
-            case UINT64_ARRAY:
-                return Deserializer.deserializeUInt64Array(state, bytes);
-            case BOOLEAN_ARRAY:
-                return Deserializer.deserializeBooleanArray(state, bytes);
-            case BYTE_ARRAY:
-                return Deserializer.deserializeByteArray(state, bytes);
-            case DOUBLE_ARRAY:
-                return Deserializer.deserializeDoubleArray(state, bytes);
-            case FLOAT_ARRAY:
-                return Deserializer.deserializeFloatArray(state, bytes);
-            case IP_ADDR_ARRAY:
-                return Deserializer.deserializeIPADDRArray(state, bytes);
-        }
-        throw new IllegalStateException("Bad type: " + type);
+        return Deserializer.deserializeValue(state, bytes, type, encoding);
     }
 
     @Override
@@ -435,14 +390,15 @@ public final class ArrayEvent extends DefaultEvent {
                 }
                 else {
                     // Wrong field.  Skip it, the type token, and the value.
-                    tempState.incr(1 + keyLength);
+                    tempState.incr(1 + keyLength); // field name
                     final FieldType type = FieldType.byToken(bytes[tempState.currentIndex()]);
-                    tempState.incr(1);
-                    tempState.incr(getValueByteSize(type, tempState.currentIndex()));
+                    tempState.incr(1); // type token
+                    Deserializer.deserializeValue(tempState, bytes, type, (short) 1);
                 }
             }
             if (tempState.currentIndex() > length) {
-                throw new IllegalStateException("Overran the end of the byte array");
+                throw new IllegalStateException(
+                        "Overran the end of the byte array: " + tempState.currentIndex() + " " + length);
             }
             return -1;
         }
@@ -464,7 +420,7 @@ public final class ArrayEvent extends DefaultEvent {
         return (((bytes[index] & 0xff) << 8) | (bytes[index + 1] & 0xff));
     }
 
-    private int getValueByteSize(FieldType type, int valueIndex) {
+    public int getValueByteSize(FieldType type, int valueIndex) {
         switch (type) {
             case BOOLEAN:
             case BYTE:
@@ -507,6 +463,31 @@ public final class ArrayEvent extends DefaultEvent {
             case UINT64_ARRAY:
             case DOUBLE_ARRAY:
                 return 2 + deserializeUINT16(valueIndex) * 8;
+            case NBOOLEAN_ARRAY:
+            case NBYTE_ARRAY:
+            case NDOUBLE_ARRAY:
+            case NFLOAT_ARRAY:
+            case NINT16_ARRAY:
+            case NINT32_ARRAY:
+            case NINT64_ARRAY:
+            case NSTRING_ARRAY:
+            case NUINT16_ARRAY:
+            case NUINT32_ARRAY:
+            case NUINT64_ARRAY:
+                // array_len + bitset_len + bitset + array
+                DeserializerState ds = new DeserializerState();
+                ds.incr(valueIndex+2); // array length
+                BitSet bs = Deserializer.deserializeBitSet(ds, bytes);
+                if (type.getComponentType().isConstantSize()) {
+                    ds.incr(type.getComponentType().getConstantSize() * bs.cardinality());
+                } else {
+                    // If the field is not constant-width, we must walk it.  If there are N
+                    // bits set in the BitSet, consume N objects of the component type.
+                    for (int i=0, n=bs.cardinality(); i<n; i++) {
+                        ds.incr(getValueByteSize(type.getComponentType(), ds.currentIndex()));
+                    }
+                }
+                return ds.currentIndex() - valueIndex;
         }
         throw new IllegalStateException("Unrecognized type: " + type);
     }
@@ -559,11 +540,11 @@ public final class ArrayEvent extends DefaultEvent {
 
     /**
      * These two ArrayEvent objects swap all of their fields.
-     * 
+     * <p/>
      * Why would one want to do this? If one must set "this" to the value of
      * "event", but it's acceptable to modify "event" in the process, then
      * swap() accomplishes the copy faster than copyFrom(event) can.
-     * 
+     * <p/>
      * Typical events seem to take about 6ms for copyFrom() but only 100ns for
      * swap().  However, if you're not doing enough copies that the performance
      * difference matters, you should probably use copyFrom().
@@ -621,7 +602,7 @@ public final class ArrayEvent extends DefaultEvent {
 
         return true;
     }
-    
+
     /**
      * This method shows detailed information about the internal state of the
      * event, and was designed as a "Detail Formatter" for tracing execution
@@ -638,30 +619,34 @@ public final class ArrayEvent extends DefaultEvent {
             final DeserializerState ds = new DeserializerState();
             ds.set(getValueListIndex());
             while (ds.currentIndex() < length) {
-              String    field;
-              FieldType type;
-              Object    value;
-              try {
-                field = Deserializer.deserializeATTRIBUTEWORD(ds, bytes);
-              } catch(Exception e) {
-                throw new Exception("Error when reading field name: "+e.getMessage());
-              }
-              try {
-                type = FieldType.byToken(Deserializer.deserializeBYTE(ds, bytes));
-              } catch(Exception e) {
-                throw new Exception("Error when reading field name: "+e.getMessage());
-              }
-              try {
-                value = Deserializer.deserializeValue(ds, bytes, type, encoding);
-              } catch(Exception e) {
-                throw new Exception("Error when reading field name: "+e.getMessage());
-              }
-              if (value.getClass().isArray()) {
-                value = Arrays.deepToString(new Object[] { value });
-              }
-              buf.append(String.format("  field \"%s\" (%s): %s\n", field, type, value));
+                String field;
+                FieldType type;
+                Object value;
+                try {
+                    field = Deserializer.deserializeATTRIBUTEWORD(ds, bytes);
+                }
+                catch (Exception e) {
+                    throw new Exception("Error when reading field name: " + e.getMessage());
+                }
+                try {
+                    type = FieldType.byToken(Deserializer.deserializeBYTE(ds, bytes));
+                }
+                catch (Exception e) {
+                    throw new Exception("Error when reading field name: " + e.getMessage());
+                }
+                try {
+                    value = Deserializer.deserializeValue(ds, bytes, type, encoding);
+                }
+                catch (Exception e) {
+                    throw new Exception("Error when reading field name: " + e.getMessage());
+                }
+                if (value.getClass().isArray()) {
+                    value = Arrays.deepToString(new Object[]{value});
+                }
+                buf.append(String.format("  field \"%s\" (%s): %s\n", field, type, value));
             }
-        } catch(Exception e) {
+        }
+        catch (Exception e) {
             buf.append("\nEXCEPTION: ").append(e.getMessage());
         }
         return buf.toString();
@@ -671,7 +656,7 @@ public final class ArrayEvent extends DefaultEvent {
     public Iterator<FieldAccessor> iterator() {
         return new Iterator<FieldAccessor>() {
             private final ArrayEventFieldAccessor accessor = new ArrayEventFieldAccessor();
-            
+
             public boolean hasNext() {
                 return accessor.nextFieldIndex < length;
             }
@@ -689,10 +674,10 @@ public final class ArrayEvent extends DefaultEvent {
 
     private final class ArrayEventFieldAccessor extends DefaultFieldAccessor {
         private transient final DeserializerState accessorTempState = new DeserializerState();
-        private int                               nextFieldIndex    = getValueListIndex(),
+        private int nextFieldIndex = getValueListIndex(),
                 currentFieldIndex = Integer.MIN_VALUE,
                 currentValueIndex = Integer.MIN_VALUE;
-        
+
         public void advance() {
             // Deserialize name,type eagerly; deserialize value lazily. 
             currentFieldIndex = nextFieldIndex;
@@ -704,7 +689,7 @@ public final class ArrayEvent extends DefaultEvent {
             // Remember where the current value starts.
             currentValueIndex = accessorTempState.currentIndex();
             // Remember where the next field (or end of event) is.
-            nextFieldIndex    = currentValueIndex + getValueByteSize(getType(), currentValueIndex);
+            nextFieldIndex = currentValueIndex + getValueByteSize(getType(), currentValueIndex);
         }
 
         @Override

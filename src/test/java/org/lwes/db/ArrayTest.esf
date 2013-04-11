@@ -24,4 +24,12 @@ TestEvent
   double field10[5];
   float field11[5];
 
+  # Object arrays
+  nullable int32   intObjArr[5];
+  nullable double  doubleObjArr[5];
+  nullable int64   longObjArr[5];
+  nullable float   floatObjArr[5];
+  nullable int16   shortObjArr[5];
+  nullable boolean boolObjArr[5];
+  nullable string  strObjArr[5];
 }
