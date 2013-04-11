@@ -12,8 +12,13 @@
 
 package org.lwes.db;
 
+import java.io.File;
+import java.math.BigInteger;
+import java.util.Enumeration;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.lwes.Event;
@@ -21,12 +26,9 @@ import org.lwes.EventAttributeSizeException;
 import org.lwes.EventSystemException;
 import org.lwes.MapEvent;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.util.Enumeration;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -48,6 +50,54 @@ public class ArrayTest {
         template = new EventTemplateDB();
         template.setESFFile(new File(ESF));
         template.initialize();
+    }
+
+    @Test
+    public void testArrayWithNulls() {
+
+        EventTemplateDB template = new EventTemplateDB();
+        template.setESFFile(new File(ESF));
+        assertTrue("Template did not initialize", template.initialize());
+
+        Double[] doubleArray = new Double[]{
+                2.1, null, 5.5, 1.1, 3.2
+        };
+
+        Event evt = new MapEvent("TestEvent", true, template);
+        evt.setDoubleArray("doubleObjArr", doubleArray);
+
+        byte[] serializedEvent = evt.serialize();
+        Event evt2 = new MapEvent(serializedEvent, true, template);
+        assertNotNull(evt2);
+        Double[] rtnArray = evt2.getDoubleObjArray("doubleObjArr");
+        assertNotNull(rtnArray);
+        assertEquals(2.1, rtnArray[0], 1e-15);
+        assertNull(rtnArray[1]);
+        assertEquals(5.5, rtnArray[2], 1e-15);
+        assertEquals(1.1, rtnArray[3], 1e-15);
+
+
+    }
+
+    @Test
+    public void testStringArrayWithNulls() {
+        EventTemplateDB template = new EventTemplateDB();
+        template.setESFFile(new File(ESF));
+        assertTrue("Template did not initialize", template.initialize());
+
+        String[] strArray = new String[]{
+                "a", null, "bc"
+        };
+
+        Event evt = new MapEvent("TestEvent", true, template);
+        evt.setStringObjArray("strObjArr", strArray);
+        byte[] serializedEvent = evt.serialize();
+        Event evt2 = new MapEvent(serializedEvent, true, template);
+        String[] rtnStrArray = evt2.getStringArray("strObjArr");
+        Assert.assertNotNull(rtnStrArray);
+        Assert.assertEquals("a", rtnStrArray[0]);
+        Assert.assertNull(rtnStrArray[1]);
+        Assert.assertEquals("bc", rtnStrArray[2]);
     }
 
     @Test
@@ -99,7 +149,7 @@ public class ArrayTest {
         }
         catch (EventAttributeSizeException e) {
             if (log.isDebugEnabled()) {
-                log.debug(e.getMessage());
+                log.debug(e.getMessage(), e);
             }
             exceptionThrown = true;
         }
@@ -134,7 +184,7 @@ public class ArrayTest {
         }
         catch (EventAttributeSizeException e) {
             if (log.isDebugEnabled()) {
-                log.debug(e.getMessage());
+                log.debug(e.getMessage(), e);
             }
             exceptionThrown = true;
         }
@@ -172,7 +222,7 @@ public class ArrayTest {
         }
         catch (EventAttributeSizeException e) {
             if (log.isDebugEnabled()) {
-                log.debug(e.getMessage());
+                log.debug(e.getMessage(), e);
             }
             exceptionThrown = true;
         }
@@ -209,7 +259,7 @@ public class ArrayTest {
         }
         catch (EventAttributeSizeException e) {
             if (log.isDebugEnabled()) {
-                log.debug(e.getMessage());
+                log.debug(e.getMessage(), e);
             }
             exceptionThrown = true;
         }
@@ -244,7 +294,7 @@ public class ArrayTest {
         }
         catch (EventAttributeSizeException e) {
             if (log.isDebugEnabled()) {
-                log.debug(e.getMessage());
+                log.debug(e.getMessage(), e);
             }
             exceptionThrown = true;
         }
@@ -282,7 +332,7 @@ public class ArrayTest {
         }
         catch (EventAttributeSizeException e) {
             if (log.isDebugEnabled()) {
-                log.debug(e.getMessage());
+                log.debug(e.getMessage(), e);
             }
             exceptionThrown = true;
         }
@@ -320,7 +370,7 @@ public class ArrayTest {
         }
         catch (EventAttributeSizeException e) {
             if (log.isDebugEnabled()) {
-                log.debug(e.getMessage());
+                log.debug(e.getMessage(), e);
             }
             exceptionThrown = true;
         }
@@ -330,7 +380,7 @@ public class ArrayTest {
     @Test
     public void testBooleanArray() throws EventSystemException {
         Event evt = new MapEvent("TestEvent", true, template);
-        evt.setBooleanArray("field8", new boolean[] {true, false});
+        evt.setBooleanArray("field8", new boolean[]{true, false});
         boolean[] ar = evt.getBooleanArray("field8");
         assertNotNull("boolean array was null", ar);
         assertEquals("length was incorrect", 2, ar.length);
@@ -349,7 +399,7 @@ public class ArrayTest {
     @Test
     public void testByteArray() throws EventSystemException {
         Event evt = new MapEvent("TestEvent", true, template);
-        evt.setByteArray("field9", new byte[] {(byte) 0x1, (byte) 0x2});
+        evt.setByteArray("field9", new byte[]{(byte) 0x1, (byte) 0x2});
         byte[] ar = evt.getByteArray("field9");
         assertNotNull("boolean array was null", ar);
         assertEquals("length was incorrect", 2, ar.length);
@@ -369,11 +419,10 @@ public class ArrayTest {
     public void testDoubleArray() throws EventSystemException {
 
         Event evt = new MapEvent("TestEvent", true, template);
-        evt.setDoubleArray("field10", new double[] {3.14159, 5.99999});
+        evt.setDoubleArray("field10", new double[]{3.14159, 5.99999});
         double[] ar = evt.getDoubleArray("field10");
         assertNotNull("double array was null", ar);
         assertEquals("number of fields is wrong", 2, ar.length);
-        log.debug("EVENT: " + evt.toOneLineString());
         // Make sure we can serialize/deserialize it
         byte[] serializedEvent = evt.serialize();
         Event evt2 = new MapEvent(serializedEvent, true, template);
@@ -381,7 +430,6 @@ public class ArrayTest {
         double[] a2 = evt2.getDoubleArray("field10");
         assertNotNull(a2);
         assertEquals("deserialized array length was incorrect", 2, a2.length);
-        log.debug(a2);
         assertEquals("a2[0]", 3.14159, a2[0], .00001);
         assertEquals("a2[1]", 5.99999, a2[1], .00001);
     }
@@ -389,7 +437,7 @@ public class ArrayTest {
     @Test
     public void testFloatArray() throws EventSystemException {
         Event evt = new MapEvent("TestEvent", true, template);
-        evt.setFloatArray("field11", new float[] {new Float(1.11), new Float(2.22)});
+        evt.setFloatArray("field11", new float[]{new Float(1.11), new Float(2.22)});
         float[] ar = evt.getFloatArray("field11");
         assertNotNull("Float array was null", ar);
         assertEquals("number of fields is wrong ", 2, ar.length);

@@ -14,6 +14,8 @@ package org.lwes;
 
 import java.lang.reflect.Array;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lwes.serializer.StringParser;
 import org.lwes.util.EncodedString;
 
@@ -29,6 +31,8 @@ import org.lwes.util.EncodedString;
  * @author Anthony Molinaro
  */
 public class BaseType {
+
+    private static transient final Log log = LogFactory.getLog(BaseType.class);
 
     /**
      * The FieldType of this field, which provides both ESF name and
@@ -60,7 +64,7 @@ public class BaseType {
      * comment describing attribute
      */
     private String comment;
-    
+
     public BaseType() {
     }
 
@@ -95,8 +99,8 @@ public class BaseType {
         this.typeObject = typeObject;
         this.type = FieldType.byToken(typeToken);
         this.defaultValue = defaultValue;
-        if (! typeName.equals(type.name)) {
-            throw new IllegalStateException("Inconsistent type name and token: "+typeName+" vs. "+type.name);
+        if (!typeName.equals(type.name)) {
+            throw new IllegalStateException("Inconsistent type name and token: " + typeName + " vs. " + type.name);
         }
     }
 
@@ -120,21 +124,21 @@ public class BaseType {
                     boolean required,
                     int sizeRestriction,
                     Object defaultValue) {
-        this(type,typeObject,required,sizeRestriction,defaultValue,null);
+        this(type, typeObject, required, sizeRestriction, defaultValue, null);
     }
-    
+
     public BaseType(FieldType type,
                     Object typeObject,
                     boolean required,
                     int sizeRestriction,
                     Object defaultValue,
-		    String comment) {
+                    String comment) {
         this.required = required;
         this.sizeRestriction = sizeRestriction;
         this.type = type;
         this.typeObject = typeObject;
         this.defaultValue = defaultValue;
-	this.comment = comment;
+        this.comment = comment;
     }
 
     public Object getDefaultValue() {
@@ -144,7 +148,7 @@ public class BaseType {
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
     }
-    
+
     public FieldType getType() {
         return type;
     }
@@ -182,7 +186,7 @@ public class BaseType {
     }
 
     public void setTypeObject(Object typeObject) throws NoSuchAttributeTypeException {
-        if (! type.isCompatibleWith(typeObject)) {
+        if (!type.isCompatibleWith(typeObject)) {
             throw new NoSuchAttributeTypeException("Wrong type '" + typeObject.getClass().getName());
         }
         this.typeObject = typeObject;
@@ -208,49 +212,68 @@ public class BaseType {
         this.sizeRestriction = sizeRestriction;
     }
 
-    public int getByteSize(short encoding) {
-        switch (type) {
-            case BOOLEAN:
-            case BYTE:
-                return 1;
-            case UINT16:
-            case INT16:
-                return 2;
-            case UINT32:
-            case INT32:
-            case FLOAT:
-            case IPADDR:
-                return 4;
-            case INT64:
-            case UINT64:
-            case DOUBLE:
-                return 8;
-            case STRING:
-                /* add size of string plus two bytes for the length */
-                return EncodedString.getBytes((String) typeObject, Event.ENCODING_STRINGS[encoding]).length + 2;
-            case STRING_ARRAY: {
-                int count = 2; // start with the length of the array
-                String[] anArray = (String[]) typeObject;
-                for (String s : anArray) {
-                    count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
+    public int getNullableArrayByteSize(short encoding) {
+        // Size of the array (* n bytes) + 2 bytes for the length number
+        int count = 2 + 2; // start with the length of the array + length of bitset
+        int arrayLen = Array.getLength(typeObject);
+        Object[] objArray = (Object[]) typeObject;
+        count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
+        for (Object o : objArray) {
+            if (o != null) {
+                switch (type.getComponentType()) {
+                    case STRING:
+                        // length of each string in bytes + 2 for the length number
+                        count += EncodedString.getBytes((String) o, Event.ENCODING_STRINGS[encoding]).length + 2;
+                        break;
+                    default:
+                        count += type.getComponentType().getConstantSize();
+                        break;
+
                 }
-                return count;
             }
-            case BOOLEAN_ARRAY:
-            case BYTE_ARRAY:
-                return Array.getLength(typeObject) + 2;
-            case INT16_ARRAY:
-            case UINT16_ARRAY:
-                return Array.getLength(typeObject) * 2 + 2;
-            case INT32_ARRAY:
-            case UINT32_ARRAY:
-            case FLOAT_ARRAY:
-            case IP_ADDR_ARRAY:
-                return Array.getLength(typeObject) * 4 + 2;
-            case INT64_ARRAY:
-            case UINT64_ARRAY:
-            case DOUBLE_ARRAY:
-                return Array.getLength(typeObject) * 8 + 2;
+        }
+        return count;
+    }
+
+    public int getByteSize(short encoding) {
+        if (type.isNullableArray()) {
+            return getNullableArrayByteSize(encoding);
+        }
+        else if (type.isConstantSize()) {
+            return type.getConstantSize();
+        }
+        else {
+            switch (type) {
+                case STRING:
+                /* add size of string plus two bytes for the length */
+                    return EncodedString.getBytes((String) typeObject,
+                                                  Event.ENCODING_STRINGS[encoding]).length + 2;
+                case STRING_ARRAY: {
+                    int count = 2; // start with the length of the array
+                    String[] anArray = (String[]) typeObject;
+                    for (String s : anArray) {
+                        if (s != null) {
+                            count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
+                        }
+                    }
+                    return count;
+                }
+                case BOOLEAN_ARRAY:
+                case BYTE_ARRAY:
+                    return Array.getLength(typeObject) + 2;
+                case INT16_ARRAY:
+                case UINT16_ARRAY:
+                    return Array.getLength(typeObject) * 2 + 2;
+                case INT32_ARRAY:
+                case UINT32_ARRAY:
+                case FLOAT_ARRAY:
+                case IP_ADDR_ARRAY:
+                    return Array.getLength(typeObject) * 4 + 2;
+                case INT64_ARRAY:
+                case UINT64_ARRAY:
+                case DOUBLE_ARRAY:
+                    return Array.getLength(typeObject) * 8 + 2;
+            }
         }
         throw new IllegalArgumentException("Unknown size of BaseType " + type.name);
     }
@@ -301,7 +324,7 @@ public class BaseType {
                 throw new UnsupportedOperationException("Not yet implemented");
         }
         throw new NoSuchAttributeTypeException("Unknown size of BaseType "
-                + type.name);
+                                               + type.name);
     }
 
     public BaseType cloneBaseType() {
@@ -314,13 +337,12 @@ public class BaseType {
     }
 
     public String getComment() {
-	return comment;
+        return comment;
     }
 
     public void setComment(String comment) {
-	this.comment = comment;
+        this.comment = comment;
     }
-    
-    
-    
+
+
 }
