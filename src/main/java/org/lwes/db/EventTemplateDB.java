@@ -147,11 +147,11 @@ public class EventTemplateDB {
         ESFParser parser;
         try {
             if (getESFInputStream() != null) {
-                parser = new ESFParser(getESFInputStream());
+                parser = new ESFParser(getESFInputStream(), "UTF-8");
             }
             else if (getESFFile() != null) {
                 parser = new ESFParser(
-                        new java.io.FileInputStream(getESFFile()));
+                        new java.io.FileInputStream(getESFFile()), "UTF-8");
             }
             else {
                 return false;
