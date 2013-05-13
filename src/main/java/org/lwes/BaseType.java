@@ -217,7 +217,7 @@ public class BaseType {
         int count = 2 + 2; // start with the length of the array + length of bitset
         int arrayLen = Array.getLength(typeObject);
         Object[] objArray = (Object[]) typeObject;
-        count += (int) Math.ceil((double) arrayLen / 8.0); // number of bytes in the bitset
+        count += (int) Math.ceil(arrayLen / 8.0); // number of bytes in the bitset
         for (Object o : objArray) {
             if (o != null) {
                 switch (type.getComponentType()) {

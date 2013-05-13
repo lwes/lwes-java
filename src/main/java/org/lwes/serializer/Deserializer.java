@@ -494,7 +494,7 @@ public class Deserializer {
     public static BitSet deserializeBitSet(DeserializerState myState, byte[] bytes) {
 
         int size = deserializeUINT16(myState, bytes);
-        int numBytes = (int) Math.ceil((double) size / 8.0);
+        int numBytes = (int) Math.ceil(size / 8.0);
         BitSet bitSet = new BitSet(size);
         int offset = myState.currentIndex();
         int index = 0;
