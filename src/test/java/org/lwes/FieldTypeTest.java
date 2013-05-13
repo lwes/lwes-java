@@ -64,4 +64,12 @@ public class FieldTypeTest {
         }
       }
     }
+    
+    @Test
+    public void testCompatibility() {
+      final RandomEventGenerator generator = new RandomEventGenerator();
+      for (FieldType type : FieldType.values()) {
+        assertTrue(type.isCompatibleWith(generator.createRandomValue(type)));
+      }
+    }
 }

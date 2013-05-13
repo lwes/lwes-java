@@ -191,6 +191,7 @@ public class StringParser {
         return toReturn;
     }
 
+    // FIXME: why not BigInteger?
     public static Object fromStringUINT64(String string)
             throws EventSystemException {
         Object toReturn = null;
