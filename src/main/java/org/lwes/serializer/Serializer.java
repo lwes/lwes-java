@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.lwes.Event;
 import org.lwes.FieldType;
 import org.lwes.util.EncodedString;
@@ -35,8 +33,6 @@ import org.lwes.util.NumberCodec;
  * @author Frank Maritato
  */
 public class Serializer {
-    private static final transient Log log = LogFactory.getLog(Serializer.class);
-
     public static int serializeIPV4(Inet4Address value, byte[] bytes, int offset) {
         byte[] bs = value.getAddress();
         int i = offset;

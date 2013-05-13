@@ -4,17 +4,13 @@ package org.lwes.listener;
  * Date: 5/1/12
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.lwes.EventSystemException;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 public class ThreadedProcessorTest {
-
-    private static transient Log log = LogFactory.getLog(ThreadedProcessorTest.class);
 
     @Test(expected = EventSystemException.class)
     public void testNoEnqueuer() {

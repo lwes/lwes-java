@@ -16,8 +16,6 @@ import java.math.BigInteger;
 import java.util.BitSet;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.lwes.FieldType;
 
@@ -31,7 +29,6 @@ import static org.junit.Assert.assertNotNull;
  */
 
 public class SerializerTest {
-    private static transient final Log log = LogFactory.getLog(SerializerTest.class);
     private static final int N = 100;
 
     @Test

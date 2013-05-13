@@ -6,15 +6,11 @@ package org.lwes;
 
 import java.math.BigInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import junit.framework.Assert;
 
 public class MapEventTest extends EventTest {
-
-    private static transient Log log = LogFactory.getLog(MapEventTest.class);
 
     @Test
     public void mapEventWithFullNINT32_ARRAY() {

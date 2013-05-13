@@ -14,8 +14,6 @@ package org.lwes;
 
 import java.lang.reflect.Array;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.lwes.serializer.StringParser;
 import org.lwes.util.EncodedString;
 
@@ -31,8 +29,6 @@ import org.lwes.util.EncodedString;
  * @author Anthony Molinaro
  */
 public class BaseType {
-
-    private static transient final Log log = LogFactory.getLog(BaseType.class);
 
     /**
      * The FieldType of this field, which provides both ESF name and

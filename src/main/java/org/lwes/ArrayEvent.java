@@ -24,16 +24,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.EncodedString;
 
 public final class ArrayEvent extends DefaultEvent {
-
-    private static transient final Log log = LogFactory.getLog(ArrayEvent.class);
 
     private static final int SERIALIZED_ENCODING_LENGTH;
     private byte[] bytes = new byte[MAX_MESSAGE_SIZE];
