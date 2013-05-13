@@ -14,6 +14,7 @@ options {
   DEBUG_PARSER=false;
   DEBUG_LOOKAHEAD=false;
   DEBUG_TOKEN_MANAGER=false;
+  JAVA_UNICODE_ESCAPE = true ; 
   STATIC=false;
 }
 
