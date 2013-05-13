@@ -20,14 +20,10 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 
 public abstract class DefaultEvent implements Event {
-    private static final transient Log log = LogFactory.getLog(DefaultEvent.class);
-
     private static final BigInteger UINT64_MASK = new BigInteger("ffffffffffffffff", 16);
 
     public void setInt16Array(String attributeName, short[] value) throws EventSystemException {

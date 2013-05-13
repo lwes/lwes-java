@@ -435,6 +435,17 @@ public class EventTemplateDB {
                 case UINT16_ARRAY:
                 case UINT32_ARRAY:
                 case UINT64_ARRAY:
+                case NBOOLEAN_ARRAY:
+                case NBYTE_ARRAY:
+                case NDOUBLE_ARRAY:
+                case NFLOAT_ARRAY:
+                case NINT16_ARRAY:
+                case NINT32_ARRAY:
+                case NINT64_ARRAY:
+                case NSTRING_ARRAY:
+                case NUINT16_ARRAY:
+                case NUINT32_ARRAY:
+                case NUINT64_ARRAY:
                     throw new EventSystemException("Unsupported default value type " + type);
             }
             throw new EventSystemException("Unrecognized type " + type + " for value " + esfValue);

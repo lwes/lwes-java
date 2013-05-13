@@ -7,7 +7,6 @@ package org.lwes.emitter;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +38,6 @@ public class RandomEventEmitter {
     protected int num = 1000;
 
     private EventTemplateDB db = new EventTemplateDB();
-    private SecureRandom rand = new SecureRandom();
     private String[] eventNames;
 
     public void processArguments(String[] args) {

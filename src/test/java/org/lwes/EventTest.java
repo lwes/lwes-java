@@ -214,10 +214,8 @@ public abstract class EventTest {
         evt.setEventName("Test");
         evt.setString("attr_s", "str_value");
         evt.setInt32("attr_i", 1);
-        byte[] bytes = evt.serialize();
-        String str = new String(bytes);
-        byte[] encoded = Base64.encodeBase64(bytes);
-        // TODO this test not finished yet.
+        byte[] encoded = Base64.encodeBase64(evt.serialize());
+        assertEquals("BFRlc3QAAwNlbmMCAAEGYXR0cl9zBQAJc3RyX3ZhbHVlBmF0dHJfaQQAAAAB", new String(encoded));
     }
 
     @Test

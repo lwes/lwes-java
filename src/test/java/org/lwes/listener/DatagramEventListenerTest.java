@@ -4,17 +4,14 @@ package org.lwes.listener;
  * Date: 5/1/12
  */
 
-import junit.framework.Assert;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Collection;
+
 import org.junit.Test;
 import org.lwes.Event;
 
-import java.util.Collection;
+import junit.framework.Assert;
 
 public class DatagramEventListenerTest {
-
-    private static transient Log log = LogFactory.getLog(DatagramEventListenerTest.class);
 
     @Test
     public void testNulls() {
