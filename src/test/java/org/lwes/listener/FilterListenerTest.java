@@ -13,20 +13,43 @@ package org.lwes.listener;
  * Date: 4/25/12
  */
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.lwes.Event;
 import org.lwes.MapEvent;
 
 import junit.framework.Assert;
 
+import static org.junit.Assert.assertEquals;
+
 public class FilterListenerTest {
+    private PrintStream stdout, stderr;
+    
+    @Before
+    public void before() {
+      this.stdout = System.out;
+      this.stderr = System.err;
+    }
+    
+    @After
+    public void after() {
+      // Must restore stdout and stderr if the test replaced it.
+      System.setOut(this.stdout);
+      System.setErr(this.stderr);
+    }
 
     @Test(expected = RuntimeException.class)
     public void testBadArgument() {
+        // Avoid dumping error message to stderr
+        System.setErr(new PrintStream(new ByteArrayOutputStream()));
+        
         FilterListener filterListener = new FilterListener();
         filterListener.processArguments(
                 new String[]{
@@ -66,11 +89,14 @@ public class FilterListenerTest {
                         "-p", "0000",
                         "-e", "Test::One"
                 });
-
+        
         List<String> names = filterListener.getEventNames();
         Assert.assertNotNull(names);
         Assert.assertEquals(1, names.size());
         Assert.assertEquals("Test::One", names.get(0));
+
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
 
         MapEvent evt = new MapEvent("Test::One");
         Event matchedEvent = filterListener.match(evt);
@@ -81,6 +107,9 @@ public class FilterListenerTest {
         matchedEvent = filterListener.match(evt);
         Assert.assertNull(matchedEvent);
         filterListener.handleEvent(evt);
+        
+        System.out.close();
+        assertEquals("Test::One { \tenc = 1; }\n", new String(baos.toByteArray()));
     }
 
     @Test
