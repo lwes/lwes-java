@@ -293,6 +293,28 @@ public enum FieldType {
                 return value instanceof long[];
             case UINT64_ARRAY:
                 return value instanceof BigInteger[];
+            case NBOOLEAN_ARRAY:
+                return value instanceof Boolean[];
+            case NBYTE_ARRAY:
+                return value instanceof Byte[];
+            case NDOUBLE_ARRAY:
+                return value instanceof Double[];
+            case NFLOAT_ARRAY:
+                return value instanceof Float[];
+            case NINT16_ARRAY:
+                return value instanceof Short[];
+            case NINT32_ARRAY:
+                return value instanceof Integer[];
+            case NINT64_ARRAY:
+                return value instanceof Long[];
+            case NSTRING_ARRAY:
+                return value instanceof String[];
+            case NUINT16_ARRAY:
+                return value instanceof Integer[];
+            case NUINT32_ARRAY:
+                return value instanceof Long[];
+            case NUINT64_ARRAY:
+                return value instanceof BigInteger[];
         }
         throw new IllegalStateException("Unsupported type: " + this);
     }

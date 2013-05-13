@@ -13,7 +13,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Enumeration;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -24,8 +23,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public final class ArrayEventTest extends EventTest {
-
-    private static final Logger log = Logger.getLogger(ArrayEventTest.class);
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidEncoding() {

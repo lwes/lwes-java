@@ -152,6 +152,7 @@ public class MapEvent extends DefaultEvent {
         copyFrom(event);
     }
 
+    @Override
     public void reset() {
         name = "";
         validating = false;
@@ -180,6 +181,7 @@ public class MapEvent extends DefaultEvent {
         }
     }
 
+    @Override
     public int getNumEventAttributes() {
         return attributes.size();
     }
@@ -189,10 +191,12 @@ public class MapEvent extends DefaultEvent {
      *
      * @return an enumeration of attribute strings
      */
+    @Override
     public Enumeration<String> getEventAttributeNames() {
         return attributes.keys();
     }
 
+    @Override
     public SortedSet<String> getEventAttributes() {
         return new TreeSet<String>(attributes.keySet());
     }
@@ -247,6 +251,7 @@ public class MapEvent extends DefaultEvent {
      *
      * @return the name of the event
      */
+    @Override
     public synchronized String getEventName() {
         return this.name;
     }
@@ -257,6 +262,7 @@ public class MapEvent extends DefaultEvent {
      * @param name the name of the event
      * @throws NoSuchEventException if the event is validating and does not exist in the EventTemplateDB
      */
+    @Override
     public synchronized void setEventName(String name) {
         checkShortStringLength(name, encoding, MAX_EVENT_NAME_SIZE);
         
@@ -275,6 +281,7 @@ public class MapEvent extends DefaultEvent {
      *
      * @return the encoding
      */
+    @Override
     public short getEncoding() {
         return this.encoding;
     }
@@ -286,6 +293,7 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchAttributeTypeException if the type for the encoding attribute does not exist
      * @throws NoSuchAttributeException     if the encoding attribute does not exist
      */
+    @Override
     public void setEncoding(short encoding) throws EventSystemException {
         this.encoding = encoding;
         setInt16(ENCODING, this.encoding);
@@ -299,6 +307,7 @@ public class MapEvent extends DefaultEvent {
      * @return the object poitned to by attributeName
      * @throws NoSuchAttributeException if the attribute does not exist in this event
      */
+    @Override
     public Object get(String attributeName) {
         if (attributes.containsKey(attributeName)) {
             return attributes.get(attributeName).getTypeObject();
@@ -307,6 +316,7 @@ public class MapEvent extends DefaultEvent {
         return null;
     }
 
+    @Override
     public void clear(String attributeName) {
         final BaseType bt = attributes.remove(attributeName);
         if (bt != null) {
@@ -334,6 +344,7 @@ public class MapEvent extends DefaultEvent {
         }
     }
 
+    @Override
     public void set(String attribute, FieldType type, Object value) throws EventSystemException {
         set(attribute, new BaseType(type, value));
     }
@@ -383,6 +394,7 @@ public class MapEvent extends DefaultEvent {
      * @return the serialized byte array
      * @throws EventSystemException if there is a bug in predicting the serialized size
      */
+    @Override
     public int serialize(byte[] bytes, int offset) {
         /*
            * Serialization uses the following protocol
@@ -469,6 +481,7 @@ public class MapEvent extends DefaultEvent {
         return bytesWritten;
     }
 
+    @Override
     public int serialize(DataOutput output) throws IOException {
         final byte[] bytes = serialize();
         output.write(bytes);
@@ -481,6 +494,7 @@ public class MapEvent extends DefaultEvent {
      * @param bytes the byte array containing a serialized Event
      * @throws EventSystemException
      */
+    @Override
     public void deserialize(byte[] bytes, int offset, int length)
             throws EventSystemException {
         if (bytes == null) {
@@ -534,6 +548,7 @@ public class MapEvent extends DefaultEvent {
         }
     }
 
+    @Override
     public void deserialize(DataInput stream, int length) throws IOException, EventSystemException {
         final byte[] bytes = new byte[length];
         stream.readFully(bytes);
@@ -548,6 +563,7 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchAttributeException     if the attribute does not exist in this event
      * @throws NoSuchAttributeTypeException if there is an attribute that does not match a type in the EventTemplateDB
      */
+    @Override
     public Event copy() throws EventSystemException {
         /* match the type-checking of the original event */
         MapEvent evt = new MapEvent(name, isValidating(), getEventTemplateDB());
@@ -577,6 +593,7 @@ public class MapEvent extends DefaultEvent {
         templ.validate(this);
     }
 
+    @Override
     public FieldType getType(String field) {
         final BaseType bt = attributes.get(field);
         return bt == null ? null : bt.getType();
@@ -585,6 +602,7 @@ public class MapEvent extends DefaultEvent {
     /**
      * This returns the number of bytes necessary for serialization, not the number of attributes.
      */
+    @Override
     public int getBytesSize() {
         return bytesStoreSize;
     }

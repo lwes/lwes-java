@@ -4,8 +4,6 @@ package org.lwes;
  * Date: 2/27/13
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -16,8 +14,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class FieldTypeTest {
-
-    private static transient Log log = LogFactory.getLog(FieldTypeTest.class);
 
     @Test
     public void testIsNullableArray() {
@@ -66,6 +62,14 @@ public class FieldTypeTest {
                 arrayType == nullableArrayType);
           }
         }
+      }
+    }
+    
+    @Test
+    public void testCompatibility() {
+      final RandomEventGenerator generator = new RandomEventGenerator();
+      for (FieldType type : FieldType.values()) {
+        assertTrue(type.isCompatibleWith(generator.createRandomValue(type)));
       }
     }
 }

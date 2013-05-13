@@ -8,15 +8,11 @@ package org.lwes.db;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 public class ESFValidator {
-
-    private static transient Log log = LogFactory.getLog(ESFValidator.class);
 
     @Option(name = "-f", aliases = "--file", required = true, usage = "The ESF file to validate")
     protected String file;

@@ -6,16 +6,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class RandomEventTest {
-
-    private static final transient Log log = LogFactory.getLog(RandomEventTest.class);
 
     private final int N = 1000; // number of trials
     private final List<Class<? extends Event>> eventClasses = new ArrayList<Class<? extends Event>>();
