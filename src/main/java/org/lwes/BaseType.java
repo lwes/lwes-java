@@ -269,6 +269,30 @@ public class BaseType {
                 case UINT64_ARRAY:
                 case DOUBLE_ARRAY:
                     return Array.getLength(typeObject) * 8 + 2;
+                case BOOLEAN:
+                case BYTE:
+                case DOUBLE:
+                case FLOAT:
+                case INT16:
+                case INT32:
+                case INT64:
+                case IPADDR:
+                case UINT16:
+                case UINT32:
+                case UINT64:
+                    throw new IllegalStateException("Type should be handled in the constant-size condition: "+type);
+                case NBOOLEAN_ARRAY:
+                case NBYTE_ARRAY:
+                case NDOUBLE_ARRAY:
+                case NFLOAT_ARRAY:
+                case NINT16_ARRAY:
+                case NINT32_ARRAY:
+                case NINT64_ARRAY:
+                case NSTRING_ARRAY:
+                case NUINT16_ARRAY:
+                case NUINT32_ARRAY:
+                case NUINT64_ARRAY:
+                    throw new IllegalStateException("Type should be handled in the array-type condition: "+type);
             }
         }
         throw new IllegalArgumentException("Unknown size of BaseType " + type.name);
@@ -317,6 +341,17 @@ public class BaseType {
             case UINT32_ARRAY:
             case UINT64_ARRAY:
             case BYTE_ARRAY:
+            case NBOOLEAN_ARRAY:
+            case NBYTE_ARRAY:
+            case NDOUBLE_ARRAY:
+            case NFLOAT_ARRAY:
+            case NINT16_ARRAY:
+            case NINT32_ARRAY:
+            case NINT64_ARRAY:
+            case NSTRING_ARRAY:
+            case NUINT16_ARRAY:
+            case NUINT32_ARRAY:
+            case NUINT64_ARRAY:
                 throw new UnsupportedOperationException("Not yet implemented");
         }
         throw new NoSuchAttributeTypeException("Unknown size of BaseType "
