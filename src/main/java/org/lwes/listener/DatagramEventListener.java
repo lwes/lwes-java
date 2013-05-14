@@ -37,15 +37,21 @@ import java.util.Collection;
  */
 public class DatagramEventListener extends ThreadedEventListener {
     /* the enqueuer to use to acquire multicast packets */
-    private DatagramEnqueuer enqueuer = new DatagramEnqueuer();
+    private DatagramEnqueuer enqueuer;
 
     /* the dequeuer to use to handle packets */
-    private DatagramDequeuer dequeuer = new DatagramDequeuer();
+    private DatagramDequeuer dequeuer;
 
     /**
      * Default constructor.
      */
     public DatagramEventListener() {
+    	this(new DatagramEnqueuer(), new DatagramDequeuer());
+    }
+    
+    protected DatagramEventListener(DatagramEnqueuer enqueuer, DatagramDequeuer dequeuer){
+    	this.enqueuer = enqueuer;
+    	this.dequeuer = dequeuer;
     }
 
     /**
