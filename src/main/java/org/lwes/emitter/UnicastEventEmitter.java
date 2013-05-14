@@ -63,7 +63,7 @@ public class UnicastEventEmitter implements EventEmitter {
 	private int port = 9191;
 
 	/* a lock variable to synchronize events */
-	private Object lock = new Object();
+	protected Object lock = new Object();
 
 	/**
 	 * Default constructor.

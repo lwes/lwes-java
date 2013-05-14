@@ -95,7 +95,7 @@ public class DatagramDequeuer extends ThreadedDequeuer {
         /* now try to deserialize the packet */
         try {
             /* don't validate the event for now to save time */
-            Event event = factory.createEvent(packet.getData(), false);
+            Event event = factory.createEvent(getData(packet), false);
             event.setInt64(Event.RECEIPT_TIME, timestamp);
             event.setIPAddress(Event.SENDER_IP, address);
             event.setUInt16(Event.SENDER_PORT, port);
@@ -109,5 +109,9 @@ public class DatagramDequeuer extends ThreadedDequeuer {
                 log.warn("Unable to deserialize event in handleElement()", e);
             }
         }
+    }
+    
+    protected byte[] getData (DatagramPacket packet) throws IOException {
+    	return packet.getData();
     }
 }
