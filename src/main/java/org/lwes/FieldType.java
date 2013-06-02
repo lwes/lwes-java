@@ -135,7 +135,7 @@ public enum FieldType {
 
     public static FieldType[] fixedValues() {
         return new FieldType[] {
-                /*UINT16,
+                UINT16,
                 INT16,
                 UINT32,
                 INT32,
@@ -159,7 +159,6 @@ public enum FieldType {
                 BYTE_ARRAY,
                 FLOAT_ARRAY,
                 DOUBLE_ARRAY,
-                */
 
                 NUINT16_ARRAY,
                 NINT16_ARRAY,
