@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ArrayEventPerformanceTest {
   private static final Log                 LOG        = LogFactory.getLog(ArrayEventPerformanceTest.class);
-  private static final int                 NUM_EVENTS = 100, NUM_PASSES = 1000;
+  private static final int                 NUM_EVENTS = 100, NUM_PASSES = 10000;
   private static double                    CPU_SCALE;  // used to reduce CPU-dependent effects
   private static final double              TOLERANCE  = 1.5;
   private ArrayEvent[]                     events;
@@ -30,7 +30,7 @@ public class ArrayEventPerformanceTest {
   
   // Change these values as performance shifts. If ArrayEvent gets faster, lower
   // them.  If we are forced to accept it getting slower, lower them.
-  private static final double DIRECT_GET_CPU_TIME = 140000;
+  private static final double DIRECT_GET_CPU_TIME = 117000;
   
   @BeforeClass
   public static void beforeClass() {
