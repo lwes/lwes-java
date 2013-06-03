@@ -14,7 +14,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Enumeration;
@@ -475,13 +474,13 @@ public final class ArrayEvent extends DefaultEvent {
                 // array_len + bitset_len + bitset + array
                 DeserializerState ds = new DeserializerState();
                 ds.incr(valueIndex+2); // array length
-                BitSet bs = Deserializer.deserializeBitSet(ds, bytes);
+                final int count = Deserializer.deserializeBitSetCount(ds, bytes);
                 if (type.getComponentType().isConstantSize()) {
-                    ds.incr(type.getComponentType().getConstantSize() * bs.cardinality());
+                    ds.incr(type.getComponentType().getConstantSize() * count);
                 } else {
                     // If the field is not constant-width, we must walk it.  If there are N
                     // bits set in the BitSet, consume N objects of the component type.
-                    for (int i=0, n=bs.cardinality(); i<n; i++) {
+                    for (int i=0; i<count; i++) {
                         ds.incr(getValueByteSize(type.getComponentType(), ds.currentIndex()));
                     }
                 }
