@@ -390,7 +390,8 @@ public final class ArrayEvent extends DefaultEvent {
                     tempState.incr(1 + keyLength); // field name
                     final FieldType type = FieldType.byToken(bytes[tempState.currentIndex()]);
                     tempState.incr(1); // type token
-                    Deserializer.deserializeValue(tempState, bytes, type, (short) 1);
+                    // Skip the value without deserializing it
+                    tempState.incr(getValueByteSize(type, tempState.currentIndex()));
                 }
             }
             if (tempState.currentIndex() > length) {
