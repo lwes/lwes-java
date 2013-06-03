@@ -133,46 +133,6 @@ public enum FieldType {
         return type;
     }
 
-    public static FieldType[] fixedValues() {
-        return new FieldType[] {
-                UINT16,
-                INT16,
-                UINT32,
-                INT32,
-                STRING,
-                IPADDR,
-                INT64,
-                UINT64,
-                BOOLEAN,
-                BYTE,
-                FLOAT,
-                DOUBLE,
-                UINT16_ARRAY,
-                INT16_ARRAY,
-                UINT32_ARRAY,
-                INT32_ARRAY,
-                STRING_ARRAY,
-                IP_ADDR_ARRAY,
-                INT64_ARRAY,
-                UINT64_ARRAY,
-                BOOLEAN_ARRAY,
-                BYTE_ARRAY,
-                FLOAT_ARRAY,
-                DOUBLE_ARRAY,
-
-                NUINT16_ARRAY,
-                NINT16_ARRAY,
-                NUINT32_ARRAY,
-                NINT32_ARRAY,
-                NSTRING_ARRAY,
-                NINT64_ARRAY,
-                NUINT64_ARRAY,
-                NBOOLEAN_ARRAY,
-                NBYTE_ARRAY,
-                NFLOAT_ARRAY,
-        };    
-    }
-    
     @Override
     public String toString() {
         return name;
