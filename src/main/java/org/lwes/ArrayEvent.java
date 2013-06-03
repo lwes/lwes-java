@@ -166,7 +166,7 @@ public final class ArrayEvent extends DefaultEvent {
                 final int tokenIndex = getTokenIndexFromFieldIndex(fieldIndex);
                 final FieldType oldType = FieldType.byToken(bytes[tokenIndex]);
                 if (oldType == type && type.isConstantSize()) {
-                    // Modify the value in place, requiring neither shifts nor changes to keyCache.
+                    // Modify the value in place, requiring no shifts.
                     Serializer.serializeValue(type, value, encoding, bytes, tokenIndex + 1);
                     return;
                 }
