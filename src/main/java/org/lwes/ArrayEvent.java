@@ -20,6 +20,7 @@ import java.util.EnumMap;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -526,6 +527,15 @@ public final class ArrayEvent extends DefaultEvent {
 
     public static Map<ArrayEventStats, MutableInt> getStats() {
         return STATS;
+    }
+
+    public static Map<ArrayEventStats, Integer> getStatsSnapshot() {
+        final Map<ArrayEventStats, Integer> statsCopy =
+            new EnumMap<ArrayEventStats, Integer>(ArrayEventStats.class);
+        for (Entry<ArrayEventStats, MutableInt> entry : STATS.entrySet()) {
+          statsCopy.put(entry.getKey(), entry.getValue().intValue());
+        }
+        return statsCopy;
     }
 
     public static void resetStats() {
