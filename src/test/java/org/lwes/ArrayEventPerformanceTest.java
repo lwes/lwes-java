@@ -30,7 +30,7 @@ public class ArrayEventPerformanceTest {
   
   // Change these values as performance shifts. If ArrayEvent gets faster, lower
   // them.  If we are forced to accept it getting slower, lower them.
-  private static final double DIRECT_GET_CPU_TIME = 117000;
+  private static final double DIRECT_GET_CPU_TIME = 76000;
   
   @BeforeClass
   public static void beforeClass() {
