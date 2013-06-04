@@ -410,12 +410,12 @@ public class Deserializer {
         try {
             len = deserializeUINT16(myState, bytes);
 
-            if (log.isTraceEnabled()) {
-                log.trace("Datagram Bytes: " +
-                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-                log.trace("String Length: " + len);
-                log.trace("State: " + myState);
-            }
+//            if (log.isTraceEnabled()) {
+//                log.trace("Datagram Bytes: " +
+//                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+//                log.trace("String Length: " + len);
+//                log.trace("State: " + myState);
+//            }
 
             aString = EncodedString.bytesToString(bytes, myState.currentIndex(), len,
                                                   Event.ENCODING_STRINGS[encoding]);
@@ -454,12 +454,12 @@ public class Deserializer {
         try {
             len = deserializeUBYTE(myState, bytes);
 
-            if (log.isTraceEnabled()) {
-                log.trace("Datagram Bytes: " +
-                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-                log.trace("String Length: " + len);
-                log.trace("State: " + myState);
-            }
+//            if (log.isTraceEnabled()) {
+//                log.trace("Datagram Bytes: " +
+//                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+//                log.trace("String Length: " + len);
+//                log.trace("State: " + myState);
+//            }
 
             aString = EncodedString.bytesToString(bytes, myState.currentIndex(), len,
                                                   Event.ENCODING_STRINGS[encoding]);
