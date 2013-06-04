@@ -424,31 +424,34 @@ public final class ArrayEvent extends DefaultEvent {
         if (type == FieldType.STRING) {
             return 2 + deserializeUINT16(valueIndex);
         }
-        if (type.isNullableArray()) {
-            // array_len + bitset_len + bitset + array
-            DeserializerState ds = new DeserializerState();
-            ds.incr(valueIndex+2); // array length
-            final int count = Deserializer.deserializeBitSetCount(ds, bytes);
-            if (type.getComponentType().isConstantSize()) {
-              ds.incr(type.getComponentType().getConstantSize() * count);
-            } else {
-              // If the field is not constant-width, we must walk it.  If there are N
-              // bits set in the BitSet, consume N objects of the component type.
-              for (int i=0; i<count; i++) {
-                ds.incr(getValueByteSize(type.getComponentType(), ds.currentIndex()));
-              }
-            }
-            return ds.currentIndex() - valueIndex;
-        }
         if (type.isArray()) {
-            if (type.getComponentType().isConstantSize()) {
-                return 2 + deserializeUINT16(valueIndex) * type.getComponentType().getConstantSize();
+            final FieldType componentType = type.getComponentType();
+            
+            if (type.isNullableArray()) {
+                // array_len + bitset_len + bitset + array
+                DeserializerState ds = new DeserializerState();
+                ds.incr(valueIndex+2); // array length
+                final int count = Deserializer.deserializeBitSetCount(ds, bytes);
+                if (componentType.isConstantSize()) {
+                    ds.incr(componentType.getConstantSize() * count);
+                } else {
+                    // If the field is not constant-width, we must walk it.  If there are N
+                    // bits set in the BitSet, consume N objects of the component type.
+                    for (int i=0; i<count; i++) {
+                        ds.incr(getValueByteSize(componentType, ds.currentIndex()));
+                    }
+                }
+                return ds.currentIndex() - valueIndex;
+            }
+            
+            if (componentType.isConstantSize()) {
+                return 2 + deserializeUINT16(valueIndex) * componentType.getConstantSize();
             } else {
                 DeserializerState ds = new DeserializerState();
                 ds.incr(valueIndex); // array length
                 final int count = Deserializer.deserializeUINT16(ds, bytes);
                 for (int i=0; i<count; i++) {
-                  ds.incr(getValueByteSize(type.getComponentType(), ds.currentIndex()));
+                  ds.incr(getValueByteSize(componentType, ds.currentIndex()));
                 }
                 return ds.currentIndex() - valueIndex;
             }
