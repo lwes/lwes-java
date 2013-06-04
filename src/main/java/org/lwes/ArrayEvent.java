@@ -418,73 +418,40 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     public int getValueByteSize(FieldType type, int valueIndex) {
-        switch (type) {
-            case BOOLEAN:
-            case BYTE:
-                return 1;
-            case UINT16:
-            case INT16:
-                return 2;
-            case UINT32:
-            case INT32:
-            case FLOAT:
-            case IPADDR:
-                return 4;
-            case INT64:
-            case UINT64:
-            case DOUBLE:
-                return 8;
-            case STRING:
-                return 2 + deserializeUINT16(valueIndex);
-            case STRING_ARRAY: {
-                int index0 = valueIndex;
-                int count = deserializeUINT16(valueIndex);
-                valueIndex += 2;
-                for (int n = 0; n < count; ++n) {
-                    valueIndex += 2 + deserializeUINT16(valueIndex);
-                }
-                return valueIndex - index0;
+        if (type.isConstantSize()) {
+            return type.getConstantSize();
+        }
+        if (type == FieldType.STRING) {
+            return 2 + deserializeUINT16(valueIndex);
+        }
+        if (type.isNullableArray()) {
+            // array_len + bitset_len + bitset + array
+            DeserializerState ds = new DeserializerState();
+            ds.incr(valueIndex+2); // array length
+            final int count = Deserializer.deserializeBitSetCount(ds, bytes);
+            if (type.getComponentType().isConstantSize()) {
+              ds.incr(type.getComponentType().getConstantSize() * count);
+            } else {
+              // If the field is not constant-width, we must walk it.  If there are N
+              // bits set in the BitSet, consume N objects of the component type.
+              for (int i=0; i<count; i++) {
+                ds.incr(getValueByteSize(type.getComponentType(), ds.currentIndex()));
+              }
             }
-            case BOOLEAN_ARRAY:
-            case BYTE_ARRAY:
-                return 2 + deserializeUINT16(valueIndex);
-            case INT16_ARRAY:
-            case UINT16_ARRAY:
-                return 2 + deserializeUINT16(valueIndex) * 2;
-            case INT32_ARRAY:
-            case UINT32_ARRAY:
-            case FLOAT_ARRAY:
-            case IP_ADDR_ARRAY:
-                return 2 + deserializeUINT16(valueIndex) * 4;
-            case INT64_ARRAY:
-            case UINT64_ARRAY:
-            case DOUBLE_ARRAY:
-                return 2 + deserializeUINT16(valueIndex) * 8;
-            case NBOOLEAN_ARRAY:
-            case NBYTE_ARRAY:
-            case NDOUBLE_ARRAY:
-            case NFLOAT_ARRAY:
-            case NINT16_ARRAY:
-            case NINT32_ARRAY:
-            case NINT64_ARRAY:
-            case NSTRING_ARRAY:
-            case NUINT16_ARRAY:
-            case NUINT32_ARRAY:
-            case NUINT64_ARRAY:
-                // array_len + bitset_len + bitset + array
+            return ds.currentIndex() - valueIndex;
+        }
+        if (type.isArray()) {
+            if (type.getComponentType().isConstantSize()) {
+                return 2 + deserializeUINT16(valueIndex) * type.getComponentType().getConstantSize();
+            } else {
                 DeserializerState ds = new DeserializerState();
-                ds.incr(valueIndex+2); // array length
-                final int count = Deserializer.deserializeBitSetCount(ds, bytes);
-                if (type.getComponentType().isConstantSize()) {
-                    ds.incr(type.getComponentType().getConstantSize() * count);
-                } else {
-                    // If the field is not constant-width, we must walk it.  If there are N
-                    // bits set in the BitSet, consume N objects of the component type.
-                    for (int i=0; i<count; i++) {
-                        ds.incr(getValueByteSize(type.getComponentType(), ds.currentIndex()));
-                    }
+                ds.incr(valueIndex); // array length
+                final int count = Deserializer.deserializeUINT16(ds, bytes);
+                for (int i=0; i<count; i++) {
+                  ds.incr(getValueByteSize(type.getComponentType(), ds.currentIndex()));
                 }
                 return ds.currentIndex() - valueIndex;
+            }
         }
         throw new IllegalStateException("Unrecognized type: " + type);
     }
