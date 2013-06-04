@@ -47,7 +47,7 @@ public final class RandomEventGenerator {
     }
 
     public void fillRandomField(Event event) {
-        final FieldType type = FieldType.fixedValues()[random.nextInt(FieldType.fixedValues().length)];
+        final FieldType type = FieldType.values()[random.nextInt(FieldType.values().length)];
         final Object value = createRandomValue(type);
         String name;
         do {

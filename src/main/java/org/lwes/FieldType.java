@@ -10,12 +10,8 @@
 package org.lwes;
 
 import java.math.BigInteger;
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.lwes.util.IPAddress;
 
@@ -61,15 +57,14 @@ public enum FieldType {
     NFLOAT_ARRAY(0x97, "[LFloat", new Float[0]),
     NDOUBLE_ARRAY(0x98, "[LDouble", new Double[0]);
 
-    public final byte token;
-    public final String name;
-    private final boolean array;
-    private final Object defaultValue;
-    private static final FieldType[] TYPES_BY_TOKEN = new FieldType[256];
-    private static final Map<String, FieldType>    TYPES_BY_NAME;
-    private static final Map<FieldType, FieldType> COMPONENTS;
-    private static final Set<FieldType>            NULLABLE_ARRAY_TYPES;
-    private static final Map<FieldType,Integer>    CONSTANT_SIZES;
+    public final byte                           token;
+    public final String                         name;
+    private Integer                             constantSize;
+    private final boolean                       array, nullableArray;
+    private FieldType                           componentType, arrayType, nullableArrayType;
+    private final Object                        defaultValue;
+    private static final FieldType[]            TYPES_BY_TOKEN = new FieldType[256];
+    private static final Map<String, FieldType> TYPES_BY_NAME;
 
     private FieldType(int token, String name) {
         this(token, name, null);
@@ -79,42 +74,42 @@ public enum FieldType {
         this.token = (byte) token;
         this.name = name;
         this.array = name.startsWith("[L");
+        this.nullableArray = this.array && name().startsWith("N");
         this.defaultValue = defaultValue;
     }
 
     static {
         TYPES_BY_NAME        = new HashMap<String, FieldType>();
-        COMPONENTS           = new EnumMap<FieldType, FieldType>(FieldType.class);
-        NULLABLE_ARRAY_TYPES = EnumSet.noneOf(FieldType.class);
-        CONSTANT_SIZES       = new EnumMap<FieldType,Integer>(FieldType.class);
         for (FieldType type : values()) {
             TYPES_BY_TOKEN[type.token & 0xff] = type;
             TYPES_BY_NAME.put(type.name, type);
             
-            if (type.name().endsWith("_ARRAY")) {
-              // This will fail if our naming becomes inconsistent or a type starts with N.
-              String name = type.name();
-              name = name.replace("_ARRAY", "");
-              name = name.replaceFirst("^N", "");
-              name = name.replace("IP_ADDR", "IPADDR");  // due to formatting inconsistency
-              COMPONENTS.put(type, valueOf(name));
-              
-              if (type.name().startsWith("N")) {
-                NULLABLE_ARRAY_TYPES.add(type);
-              }
+            if (type.isArray()) {
+                // This will fail if our naming becomes inconsistent or a type starts with N.
+                String name = type.name();
+                name = name.replace("_ARRAY", "");
+                name = name.replaceFirst("^N", "");
+                name = name.replace("IP_ADDR", "IPADDR");  // due to formatting inconsistency
+                final FieldType componentType = valueOf(name);
+                type.componentType = componentType;
+                if (type.isNullableArray()) {
+                    componentType.nullableArrayType = type;
+                } else {
+                    componentType.arrayType = type;
+                }
             }
         }
-        CONSTANT_SIZES.put(BOOLEAN, 1);
-        CONSTANT_SIZES.put(BYTE,    1);
-        CONSTANT_SIZES.put(INT16,   2);
-        CONSTANT_SIZES.put(UINT16,  2);
-        CONSTANT_SIZES.put(FLOAT,   4);
-        CONSTANT_SIZES.put(INT32,   4);
-        CONSTANT_SIZES.put(IPADDR,  4);
-        CONSTANT_SIZES.put(UINT32,  4);
-        CONSTANT_SIZES.put(INT64,   8);
-        CONSTANT_SIZES.put(UINT64,  8);
-        CONSTANT_SIZES.put(DOUBLE,  8);
+        BOOLEAN.constantSize = 1;
+        BYTE.constantSize    = 1;
+        INT16.constantSize   = 2;
+        UINT16.constantSize  = 2;
+        FLOAT.constantSize   = 4;
+        INT32.constantSize   = 4;
+        IPADDR.constantSize  = 4;
+        UINT32.constantSize  = 4;
+        INT64.constantSize   = 8;
+        UINT64.constantSize  = 8;
+        DOUBLE.constantSize  = 8;
     }
 
     public static FieldType byToken(byte token) {
@@ -133,53 +128,13 @@ public enum FieldType {
         return type;
     }
 
-    public static FieldType[] fixedValues() {
-        return new FieldType[] {
-                UINT16,
-                INT16,
-                UINT32,
-                INT32,
-                STRING,
-                IPADDR,
-                INT64,
-                UINT64,
-                BOOLEAN,
-                BYTE,
-                FLOAT,
-                DOUBLE,
-                UINT16_ARRAY,
-                INT16_ARRAY,
-                UINT32_ARRAY,
-                INT32_ARRAY,
-                STRING_ARRAY,
-                IP_ADDR_ARRAY,
-                INT64_ARRAY,
-                UINT64_ARRAY,
-                BOOLEAN_ARRAY,
-                BYTE_ARRAY,
-                FLOAT_ARRAY,
-                DOUBLE_ARRAY,
-
-                NUINT16_ARRAY,
-                NINT16_ARRAY,
-                NUINT32_ARRAY,
-                NINT32_ARRAY,
-                NSTRING_ARRAY,
-                NINT64_ARRAY,
-                NUINT64_ARRAY,
-                NBOOLEAN_ARRAY,
-                NBYTE_ARRAY,
-                NFLOAT_ARRAY,
-        };    
-    }
-    
     @Override
     public String toString() {
         return name;
     }
 
     public boolean isNullableArray() {
-        return NULLABLE_ARRAY_TYPES.contains(this);
+        return nullableArray;
     }
 
     public boolean isArray() {
@@ -191,52 +146,47 @@ public enum FieldType {
     }
 
     public FieldType getNullableArrayType() {
-      for (Entry<FieldType,FieldType> entry : COMPONENTS.entrySet()) {
-        if (this == entry.getValue() && entry.getKey().isNullableArray()) {
-          return entry.getKey();
+        if (nullableArrayType == null) {
+            if (isArray()) {
+                throw new IllegalStateException(
+                    "Multidimensional arrays are not supported; " + this + ".getArrayType() unsupported");
+            } else {
+                throw new IllegalStateException("Unsupported type: " + this);
+            }
         }
-      }
-      if (COMPONENTS.containsKey(this)) {
-        throw new IllegalStateException(
-            "Multidimensional arrays are not supported; " + this + ".getArrayType() unsupported");
-      } else {
-        throw new IllegalStateException("Unsupported type: " + this);
-      }
+        return nullableArrayType;
     }
 
     public FieldType getArrayType() {
-        for (Entry<FieldType,FieldType> entry : COMPONENTS.entrySet()) {
-          if (this == entry.getValue() && ! entry.getKey().isNullableArray()) {
-            return entry.getKey();
-          }
+        if (arrayType == null) {
+            if (isArray()) {
+                throw new IllegalStateException(
+                    "Multidimensional arrays are not supported; " + this + ".getArrayType() unsupported");
+            } else {
+                throw new IllegalStateException("Unsupported type: " + this);
+            }
         }
-        if (COMPONENTS.containsKey(this)) {
-          throw new IllegalStateException(
-              "Multidimensional arrays are not supported; " + this + ".getArrayType() unsupported");
-        } else {
-          throw new IllegalStateException("Unsupported type: " + this);
-        }
+        return arrayType;
     }
 
     public FieldType getComponentType() {
-      final FieldType component = COMPONENTS.get(this);
-      if (component == null) {
+      if (componentType == null) {
         throw new IllegalStateException(
             "Only array types provide component types " + this + ".getComponentType() unsupported");
       }
-      return component;
+      return componentType;
     }
 
     public boolean isConstantSize() {
-      return CONSTANT_SIZES.containsKey(this);
-  }
+        return constantSize != null;
+    }
 
     public int getConstantSize() {
-        final Integer size = CONSTANT_SIZES.get(this);
-        if (size == null) {
+        if (constantSize == null) {
             throw new IllegalStateException("Type "+this+" does not have a constant size");
+        } else {
+            return constantSize;
         }
-        return size;
     }
 
     public boolean isCompatibleWith(Object value) {
