@@ -57,14 +57,14 @@ public enum FieldType {
     NFLOAT_ARRAY(0x97, "[LFloat", new Float[0]),
     NDOUBLE_ARRAY(0x98, "[LDouble", new Double[0]);
 
-    public final byte token;
-    public final String name;
-    private Integer constantSize;
-    private final boolean array, nullableArray;
-    private FieldType componentType, arrayType, nullableArrayType;
-    private final Object defaultValue;
-    private static final FieldType[] TYPES_BY_TOKEN = new FieldType[256];
-    private static final Map<String, FieldType>    TYPES_BY_NAME;
+    public final byte                           token;
+    public final String                         name;
+    private Integer                             constantSize;
+    private final boolean                       array, nullableArray;
+    private FieldType                           componentType, arrayType, nullableArrayType;
+    private final Object                        defaultValue;
+    private static final FieldType[]            TYPES_BY_TOKEN = new FieldType[256];
+    private static final Map<String, FieldType> TYPES_BY_NAME;
 
     private FieldType(int token, String name) {
         this(token, name, null);
