@@ -410,12 +410,12 @@ public class Deserializer {
         try {
             len = deserializeUINT16(myState, bytes);
 
-            if (log.isTraceEnabled()) {
-                log.trace("Datagram Bytes: " +
-                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-                log.trace("String Length: " + len);
-                log.trace("State: " + myState);
-            }
+//            if (log.isTraceEnabled()) {
+//                log.trace("Datagram Bytes: " +
+//                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+//                log.trace("String Length: " + len);
+//                log.trace("State: " + myState);
+//            }
 
             aString = EncodedString.bytesToString(bytes, myState.currentIndex(), len,
                                                   Event.ENCODING_STRINGS[encoding]);
@@ -454,12 +454,12 @@ public class Deserializer {
         try {
             len = deserializeUBYTE(myState, bytes);
 
-            if (log.isTraceEnabled()) {
-                log.trace("Datagram Bytes: " +
-                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
-                log.trace("String Length: " + len);
-                log.trace("State: " + myState);
-            }
+//            if (log.isTraceEnabled()) {
+//                log.trace("Datagram Bytes: " +
+//                          NumberCodec.byteArrayToHexString(bytes, 0, bytes.length));
+//                log.trace("String Length: " + len);
+//                log.trace("State: " + myState);
+//            }
 
             aString = EncodedString.bytesToString(bytes, myState.currentIndex(), len,
                                                   Event.ENCODING_STRINGS[encoding]);
@@ -506,6 +506,28 @@ public class Deserializer {
         }
         myState.incr(numBytes);
         return bitSet;
+    }
+
+    /**
+     * Instead of deserializing the whole bit set, just determine the number of
+     * bits which are set, while moving "myState" past the bit set.  This is only
+     * useful if it is faster than deserializeBitSet(myState,bytes).cardinality().
+     */
+    public static int deserializeBitSetCount(DeserializerState myState, byte[] bytes) {
+        int size = deserializeUINT16(myState, bytes);
+        int numBytes = (size / 8) + (size % 8 == 0 ? 0 : 1);
+        int offset = myState.currentIndex();
+        int bitsSet = 0;
+        for (int i = 0; i < numBytes; i++) {
+            int val = bytes[offset + i];
+            for (int j = 0; j < 8; j++) {
+                if ((val & (1 << j)) != 0) {
+                    ++bitsSet;
+                }
+            }
+        }
+        myState.incr(numBytes);
+        return bitsSet;
     }
 
     public static String[] deserializeNStringArray(DeserializerState state,
