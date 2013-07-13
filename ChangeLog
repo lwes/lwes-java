@@ -1,3 +1,5 @@
+* Tue Jul 30 08:00:00 PDT 2013 Robert Wong <rob@openx.com> 1.4.0
+Added random sampling for event emission
 * Wed Jun 05 08:00:00 PDT 2013 Preston Pfarner <preston.pfarner@gmail.com> 1.3.3
 Significant speed increases for ArrayEvent.
 * Thu Apr 11 11:23:26 PDT 2013 Frank Maritato <frank.maritato@openx.com> 1.3.1
