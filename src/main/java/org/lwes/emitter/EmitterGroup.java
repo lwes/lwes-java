@@ -32,6 +32,7 @@ public abstract class EmitterGroup {
     if (sampleRate < 0.0 || sampleRate > 1.0) {
       throw new IllegalArgumentException("Sample rate must be within range [0.0, 1.0]");
     }
+    this.sampleRate = sampleRate;
     this.filter = filter;
   }
 
