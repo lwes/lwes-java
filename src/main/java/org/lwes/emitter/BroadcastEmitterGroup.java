@@ -27,7 +27,11 @@ public class BroadcastEmitterGroup extends EmitterGroup {
   protected final PreserializedUnicastEventEmitter[] emitters;
 
   public BroadcastEmitterGroup(PreserializedUnicastEventEmitter[] emitters, EmitterGroupFilter filter) {
-    super(filter);
+    this(emitters, filter, 1.0);
+  }
+  
+  public BroadcastEmitterGroup(PreserializedUnicastEventEmitter[] emitters, EmitterGroupFilter filter, double sampleRate) {
+    super(filter, sampleRate);
     this.emitters = emitters;
   }
 
