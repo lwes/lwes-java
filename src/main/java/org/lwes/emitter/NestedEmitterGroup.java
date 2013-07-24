@@ -25,14 +25,18 @@ public class NestedEmitterGroup extends EmitterGroup {
 	private AtomicInteger i;
 	private int m;
 	private int n;
-
+	
 	/**
-	 * @param emittergroups
+   * @param emittergroups
      * @param m
      * @param filter
-	 */
-	public NestedEmitterGroup(EmitterGroup[] emittergroups, int m, EmitterGroupFilter filter) {
-	  super(filter);
+   */
+  public NestedEmitterGroup(EmitterGroup[] emittergroups, int m, EmitterGroupFilter filter) {
+    this(emittergroups, m, filter, 1.0);
+  }
+
+	public NestedEmitterGroup(EmitterGroup[] emittergroups, int m, EmitterGroupFilter filter, double sampleRate) {
+	  super(filter, sampleRate);
 		this.m = m;
 		this.n = emittergroups.length;
 		this.emitterGroups = emittergroups;
