@@ -33,11 +33,15 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
   private final int n;
   private final AtomicInteger i;
 
+  public MOfNEmitterGroup(PreserializedUnicastEventEmitter[] emitters, int m, EmitterGroupFilter filter) {
+    this(emitters, m, filter, 1.0);
+  }
+  
   /**
    * @param emitters
    */
-  public MOfNEmitterGroup(PreserializedUnicastEventEmitter[] emitters, int m, EmitterGroupFilter filter) {
-    super(emitters, filter);
+  public MOfNEmitterGroup(PreserializedUnicastEventEmitter[] emitters, int m, EmitterGroupFilter filter, double sampleRate) {
+    super(emitters, filter, sampleRate);
     this.m = m;
     this.n = emitters.length;
     this.i = new AtomicInteger(0);

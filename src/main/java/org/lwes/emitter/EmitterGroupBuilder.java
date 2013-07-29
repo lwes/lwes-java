@@ -93,13 +93,16 @@ public class EmitterGroupBuilder {
     String[] hosts = hostsStr.split(",");
     String strategy = props.getProperty(prefix + "strategy");
 
+    String rateStr = props.getProperty(prefix + "sample_rate");
+    double defaultSampleRate = null == rateStr ? 1.0 : Double.parseDouble(rateStr);
+
     EmitterGroupFilter filter = getEmitterGroupFilter(props, prefix);
     if (filter != null) {
       LOG.info(String.format("Emitter group %s : %s", groupName, filter));
     }
 
     if (STRATEGY_NESTED.matcher(strategy).matches()) {
-    	return buildNestedEmitterGroup(hostsStr, strategy, defaultPort, filter);
+    	return buildNestedEmitterGroup(hostsStr, strategy, defaultPort, filter, defaultSampleRate);
     }
 
     PreserializedUnicastEventEmitter[] emitters = new PreserializedUnicastEventEmitter[hosts.length];
@@ -138,9 +141,9 @@ public class EmitterGroupBuilder {
     Matcher mOfN = STRATEGY_M_OF_N.matcher(strategy);
 
     if (STRATEGY_ALL.equalsIgnoreCase(strategy)) {
-      return new BroadcastEmitterGroup(emitters, filter);
+      return new BroadcastEmitterGroup(emitters, filter, defaultSampleRate);
     } else if (mOfN.matches()) {
-      return new MOfNEmitterGroup(emitters, Integer.parseInt(mOfN.group(1)), filter);
+      return new MOfNEmitterGroup(emitters, Integer.parseInt(mOfN.group(1)), filter, defaultSampleRate);
     } else {
       throw new RuntimeException(
           String.format(
@@ -151,7 +154,7 @@ public class EmitterGroupBuilder {
     }
   }
   
-  private static EmitterGroup buildNestedEmitterGroup(String hostsStr, String strategyStr, int port, EmitterGroupFilter filter) throws IOException {
+  private static EmitterGroup buildNestedEmitterGroup(String hostsStr, String strategyStr, int port, EmitterGroupFilter filter, double sampleRate) throws IOException {
 	String[] ratioConfig = strategyStr.split("_");	
 	if (null == ratioConfig || ratioConfig.length != 2) {
 		throw new IllegalArgumentException("Invalid nested strategy config " + strategyStr);
@@ -176,7 +179,7 @@ public class EmitterGroupBuilder {
 	
 	int groupEmitCount = getEmitCount(ratioConfig[0]);
 	EmitterGroup[] emitterGroupsArray = emitterGroups.toArray(new EmitterGroup[emitterGroups.size()]);
-	return new NestedEmitterGroup(emitterGroupsArray, groupEmitCount == -1 ? emitterGroupsArray.length : groupEmitCount, filter);
+	return new NestedEmitterGroup(emitterGroupsArray, groupEmitCount == -1 ? emitterGroupsArray.length : groupEmitCount, filter, sampleRate);
   }
   
   /**
