@@ -12,16 +12,14 @@
 
 package org.lwes.listener;
 
-import org.lwes.EventSystemException;
-
 import java.net.InetAddress;
 import java.util.Collection;
 
 /**
- * This is an event listener that handles UDP packets.  Automatically
- * detects multicast addresses and joins those groups.
+ * This is an event listener that handles UDP packets. Automatically detects multicast addresses and joins those groups.
  * <p/>
  * Sample code that prints multicast events to stdout:
+ *
  * <pre>
  * EventHandler myHandler = new EventPrintingHandler();
  * InetAddress address = InetAddress.getByName("224.0.0.69");
@@ -35,19 +33,22 @@ import java.util.Collection;
  *
  * @author Michael P. Lum
  */
-public class DatagramEventListener extends ThreadedEventListener {
-    /* the enqueuer to use to acquire multicast packets */
-    private DatagramEnqueuer enqueuer = new DatagramEnqueuer();
-
-    /* the dequeuer to use to handle packets */
-    private DatagramDequeuer dequeuer = new DatagramDequeuer();
+public class DatagramEventListener extends ThreadedEventListener<DatagramEnqueuer, DatagramDequeuer> {
 
     /**
      * Default constructor.
      */
     public DatagramEventListener() {
+        /* the enqueuer to use to acquire multicast packets */
+        enqueuer = new DatagramEnqueuer();
+        /* the dequeuer to use to handle packets */
+        dequeuer = new DatagramDequeuer();
     }
 
+    public DatagramEventListener(DatagramEnqueuer enqueuer, DatagramDequeuer dequeuer) {
+        this.enqueuer = enqueuer;
+        this.dequeuer = dequeuer;
+    }
     /**
      * Gets the address to use for this listener
      *
@@ -118,8 +119,8 @@ public class DatagramEventListener extends ThreadedEventListener {
     }
 
     /**
-     * Get the TTL to use for this listener.  Only applies to
-     * multicast listeners.  Typically this does not need to be changed.
+     * Get the TTL to use for this listener. Only applies to multicast listeners. Typically this does not need to be
+     * changed.
      *
      * @return the interface
      */
@@ -131,8 +132,8 @@ public class DatagramEventListener extends ThreadedEventListener {
     }
 
     /**
-     * Sets the TTL to use for this listener.  Only applies to multicast listeners.
-     * Typically this does not need to be changed.
+     * Sets the TTL to use for this listener. Only applies to multicast listeners. Typically this does not need to be
+     * changed.
      *
      * @param ttl the TTL value
      */
@@ -166,8 +167,8 @@ public class DatagramEventListener extends ThreadedEventListener {
     }
 
     /**
-     * Adds an event handler to this listener.  This has a callback that will be invoked
-     * for every event coming through the system.
+     * Adds an event handler to this listener. This has a callback that will be invoked for every event coming through
+     * the system.
      *
      * @param handler the EventHandler to add
      */
@@ -179,8 +180,8 @@ public class DatagramEventListener extends ThreadedEventListener {
     }
 
     /**
-     * Removes an event handler from the system.  This causes the event handler to no longer
-     * receive events coming through the system.
+     * Removes an event handler from the system. This causes the event handler to no longer receive events coming
+     * through the system.
      *
      * @param handler the EventHandler to remove
      */
@@ -196,17 +197,4 @@ public class DatagramEventListener extends ThreadedEventListener {
         }
         return null;
     }
-
-    /**
-     * Initializes the listener.
-     *
-     * @throws EventSystemException thrown if there is a problem initializing the listener
-     */
-    @Override
-    public void initialize() throws EventSystemException {
-        this.setEnqueuer(enqueuer);
-        this.setDequeuer(dequeuer);
-        super.initialize();
-	}
-
 }

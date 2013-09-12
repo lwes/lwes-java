@@ -6,10 +6,10 @@ package org.lwes.listener;
 
 import java.util.Collection;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.lwes.Event;
-
-import junit.framework.Assert;
 
 public class DatagramEventListenerTest {
 
@@ -17,13 +17,11 @@ public class DatagramEventListenerTest {
     public void testNulls() {
         DatagramEventListener listener = new DatagramEventListener();
         listener.initialize();
-        listener.setEnqueuer(null);
-        listener.setDequeuer(null);
 
         Assert.assertNotNull(listener.getAddress());
         Assert.assertNull(listener.getInterface());
-        Assert.assertNull(listener.getEnqueuer());
-        Assert.assertNull(listener.getDequeuer());
+        Assert.assertNotNull(listener.getEnqueuer());
+        Assert.assertNotNull(listener.getDequeuer());
 
     }
 
