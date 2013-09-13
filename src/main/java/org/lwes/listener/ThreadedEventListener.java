@@ -14,13 +14,13 @@ package org.lwes.listener;
 
 import org.lwes.EventSystemException;
 
-public abstract class ThreadedEventListener implements EventListener {
+public abstract class ThreadedEventListener<E extends ThreadedEnqueuer, D extends ThreadedDequeuer> implements EventListener {
     /* the processor for handling events */
     protected ThreadedProcessor processor = new ThreadedProcessor();
 
     /* the event enqueuer and dequeuer */
-    private ThreadedEnqueuer enqueuer = null;
-    private ThreadedDequeuer dequeuer = null;
+    protected E enqueuer = null;
+    protected D dequeuer = null;
 
     private int queueSize = -1;
 
@@ -43,7 +43,7 @@ public abstract class ThreadedEventListener implements EventListener {
      *
      * @return the enqueuer
      */
-    public ThreadedEnqueuer getEnqueuer() {
+    public E getEnqueuer() {
         return enqueuer;
     }
 
@@ -52,7 +52,7 @@ public abstract class ThreadedEventListener implements EventListener {
      *
      * @param enqueuer the enqueuer to set
      */
-    public void setEnqueuer(ThreadedEnqueuer enqueuer) {
+    public void setEnqueuer(E enqueuer) {
         this.enqueuer = enqueuer;
     }
 
@@ -61,7 +61,7 @@ public abstract class ThreadedEventListener implements EventListener {
      *
      * @return the dequeuer
      */
-    public ThreadedDequeuer getDequeuer() {
+    public D getDequeuer() {
         return dequeuer;
     }
 
@@ -70,7 +70,7 @@ public abstract class ThreadedEventListener implements EventListener {
      *
      * @param dequeuer the dequeuer to set
      */
-    public void setDequeuer(ThreadedDequeuer dequeuer) {
+    public void setDequeuer(D dequeuer) {
         this.dequeuer = dequeuer;
     }
 
