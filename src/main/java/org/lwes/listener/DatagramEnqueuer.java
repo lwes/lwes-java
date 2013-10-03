@@ -12,14 +12,14 @@
 
 package org.lwes.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class listens to packets sent via UDP, and enqueues them for processing.
@@ -35,7 +35,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
 
     /* max datagram size in bytes */
     private static final int MAX_DATAGRAM_SIZE = 65535;
-    private String DEFAULT_ADDRESS = "224.0.0.69";
+    private final String DEFAULT_ADDRESS = "224.0.0.69";
 
     /* the default network settings */
     private InetAddress address = null;
@@ -44,13 +44,13 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
     private int ttl = 31;
 
     /* the network socket */
-    private DatagramSocket socket = null;
+    protected DatagramSocket socket = null;
 
     /* a running buffer */
-    private byte[] buffer = null;
+    protected byte[] buffer = null;
 
     /* thread control */
-    private boolean running = false;
+    protected boolean running = false;
 
     public DatagramEnqueuer() {
         super();
@@ -152,7 +152,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
             else {
                 socket = new DatagramSocket(port, address);
             }
-            
+
             if(port == 0){
             	port = socket.getLocalPort();
             }
