@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.lwes.db.EventTemplateDB;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
+import org.lwes.serializer.JsonDeserializer;
+import org.lwes.serializer.JsonSerializer;
 import org.lwes.serializer.Serializer;
 
 public class MapEvent extends DefaultEvent {
@@ -606,4 +608,9 @@ public class MapEvent extends DefaultEvent {
     public int getBytesSize() {
         return bytesStoreSize;
     }
+
+    public String toJson() {
+        return JsonSerializer.getInstance().toJson(name, attributes);
+    }
+    
 }

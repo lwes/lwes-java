@@ -226,6 +226,8 @@ public interface Event extends Iterable<FieldAccessor> {
     void deserialize(DataInput stream, int length) throws IOException;
 
     int getBytesSize();
+    
+    String toJson();
 
     // MISCELLANEOUS
 

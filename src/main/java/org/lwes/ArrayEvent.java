@@ -18,14 +18,18 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
+import org.lwes.serializer.JsonDeserializer;
+import org.lwes.serializer.JsonSerializer;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.EncodedString;
 
@@ -38,6 +42,7 @@ public final class ArrayEvent extends DefaultEvent {
     private short encoding = DEFAULT_ENCODING;
     private static Map<ArrayEventStats, MutableInt> STATS =
             new EnumMap<ArrayEventStats, MutableInt>(ArrayEventStats.class);
+    private Map<String, BaseType> attributes;
 
     static {
         byte[] temp = new byte[256];
@@ -51,6 +56,7 @@ public final class ArrayEvent extends DefaultEvent {
     //  * UINT64|INT64|BOOLEAN|STRING)
 
     public ArrayEvent() {
+        attributes = new LinkedHashMap<String, BaseType>();
         length = getValueListIndex();
         setEncoding(DEFAULT_ENCODING);
         final MutableInt creations = STATS.get(ArrayEventStats.CREATIONS);
@@ -168,6 +174,7 @@ public final class ArrayEvent extends DefaultEvent {
                 if (oldType == type && type.isConstantSize()) {
                     // Modify the value in place, requiring no shifts.
                     Serializer.serializeValue(type, value, encoding, bytes, tokenIndex + 1);
+                    attributes.put(key, new BaseType(type, value));
                     return;
                 }
                 clear(key);
@@ -192,6 +199,7 @@ public final class ArrayEvent extends DefaultEvent {
             length += Serializer.serializeATTRIBUTEWORD(key, bytes, length);
             length += Serializer.serializeBYTE(type.token, bytes, length);
             length += Serializer.serializeValue(type, value, encoding, bytes, length);
+            attributes.put(key, new BaseType(type, value));
             setNumEventAttributes(getNumEventAttributes() + 1);
         }
         catch (ArrayIndexOutOfBoundsException e) {
@@ -679,4 +687,9 @@ public final class ArrayEvent extends DefaultEvent {
             return value;
         }
     }
+    
+    public String toJson() {
+        return JsonSerializer.getInstance().toJson(getEventName(), attributes);
+    }
+    
 }
