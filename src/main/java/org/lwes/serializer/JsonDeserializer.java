@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwes.Event;
 import org.lwes.FieldType;
 import org.lwes.TypeValue;
+import org.lwes.util.IPAddress;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -87,80 +88,86 @@ private static JsonDeserializer instance;
         return new TypeValue(fType.name, value);
     }
     
-    Object getObjectForType(FieldType ft, String str){
+    Object getObjectForType(FieldType ft, String str) {
+        //Giant switch statement dervied from Serializer.serializeValue's
+        //type system definition
         switch (ft) {
-        case BOOLEAN:
-            return gson.fromJson(str, Boolean.class);
-        case BYTE:
-            return gson.fromJson(str, Byte.class);
-        case DOUBLE:
-            return gson.fromJson(str, Double.class);
-        case FLOAT:
-            return gson.fromJson(str, Float.class);
-        case INT16:
-            return gson.fromJson(str, Short.class);
-        case INT32:
-            return gson.fromJson(str, Integer.class);
-        case INT64:
-            return gson.fromJson(str, Long.class);
-        case IPADDR:
-            return gson.fromJson(str, String.class);
-        case STRING:
-            return gson.fromJson(str, String.class);
-        case UINT16:
-            return gson.fromJson(str, Integer.class);
-        case UINT32:
-            return gson.fromJson(str, Long.class);
-        case UINT64:
-            return gson.fromJson(str, BigInteger.class);
-        case BOOLEAN_ARRAY:
-            return gson.fromJson(str, boolean[].class);
-        case BYTE_ARRAY:
-            return gson.fromJson(str, byte[].class);
-        case DOUBLE_ARRAY:
-            return gson.fromJson(str, double[].class);
-        case FLOAT_ARRAY:
-            return gson.fromJson(str, float[].class);
-        case INT16_ARRAY:
-            return gson.fromJson(str, short[].class);
-        case INT32_ARRAY:
-            return gson.fromJson(str, int[].class);
-        case INT64_ARRAY:
-            return gson.fromJson(str, long[].class);
-        case IP_ADDR_ARRAY:
-            return gson.fromJson(str, String[].class);
-        case STRING_ARRAY:
-            return gson.fromJson(str, String[].class);
-        case UINT16_ARRAY:
-            return gson.fromJson(str, int[].class);
-        case UINT32_ARRAY:
-            return gson.fromJson(str, long[].class);
-        case UINT64_ARRAY:
-            return gson.fromJson(str, BigInteger[].class);
-        case NBOOLEAN_ARRAY:
-            return gson.fromJson(str, Boolean[].class);
-        case NBYTE_ARRAY:
-            return gson.fromJson(str, Byte[].class);
-        case NDOUBLE_ARRAY:
-            return gson.fromJson(str, Double[].class);
-        case NFLOAT_ARRAY:
-            return gson.fromJson(str, Float[].class);
-        case NINT16_ARRAY:
-            return gson.fromJson(str, Short[].class);
-        case NINT32_ARRAY:
-            return gson.fromJson(str, Integer[].class);
-        case NINT64_ARRAY:
-            return gson.fromJson(str, Long[].class);
-        case NSTRING_ARRAY:
-            return gson.fromJson(str, String[].class);
-        case NUINT16_ARRAY:
-            return gson.fromJson(str, Integer[].class);
-        case NUINT32_ARRAY:
-            return gson.fromJson(str, Long[].class);
-        case NUINT64_ARRAY:
-            return gson.fromJson(str, BigInteger[].class);
-        default:
-            return str;
+            case BOOLEAN:
+                return getObjectForType(str, Boolean.class);
+            case BYTE:
+                return getObjectForType(str, Byte.class);
+            case DOUBLE:
+                return getObjectForType(str, Double.class);
+            case FLOAT:
+                return getObjectForType(str, Float.class);
+            case INT16:
+                return getObjectForType(str, Short.class);
+            case INT32:
+                return getObjectForType(str, Integer.class);
+            case INT64:
+                return getObjectForType(str, Long.class);
+            case IPADDR:
+                return getObjectForType(str, IPAddress.class);
+            case STRING:
+                return getObjectForType(str, String.class);
+            case UINT16:
+                return getObjectForType(str, Integer.class);
+            case UINT32:
+                return getObjectForType(str, Long.class);
+            case UINT64:
+                return getObjectForType(str, BigInteger.class);
+            case BOOLEAN_ARRAY:
+                return getObjectForType(str, boolean[].class);
+            case BYTE_ARRAY:
+                return getObjectForType(str, byte[].class);
+            case DOUBLE_ARRAY:
+                return getObjectForType(str, double[].class);
+            case FLOAT_ARRAY:
+                return getObjectForType(str, float[].class);
+            case INT16_ARRAY:
+                return getObjectForType(str, short[].class);
+            case INT32_ARRAY:
+                return getObjectForType(str, int[].class);
+            case INT64_ARRAY:
+                return getObjectForType(str, long[].class);
+            case IP_ADDR_ARRAY:
+                return getObjectForType(str, IPAddress[].class);
+            case STRING_ARRAY:
+                return getObjectForType(str, String[].class);
+            case UINT16_ARRAY:
+                return getObjectForType(str, int[].class);
+            case UINT32_ARRAY:
+                return getObjectForType(str, long[].class);
+            case UINT64_ARRAY:
+                return getObjectForType(str, BigInteger[].class);
+            case NBOOLEAN_ARRAY:
+                return getObjectForType(str, Boolean[].class);
+            case NBYTE_ARRAY:
+                return getObjectForType(str, Byte[].class);
+            case NDOUBLE_ARRAY:
+                return getObjectForType(str, Double[].class);
+            case NFLOAT_ARRAY:
+                return getObjectForType(str, Float[].class);
+            case NINT16_ARRAY:
+                return getObjectForType(str, Short[].class);
+            case NINT32_ARRAY:
+                return getObjectForType(str, Integer[].class);
+            case NINT64_ARRAY:
+                return getObjectForType(str, Long[].class);
+            case NSTRING_ARRAY:
+                return getObjectForType(str, String[].class);
+            case NUINT16_ARRAY:
+                return getObjectForType(str, Integer[].class);
+            case NUINT32_ARRAY:
+                return getObjectForType(str, Long[].class);
+            case NUINT64_ARRAY:
+                return getObjectForType(str, BigInteger[].class);
+            default:
+                return str;
         }
+    }
+    
+    Object getObjectForType(String str, Class clz){
+        return gson.fromJson(str, clz);
     }
 }

@@ -11,6 +11,7 @@ import org.lwes.EventFactory;
 import org.lwes.EventImplementation;
 import org.lwes.FieldType;
 import org.lwes.MapEvent;
+import org.lwes.util.IPAddress;
 
 public class JsonSerializerDeSerializerTest {
 
@@ -52,6 +53,7 @@ public class JsonSerializerDeSerializerTest {
         evt.set("uint32", FieldType.UINT32, 10l);
         evt.set("int64", FieldType.INT64, 10l);
         evt.set("uint64", FieldType.UINT64, new BigInteger("10000000000000"));
+        evt.set("ipaddr", FieldType.IPADDR, new IPAddress("127.0.0.1"));
         
         evt.set("int16[]", FieldType.INT16_ARRAY, new short[] {(short) 10});
         evt.set("uint16[]", FieldType.UINT16_ARRAY, new int[] {10});
@@ -64,6 +66,8 @@ public class JsonSerializerDeSerializerTest {
         evt.set("double[]", FieldType.DOUBLE_ARRAY, new double[] {5.0});
         evt.set("float[]", FieldType.FLOAT_ARRAY, new float[] {1.2f});
         evt.set("string[]", FieldType.STRING_ARRAY, new String[] {"value"});
+        evt.set("ipaddr[]", FieldType.IP_ADDR_ARRAY, new IPAddress[]{new IPAddress("10.0.13.217")});
+
         
         evt.set("long[]", FieldType.NINT64_ARRAY, new Long[] { 5000000000l, null, 8675309l });
         evt.set("short[]", FieldType.NUINT16_ARRAY, new Integer[] { 5, null, 10 });
