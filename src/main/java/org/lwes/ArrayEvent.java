@@ -24,11 +24,9 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
-import org.lwes.serializer.JsonDeserializer;
 import org.lwes.serializer.JsonSerializer;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.EncodedString;

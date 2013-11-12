@@ -9,7 +9,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.lwes.Event;
 import org.lwes.FieldType;
-import org.lwes.MapEvent;
 import org.lwes.TypeValue;
 
 import com.google.gson.Gson;
