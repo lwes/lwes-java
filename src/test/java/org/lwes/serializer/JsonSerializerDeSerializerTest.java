@@ -52,7 +52,7 @@ public class JsonSerializerDeSerializerTest {
         evt.set("int32", FieldType.INT32, 10);
         evt.set("uint32", FieldType.UINT32, 10l);
         evt.set("int64", FieldType.INT64, 10l);
-        evt.set("uint64", FieldType.UINT64, new BigInteger("10000000000000"));
+        evt.set("uint64", FieldType.UINT64, new BigInteger("184467440737095516145"));
         evt.set("ipaddr", FieldType.IPADDR, new IPAddress("127.0.0.1"));
         
         evt.set("int16[]", FieldType.INT16_ARRAY, new short[] {(short) 10});
@@ -60,7 +60,7 @@ public class JsonSerializerDeSerializerTest {
         evt.set("int32[]", FieldType.INT32_ARRAY, new int[] {10});
         evt.set("uint32[]", FieldType.UINT32_ARRAY, new long[] {10l});
         evt.set("int64[]", FieldType.INT64_ARRAY, new long[] {10l});
-        evt.set("uint64[]", FieldType.UINT64_ARRAY, new BigInteger[] {new BigInteger("10000000000000")});
+        evt.set("uint64[]", FieldType.UINT64_ARRAY, new BigInteger[] {new BigInteger("184467440737095516145")});
         evt.set("boolean[]", FieldType.BOOLEAN_ARRAY, new boolean[] {true});
         evt.set("byte[]", FieldType.BYTE_ARRAY, new byte[] {Byte.parseByte("32")});
         evt.set("double[]", FieldType.DOUBLE_ARRAY, new double[] {5.0});
@@ -75,6 +75,5 @@ public class JsonSerializerDeSerializerTest {
         evt.set("float[]", FieldType.NFLOAT_ARRAY, new Float[] { 1.11f, 1.12f, null });
         
     }
-    
     
 }

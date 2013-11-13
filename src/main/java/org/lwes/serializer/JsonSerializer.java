@@ -33,7 +33,7 @@ public class JsonSerializer {
     }
     
     public String toJson(String eventName, Map<String,BaseType> attrs){
-        Map<String, Object> jsonContainer = typedJsonRepresentation(eventName, attrs);
+        Map<String, Object> jsonContainer = jsonRepresentation(eventName, attrs);
         return gson.toJson(jsonContainer);
     }
     
@@ -72,4 +72,5 @@ public class JsonSerializer {
         }
         return attributes;
     }
+    
 }
