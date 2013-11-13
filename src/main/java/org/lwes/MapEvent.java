@@ -612,4 +612,8 @@ public class MapEvent extends DefaultEvent {
         return JsonSerializer.getInstance().toJson(name, attributes);
     }
     
+    public String toTypedJson() {
+        return JsonSerializer.getInstance().toTypedJson(name, attributes);
+    }
+    
 }

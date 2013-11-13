@@ -28,7 +28,7 @@ public class JsonSerializerDeSerializerTest {
     public void testSimpleSerializeDeserializeMapEvent(){
         Event evt = new MapEvent("json-event");
         setEventProperties(evt);
-        Event rebornEvt = factory.createEventFromJson(evt.toJson(), EventImplementation.MAP_EVENT);
+        Event rebornEvt = factory.createEventFromJson(evt.toTypedJson(), EventImplementation.MAP_EVENT);
         Assert.assertEquals(evt, rebornEvt);
     }
    
@@ -36,7 +36,7 @@ public class JsonSerializerDeSerializerTest {
     public void testSimpleSerializeDeserializeArrayEvent(){
         Event evt = new ArrayEvent("json-event");
         setEventProperties(evt);
-        Event rebornEvt = factory.createEventFromJson(evt.toJson(), EventImplementation.ARRAY_EVENT);
+        Event rebornEvt = factory.createEventFromJson(evt.toTypedJson(), EventImplementation.ARRAY_EVENT);
         Assert.assertEquals(evt, rebornEvt);
     }
     

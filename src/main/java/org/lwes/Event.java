@@ -229,6 +229,8 @@ public interface Event extends Iterable<FieldAccessor> {
     
     String toJson();
 
+    String toTypedJson();
+    
     // MISCELLANEOUS
 
     Event copy();
