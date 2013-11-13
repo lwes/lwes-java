@@ -227,9 +227,11 @@ public interface Event extends Iterable<FieldAccessor> {
 
     int getBytesSize();
     
-    String toJson();
+    String json();
 
-    String toTypedJson();
+    String typedJson();
+    
+    String unTypedJson();
     
     // MISCELLANEOUS
 

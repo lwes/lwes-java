@@ -42,28 +42,34 @@ private static JsonDeserializer instance;
         gson = bldr.create();
     }
     
-    public Event fromJson(String json, Event e){
+    public Event fromJson(String json, Event e) throws UnsupportedOperationException{
         try{
+            Map<String, TypeValue> typedElems;
             JsonObject root = parser.parse(json).getAsJsonObject();
             String name = root.getAsJsonPrimitive("name").getAsString();
+            e.setEventName(name);
             if(StringUtils.isEmpty(name))
                 return null;
             JsonObject typedContainer = root.getAsJsonObject("typed");
-            if(typedContainer == null)
+            JsonObject attributeContainer = root.getAsJsonObject("attributes");
+            if(attributeContainer == null && typedContainer == null)
                 return null;
-            Map<String, TypeValue> typedElems = parseTyped(typedContainer);
-            
-            e.setEventName(name);
-            for(Entry<String, TypeValue> element : typedElems.entrySet()){
-                FieldType ft = FieldType.byName(element.getValue().getType());
-                e.set(element.getKey(),
+            else if(typedContainer != null){
+               typedElems = parseTyped(typedContainer);
+               for(Entry<String, TypeValue> element : typedElems.entrySet()){
+                   FieldType ft = FieldType.byName(element.getValue().getType());
+                   e.set(element.getKey(),
                         FieldType.byName(element.getValue().getType()),
                         getObjectForType(ft, element.getValue().getValue()));
-            }
+               }
+            }else
+                throw new UnsupportedOperationException("Cannot construct the event without the type information for attributes.");
             
         }catch(Exception ex){
-            ex.printStackTrace();
-            return null;
+            if (ex instanceof UnsupportedOperationException)
+                throw (UnsupportedOperationException)ex;
+            else   
+                return null;
         }
         return e;
     }
@@ -72,14 +78,15 @@ private static JsonDeserializer instance;
         Set<Entry<String, JsonElement>> types = typedContainer.entrySet();
         Map<String, TypeValue> typedElements = new HashMap<String, TypeValue>();
         for(Entry<String, JsonElement> type : types){
-            TypeValue tv = getTypeValue(type.getValue().getAsJsonObject());
+            TypeValue tv = getTypedValue(type.getValue().getAsJsonObject());
             if(tv != null)
                 typedElements.put(type.getKey(), tv);
         }
         return typedElements;
     }
     
-    TypeValue getTypeValue(JsonObject typedElement){
+    
+    TypeValue getTypedValue(JsonObject typedElement){
         String type = typedElement.getAsJsonPrimitive("type").getAsString();
         String value = typedElement.getAsJsonPrimitive("value").getAsString();
         FieldType fType = FieldType.byName(type);

@@ -608,12 +608,16 @@ public class MapEvent extends DefaultEvent {
         return bytesStoreSize;
     }
 
-    public String toJson() {
-        return JsonSerializer.getInstance().toJson(name, attributes);
+    public String json() {
+        return JsonSerializer.getInstance().json(name, attributes);
     }
     
-    public String toTypedJson() {
-        return JsonSerializer.getInstance().toTypedJson(name, attributes);
+    public String typedJson() {
+        return JsonSerializer.getInstance().typedJson(name, attributes);
+    }
+    
+    public String unTypedJson() {
+        return JsonSerializer.getInstance().unTypedJson(name, attributes);
     }
     
 }

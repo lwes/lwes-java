@@ -28,7 +28,7 @@ public class JsonSerializerDeSerializerTest {
     public void testSimpleSerializeDeserializeMapEvent(){
         Event evt = new MapEvent("json-event");
         setEventProperties(evt);
-        Event rebornEvt = factory.createEventFromJson(evt.toTypedJson(), EventImplementation.MAP_EVENT);
+        Event rebornEvt = factory.createEventFromJson(evt.json(), EventImplementation.MAP_EVENT);
         Assert.assertEquals(evt, rebornEvt);
     }
    
@@ -36,8 +36,15 @@ public class JsonSerializerDeSerializerTest {
     public void testSimpleSerializeDeserializeArrayEvent(){
         Event evt = new ArrayEvent("json-event");
         setEventProperties(evt);
-        Event rebornEvt = factory.createEventFromJson(evt.toTypedJson(), EventImplementation.ARRAY_EVENT);
+        Event rebornEvt = factory.createEventFromJson(evt.typedJson(), EventImplementation.ARRAY_EVENT);
         Assert.assertEquals(evt, rebornEvt);
+    }
+    
+    @Test(expected=UnsupportedOperationException.class)
+    public void testDeserializeFromUntypedJson(){
+        Event evt = new ArrayEvent("json-event");
+        setEventProperties(evt);
+        factory.createEventFromJson(evt.unTypedJson(), EventImplementation.ARRAY_EVENT);
     }
     
     public void setEventProperties(Event evt){

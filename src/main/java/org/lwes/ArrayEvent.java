@@ -683,12 +683,15 @@ public final class ArrayEvent extends DefaultEvent {
         }
     }
     
-    public String toJson() {
-        return EventTranslator.arrayToMapEvent(this).toJson();
+    public String json() {
+        return EventTranslator.arrayToMapEvent(this).json();
     }
     
-    public String toTypedJson() {
-        return EventTranslator.arrayToMapEvent(this).toTypedJson();
+    public String typedJson() {
+        return EventTranslator.arrayToMapEvent(this).typedJson();
     }
     
+    public String unTypedJson() {
+        return EventTranslator.arrayToMapEvent(this).unTypedJson();
+    }
 }
