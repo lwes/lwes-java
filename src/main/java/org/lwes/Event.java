@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.lwes.util.CharacterEncoding;
@@ -228,11 +229,9 @@ public interface Event extends Iterable<FieldAccessor> {
     int getBytesSize();
     
     String json();
-
-    String typedJson();
     
-    String unTypedJson();
-    
+    Map<String, Object> exportEventAttributes();
+        
     // MISCELLANEOUS
 
     Event copy();

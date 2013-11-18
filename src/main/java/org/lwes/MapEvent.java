@@ -14,6 +14,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -612,12 +614,20 @@ public class MapEvent extends DefaultEvent {
         return JsonSerializer.getInstance().json(name, attributes);
     }
     
-    public String typedJson() {
-        return JsonSerializer.getInstance().typedJson(name, attributes);
+    public Map<String, Object> exportEventAttributes(){
+        Map<String, Object> container = new HashMap<String, Object>();
+        container.put("name", name);
+        container.put("typed", JsonSerializer.getInstance().getTypedAttributes(attributes));
+        container.put("attributes", getUnTypedAttributes());
+        return container;
     }
     
-    public String unTypedJson() {
-        return JsonSerializer.getInstance().unTypedJson(name, attributes);
+    private Object getUnTypedAttributes() {
+        Map<String, Object> unTypedAttributes = new HashMap<String, Object>();
+        for(Entry<String, BaseType> attr : attributes.entrySet())
+            unTypedAttributes.put(attr.getKey(),attr.getValue().getTypeObject());
+        
+        return unTypedAttributes;
     }
     
 }
