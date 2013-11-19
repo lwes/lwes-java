@@ -10,8 +10,6 @@ import org.lwes.Event;
 import org.lwes.FieldType;
 import org.lwes.TypeValue;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -22,7 +20,6 @@ public class JsonDeserializer {
 
 private static JsonDeserializer instance;
     
-    private Gson gson;
     private JsonParser parser;
     
     public static JsonDeserializer getInstance(){
@@ -38,8 +35,6 @@ private static JsonDeserializer instance;
     
     private JsonDeserializer(){
         parser = new JsonParser();
-        GsonBuilder bldr = new GsonBuilder();
-        gson = bldr.create();
     }
     
     public Event fromJson(String json, Event e) throws UnsupportedOperationException{
@@ -85,11 +80,12 @@ private static JsonDeserializer instance;
         Map<String, TypeValue> typedValues = new HashMap<String, TypeValue>();
         for(Entry<String, JsonElement> element : typedElements){
             String key = element.getKey();
+            if(key==null || element.getValue()==null)
+                continue;
             JsonObject tv = (JsonObject)element.getValue();
             String type = tv.get("type").getAsString();
             JsonElement jsonValue = tv.get("value");
-            if(key==null || element.getValue()==null)
-                continue;
+            
             if(jsonValue instanceof JsonArray){
                 typedValues.put(element.getKey(), new TypeValue(type, parseJSONArray((JsonArray)jsonValue)));
             }else{
@@ -99,7 +95,7 @@ private static JsonDeserializer instance;
         return typedValues;
     }
     
-    String[] parseJSONArray(JsonArray json){
+    private String[] parseJSONArray(JsonArray json){
         String[] strArr = new String[json.size()];
         for(int i=0;i<json.size();i++)
             if(json.get(i) instanceof JsonNull)
@@ -110,7 +106,7 @@ private static JsonDeserializer instance;
         return strArr;
     }
     
-    Object getObjectForType(FieldType ft, String str, String[] strArr) {
+    private Object getObjectForType(FieldType ft, String str, String[] strArr) {
         
         switch (ft) {
             case BOOLEAN:

@@ -624,6 +624,7 @@ public class MapEvent extends DefaultEvent {
     
     private Object getUnTypedAttributes() {
         Map<String, Object> unTypedAttributes = new HashMap<String, Object>();
+        unTypedAttributes.put("EventName", name);
         for(Entry<String, BaseType> attr : attributes.entrySet())
             unTypedAttributes.put(attr.getKey(),attr.getValue().getTypeObject());
         
