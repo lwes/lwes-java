@@ -1,6 +1,5 @@
 package org.lwes.serializer;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,11 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwes.Event;
 import org.lwes.FieldType;
 import org.lwes.TypeValue;
-import org.lwes.util.IPAddress;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -57,10 +57,16 @@ private static JsonDeserializer instance;
             else if(typedContainer != null){
                typedElems = parseTyped(typedContainer);
                for(Entry<String, TypeValue> element : typedElems.entrySet()){
-                   FieldType ft = FieldType.byName(element.getValue().getType());
-                   e.set(element.getKey(),
-                        FieldType.byName(element.getValue().getType()),
-                        getObjectForType(ft, element.getValue().getValue()));
+                   TypeValue tv = element.getValue();
+                   FieldType ft = FieldType.byName(tv.getType());
+                   if (ft==null)
+                       continue;
+                   
+                   if(tv.getValue() instanceof String)
+                       e.set(element.getKey(),
+                               ft,getObjectForType(ft, (String)tv.getValue(), null));
+                   else if (tv.getValue() instanceof String[])
+                       e.set(element.getKey(), ft, getObjectForType(ft, null, (String[])tv.getValue()));
                }
             }else
                 throw new UnsupportedOperationException("Cannot construct the event without the type information for attributes.");
@@ -75,106 +81,111 @@ private static JsonDeserializer instance;
     }
     
     Map<String, TypeValue> parseTyped(JsonObject typedContainer){
-        Set<Entry<String, JsonElement>> types = typedContainer.entrySet();
-        Map<String, TypeValue> typedElements = new HashMap<String, TypeValue>();
-        for(Entry<String, JsonElement> type : types){
-            TypeValue tv = getTypedValue(type.getValue().getAsJsonObject());
-            if(tv != null)
-                typedElements.put(type.getKey(), tv);
+        Set<Entry<String, JsonElement>> typedElements = typedContainer.entrySet();
+        Map<String, TypeValue> typedValues = new HashMap<String, TypeValue>();
+        for(Entry<String, JsonElement> element : typedElements){
+            String key = element.getKey();
+            JsonObject tv = (JsonObject)element.getValue();
+            String type = tv.get("type").getAsString();
+            JsonElement jsonValue = tv.get("value");
+            if(key==null || element.getValue()==null)
+                continue;
+            if(jsonValue instanceof JsonArray){
+                typedValues.put(element.getKey(), new TypeValue(type, parseJSONArray((JsonArray)jsonValue)));
+            }else{
+                typedValues.put(element.getKey(), new TypeValue(type, jsonValue.getAsString()));
+            }
         }
-        return typedElements;
+        return typedValues;
     }
     
-    
-    TypeValue getTypedValue(JsonObject typedElement){
-        String type = typedElement.getAsJsonPrimitive("type").getAsString();
-        String value = typedElement.getAsJsonPrimitive("value").getAsString();
-        FieldType fType = FieldType.byName(type);
-        if(fType == null)
-            return null;
-        return new TypeValue(fType.name, value);
+    String[] parseJSONArray(JsonArray json){
+        String[] strArr = new String[json.size()];
+        for(int i=0;i<json.size();i++)
+            if(json.get(i) instanceof JsonNull)
+                strArr[i] = null;
+            else
+                strArr[i] = json.get(i).getAsString();
+        
+        return strArr;
     }
     
-    Object getObjectForType(FieldType ft, String str) {
-        //Giant switch statement dervied from Serializer.serializeValue's
-        //type system definition
+    Object getObjectForType(FieldType ft, String str, String[] strArr) {
+        
         switch (ft) {
             case BOOLEAN:
-                return getObjectForType(str, Boolean.class);
+                return StringParser.fromStringBOOLEAN(str);
             case BYTE:
-                return getObjectForType(str, Byte.class);
+                return StringParser.fromStringBYTE(str);
             case DOUBLE:
-                return getObjectForType(str, Double.class);
+                return StringParser.fromStringDOUBLE(str);
             case FLOAT:
-                return getObjectForType(str, Float.class);
+                return StringParser.fromStringFLOAT(str);
             case INT16:
-                return getObjectForType(str, Short.class);
+                return StringParser.fromStringINT16(str);
             case INT32:
-                return getObjectForType(str, Integer.class);
+                return StringParser.fromStringINT32(str);
             case INT64:
-                return getObjectForType(str, Long.class);
+                return StringParser.fromStringINT64(str);
             case IPADDR:
-                return getObjectForType(str, IPAddress.class);
+                return StringParser.fromStringIPADDR(str);
             case STRING:
-                return getObjectForType(str, String.class);
+                return StringParser.fromStringSTRING(str);
             case UINT16:
-                return getObjectForType(str, Integer.class);
+                return StringParser.fromStringUINT16(str);
             case UINT32:
-                return getObjectForType(str, Long.class);
+                return StringParser.fromStringUINT32(str);
             case UINT64:
-                return getObjectForType(str, BigInteger.class);
+                return StringParser.fromStringUINT64(str);
             case BOOLEAN_ARRAY:
-                return getObjectForType(str, boolean[].class);
+                return StringParser.fromStringBOOLEANArray(strArr);
             case BYTE_ARRAY:
-                return getObjectForType(str, byte[].class);
+                return StringParser.fromStringBYTEArray(strArr);
             case DOUBLE_ARRAY:
-                return getObjectForType(str, double[].class);
+                return StringParser.fromStringDOUBLEArray(strArr);
             case FLOAT_ARRAY:
-                return getObjectForType(str, float[].class);
+                return StringParser.fromStringFLOATArray(strArr);
             case INT16_ARRAY:
-                return getObjectForType(str, short[].class);
+                return StringParser.fromStringINT16Array(strArr);
             case INT32_ARRAY:
-                return getObjectForType(str, int[].class);
+                return StringParser.fromStringINT32Array(strArr);
             case INT64_ARRAY:
-                return getObjectForType(str, long[].class);
+                return StringParser.fromStringINT64Array(strArr);
             case IP_ADDR_ARRAY:
-                return getObjectForType(str, IPAddress[].class);
+                return StringParser.fromStringIPADDRArray(strArr);
             case STRING_ARRAY:
-                return getObjectForType(str, String[].class);
+                return StringParser.fromStringSTRINGArray(strArr);
             case UINT16_ARRAY:
-                return getObjectForType(str, int[].class);
+                return StringParser.fromStringUINT16Array(strArr);
             case UINT32_ARRAY:
-                return getObjectForType(str, long[].class);
+                return StringParser.fromStringUINT32Array(strArr);
             case UINT64_ARRAY:
-                return getObjectForType(str, BigInteger[].class);
+                return StringParser.fromStringUINT64Array(strArr);
             case NBOOLEAN_ARRAY:
-                return getObjectForType(str, Boolean[].class);
+                return StringParser.fromStringBOOLEANNArray(strArr);
             case NBYTE_ARRAY:
-                return getObjectForType(str, Byte[].class);
+                return StringParser.fromStringBYTENArray(strArr);
             case NDOUBLE_ARRAY:
-                return getObjectForType(str, Double[].class);
+                return StringParser.fromStringDOUBLENArray(strArr);
             case NFLOAT_ARRAY:
-                return getObjectForType(str, Float[].class);
+                return StringParser.fromStringFLOATNArray(strArr);
             case NINT16_ARRAY:
-                return getObjectForType(str, Short[].class);
+                return StringParser.fromStringINT16NArray(strArr);
             case NINT32_ARRAY:
-                return getObjectForType(str, Integer[].class);
+                return StringParser.fromStringINT32NArray(strArr);
             case NINT64_ARRAY:
-                return getObjectForType(str, Long[].class);
+                return StringParser.fromStringINT64NArray(strArr);
             case NSTRING_ARRAY:
-                return getObjectForType(str, String[].class);
+                return StringParser.fromStringSTRINGNArray(strArr);
             case NUINT16_ARRAY:
-                return getObjectForType(str, Integer[].class);
+                return StringParser.fromStringUINT16NArray(strArr);
             case NUINT32_ARRAY:
-                return getObjectForType(str, Long[].class);
+                return StringParser.fromStringUINT32NArray(strArr);
             case NUINT64_ARRAY:
-                return getObjectForType(str, BigInteger[].class);
+                return StringParser.fromStringUINT64NArray(strArr);
             default:
                 return str;
         }
     }
     
-    Object getObjectForType(String str, Class clz){
-        return gson.fromJson(str, clz);
-    }
 }

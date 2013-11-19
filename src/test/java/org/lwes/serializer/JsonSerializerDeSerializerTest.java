@@ -41,6 +41,13 @@ public class JsonSerializerDeSerializerTest {
     }
     
     @Test
+    public void testSimpleSerialize(){
+        Event evt = new ArrayEvent("json-event");
+        setEventProperties(evt);
+        System.out.println(evt.json());
+    }
+    
+    @Test
     public void testExportEventAttributes(){
         Event evt = new ArrayEvent("json-event");
         setEventProperties(evt);
@@ -72,7 +79,7 @@ public class JsonSerializerDeSerializerTest {
         evt.set("byte[]", FieldType.BYTE_ARRAY, new byte[] {Byte.parseByte("32")});
         evt.set("double[]", FieldType.DOUBLE_ARRAY, new double[] {5.0});
         evt.set("float[]", FieldType.FLOAT_ARRAY, new float[] {1.2f});
-        evt.set("string[]", FieldType.STRING_ARRAY, new String[] {"value"});
+        evt.set("string[]", FieldType.STRING_ARRAY, new String[] {"value with \" '"});
         evt.set("ipaddr[]", FieldType.IP_ADDR_ARRAY, new IPAddress[]{new IPAddress("10.0.13.217")});
 
         

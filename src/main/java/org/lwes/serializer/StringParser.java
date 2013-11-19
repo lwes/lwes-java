@@ -12,6 +12,7 @@
 
 package org.lwes.serializer;
 
+import java.math.BigInteger;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -191,7 +192,6 @@ public class StringParser {
         return toReturn;
     }
 
-    // FIXME: why not BigInteger?
     public static Object fromStringUINT64(String string)
             throws EventSystemException {
         Object toReturn = null;
@@ -203,11 +203,11 @@ public class StringParser {
             }
 
             byte[] bytes = NumberCodec.hexStringToByteArray(string);
-            toReturn = NumberCodec.decodeLong(bytes, 0, bytes.length);
+            toReturn = BigInteger.valueOf(NumberCodec.decodeLong(bytes, 0, bytes.length));
         }
         else {
             try {
-                toReturn = Long.valueOf(string);
+                toReturn = new BigInteger(string);
             }
             catch (NumberFormatException nfe) {
                 throw new EventSystemException("Got Exception " + nfe);
@@ -268,5 +268,189 @@ public class StringParser {
         log.trace("received '" + toReturn + "'");
 
         return toReturn;
+    }
+    
+    public static byte[] fromStringBYTEArray(String[] arr){
+        byte[] bArr = new byte[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = fromStringBYTE(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static Byte[] fromStringBYTENArray(String[] arr){
+        Byte[] bArr = new Byte[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null?null:fromStringBYTE(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static boolean[] fromStringBOOLEANArray(String[] arr){
+        boolean[] bArr = new boolean[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (Boolean)fromStringBOOLEAN(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static Boolean[] fromStringBOOLEANNArray(String[] arr){
+        Boolean[] bArr = new Boolean[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null?null:(Boolean)fromStringBOOLEAN(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static short[] fromStringINT16Array(String[] arr){
+        short[] bArr = new short[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (Short)fromStringINT16(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static int[] fromStringUINT16Array(String[] arr){
+        int[] bArr = new int[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (Integer)fromStringUINT16(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static Short[] fromStringINT16NArray(String[] arr){
+        Short[] bArr = new Short[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null?null:(Short)fromStringINT16(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static Integer[] fromStringUINT16NArray(String[] arr){
+        Integer[] bArr = new Integer[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null?null:(Integer)fromStringUINT16(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static int[] fromStringINT32Array(String[] arr){
+        int[] bArr = new int[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (Integer)fromStringINT32(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static long[] fromStringUINT32Array(String[] arr){
+        long[] bArr = new long[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (Long)fromStringUINT32(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static Integer[] fromStringINT32NArray(String[] arr){
+        Integer[] bArr = new Integer[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null?null:(Integer)fromStringINT32(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static Long[] fromStringUINT32NArray(String[] arr){
+        Long[] bArr = new Long[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null?null:(Long)fromStringUINT32(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static long[] fromStringINT64Array(String[] arr){
+        long[] bArr = new long[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (Long)fromStringINT64(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static BigInteger[] fromStringUINT64Array(String[] arr){
+        BigInteger[] bArr = new BigInteger[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (BigInteger)fromStringUINT64(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static Long[] fromStringINT64NArray(String[] arr){
+        Long[] bArr = new Long[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null?null:(Long)fromStringINT64(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static BigInteger[] fromStringUINT64NArray(String[] arr){
+        BigInteger[] bArr = new BigInteger[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null?null:(BigInteger)fromStringUINT64(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static float[] fromStringFLOATArray(String[] arr){
+        float[] bArr = new float[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (float)fromStringFLOAT(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static Float[] fromStringFLOATNArray(String[] arr){
+        Float[] bArr = new Float[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null? null:(Float)fromStringFLOAT(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static double[] fromStringDOUBLEArray(String[] arr){
+        double[] bArr = new double[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (Double)fromStringDOUBLE(arr[i]);
+        
+        return bArr;
+    }
+
+    public static Double[] fromStringDOUBLENArray(String[] arr){
+        Double[] bArr = new Double[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null? null:(Double)fromStringDOUBLE(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static String[] fromStringSTRINGArray(String[] arr){
+        String[] bArr = new String[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (String)fromStringSTRING(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static String[] fromStringSTRINGNArray(String[] arr){
+        String[] bArr = new String[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = arr[i]==null? null:(String)fromStringSTRING(arr[i]);
+        
+        return bArr;
+    }
+    
+    public static IPAddress[] fromStringIPADDRArray(String[] arr){
+        IPAddress[] bArr = new IPAddress[arr.length];
+        for(int i=0;i<arr.length;i++)
+            bArr[i] = (IPAddress)fromStringIPADDR(arr[i]);
+        
+        return bArr;
     }
 }

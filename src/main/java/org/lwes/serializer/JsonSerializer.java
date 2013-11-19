@@ -30,7 +30,7 @@ public class JsonSerializer {
     }
     
     private JsonSerializer(){
-        gson = new GsonBuilder().create();
+        gson = new GsonBuilder().disableHtmlEscaping().create();
     }
     
     public String json(String eventName, Map<String,BaseType> attrs){
@@ -48,7 +48,7 @@ public class JsonSerializer {
     public Object getTypedAttributes(Map<String, BaseType> attrs) {
         Map<String,Object> typedAttrs = new HashMap<String, Object>();
         for(Entry<String, BaseType> attr : attrs.entrySet())
-            typedAttrs.put(attr.getKey(), new TypeValue(attr.getValue().getType().name, gson.toJson(attr.getValue().getTypeObject())));
+            typedAttrs.put(attr.getKey(), new TypeValue(attr.getValue().getType().name, attr.getValue().stringyfy()));
         
         return typedAttrs;
     }
