@@ -230,7 +230,9 @@ public interface Event extends Iterable<FieldAccessor> {
     
     String json();
     
-    Map<String, Object> exportEventAttributes();
+    String unTypedJson();
+    
+    Map<String, Object> exportTypedAndUnTypedAttributes();
         
     // MISCELLANEOUS
 

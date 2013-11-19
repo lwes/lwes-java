@@ -41,17 +41,24 @@ public class JsonSerializerDeSerializerTest {
     }
     
     @Test
-    public void testSimpleSerialize(){
+    public void testTypedSerialize(){
         Event evt = new ArrayEvent("json-event");
         setEventProperties(evt);
         System.out.println(evt.json());
     }
     
     @Test
+    public void testUntypedSerialize(){
+        Event evt = new MapEvent("json-event");
+        setEventProperties(evt);
+        System.out.println(evt.unTypedJson());
+    }
+    
+    @Test
     public void testExportEventAttributes(){
         Event evt = new ArrayEvent("json-event");
         setEventProperties(evt);
-        System.out.println(evt.exportEventAttributes());
+        System.out.println(evt.exportTypedAndUnTypedAttributes());
     }
     
     public void setEventProperties(Event evt){

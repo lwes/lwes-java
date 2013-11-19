@@ -37,10 +37,25 @@ public class JsonSerializer {
         return gson.toJson(typedContainer(eventName, attrs));
     }
     
-    private Map<String, Object> typedContainer(String name, Map<String, BaseType> attrs){
+    public String unTypedJson(String eventName, Map<String, BaseType> attrs){
+        return gson.toJson(unTypedContainer(eventName, attrs));
+    }
+    
+    private Map<String, Object> basicContainer(String eventName){
         Map<String, Object> container = new HashMap<String, Object>();
-        container.put("name", name);
+        container.put("name", eventName);
         container.put("version", JSON_SERIALIZER_VERSION);
+        return container;
+    }
+    
+    private Map<String, Object> unTypedContainer(String eventName, Map<String, BaseType> attrs){
+        Map<String, Object> container = basicContainer(eventName);
+        container.put("attributes", getUnTypedAttributes(eventName, attrs));
+        return container;
+    }
+    
+    private Map<String, Object> typedContainer(String eventName, Map<String, BaseType> attrs){
+        Map<String, Object> container = basicContainer(eventName);
         container.put("typed", getTypedAttributes(attrs));
         return container;
     }
@@ -51,5 +66,14 @@ public class JsonSerializer {
             typedAttrs.put(attr.getKey(), new TypeValue(attr.getValue().getType().name, attr.getValue().stringyfy()));
         
         return typedAttrs;
+    }
+    
+    public Object getUnTypedAttributes(String eventName, Map<String, BaseType> attributes) {
+        Map<String, Object> unTypedAttributes = new HashMap<String, Object>();
+        unTypedAttributes.put("EventName", eventName);
+        for(Entry<String, BaseType> attr : attributes.entrySet())
+            unTypedAttributes.put(attr.getKey(),attr.getValue().getTypeObject());
+        
+        return unTypedAttributes;
     }
 }

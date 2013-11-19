@@ -687,7 +687,11 @@ public final class ArrayEvent extends DefaultEvent {
         return EventTranslator.arrayToMapEvent(this).json();
     }
     
-    public Map<String, Object> exportEventAttributes(){
-        return EventTranslator.arrayToMapEvent(this).exportEventAttributes();
+    public String unTypedJson() {
+        return EventTranslator.arrayToMapEvent(this).unTypedJson();
+    }
+    
+    public Map<String, Object> exportTypedAndUnTypedAttributes(){
+        return EventTranslator.arrayToMapEvent(this).exportTypedAndUnTypedAttributes();
     }
 }
