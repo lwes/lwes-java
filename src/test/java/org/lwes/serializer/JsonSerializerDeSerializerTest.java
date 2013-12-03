@@ -89,11 +89,18 @@ public class JsonSerializerDeSerializerTest {
         evt.set("string[]", FieldType.STRING_ARRAY, new String[] {"value with \" '"});
         evt.set("ipaddr[]", FieldType.IP_ADDR_ARRAY, new IPAddress[]{new IPAddress("10.0.13.217")});
 
-        
-        evt.set("long[]", FieldType.NINT64_ARRAY, new Long[] { 5000000000l, null, 8675309l });
-        evt.set("short[]", FieldType.NUINT16_ARRAY, new Integer[] { 5, null, 10 });
-        evt.set("double[]", FieldType.NDOUBLE_ARRAY, new Double[] { 1.23, null, 1.26 });
-        evt.set("float[]", FieldType.NFLOAT_ARRAY, new Float[] { 1.11f, 1.12f, null });
+        evt.set("nint16[]", FieldType.NINT16_ARRAY, new Short[] {null, null, (short) 10});
+        evt.set("nuint16[]", FieldType.NUINT16_ARRAY, new Integer[] {null, 10});
+        evt.set("nint32[]", FieldType.NINT32_ARRAY, new Integer[] {10, null, 20});
+        evt.set("nuint32[]", FieldType.NUINT32_ARRAY, new Long[] {10l, 502l, null});
+        evt.set("nint64[]", FieldType.NINT64_ARRAY, new Long[] {null, 10l,null});
+        evt.set("nuint64[]", FieldType.NUINT64_ARRAY, new BigInteger[] {null,new BigInteger("2342322"),  new BigInteger("184467440737095516145")});
+        evt.set("nboolean[]", FieldType.NBOOLEAN_ARRAY, new Boolean[] {true,null,false,true});
+        evt.set("nbyte[]", FieldType.NBYTE_ARRAY, new Byte[] {null, Byte.parseByte("32")});
+        evt.set("nlong[]", FieldType.NINT64_ARRAY, new Long[] { 5000000000l, null, 8675309l });
+        evt.set("nshort[]", FieldType.NUINT16_ARRAY, new Integer[] { 5, null, 10 });
+        evt.set("ndouble[]", FieldType.NDOUBLE_ARRAY, new Double[] { 1.23, null, 1.26 });
+        evt.set("nfloat[]", FieldType.NFLOAT_ARRAY, new Float[] { 1.11f, 1.12f, null });
         
     }
     

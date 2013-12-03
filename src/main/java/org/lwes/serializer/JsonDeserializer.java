@@ -53,7 +53,7 @@ private static JsonDeserializer instance;
                typedElems = parseTyped(typedContainer);
                for(Entry<String, TypeValue> element : typedElems.entrySet()){
                    TypeValue tv = element.getValue();
-                   FieldType ft = FieldType.byName(tv.getType());
+                   FieldType ft = FieldType.byTypeDesc(tv.getType());
                    if (ft==null)
                        continue;
                    

@@ -63,7 +63,7 @@ public class JsonSerializer {
     public Object getTypedAttributes(Map<String, BaseType> attrs) {
         Map<String,Object> typedAttrs = new HashMap<String, Object>();
         for(Entry<String, BaseType> attr : attrs.entrySet())
-            typedAttrs.put(attr.getKey(), new TypeValue(attr.getValue().getType().name, attr.getValue().stringyfy()));
+            typedAttrs.put(attr.getKey(), new TypeValue(attr.getValue().getType().typeDesc, attr.getValue().stringyfy()));
         
         return typedAttrs;
     }
