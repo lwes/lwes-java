@@ -9,6 +9,8 @@
  *======================================================================*/
 package org.lwes;
 
+import java.math.BigInteger;
+
 import org.junit.Test;
 import org.lwes.util.IPAddress;
 
@@ -29,7 +31,7 @@ public class BaseTypeTest {
       assertEquals(Long.valueOf(100), new BaseType(FieldType.INT64).parseFromString("100"));
       assertEquals(Integer.valueOf(100), new BaseType(FieldType.UINT16).parseFromString("100"));
       assertEquals(Long.valueOf(100), new BaseType(FieldType.UINT32).parseFromString("100"));
-      assertEquals(Long.valueOf(100), new BaseType(FieldType.UINT64).parseFromString("100"));  // FIXME: why not BigInteger?
+      assertEquals(BigInteger.valueOf(100), new BaseType(FieldType.UINT64).parseFromString("100"));
       assertEquals("100", new BaseType(FieldType.STRING).parseFromString("100"));
       assertEquals(new IPAddress(new byte[] { 1, 2, 3, 4 }), new BaseType(FieldType.IPADDR).parseFromString("1.2.3.4"));
       assertEquals(Boolean.TRUE, new BaseType(FieldType.BOOLEAN).parseFromString("true"));

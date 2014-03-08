@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.lwes.util.CharacterEncoding;
@@ -226,7 +227,13 @@ public interface Event extends Iterable<FieldAccessor> {
     void deserialize(DataInput stream, int length) throws IOException;
 
     int getBytesSize();
-
+    
+    String json();
+    
+    String unTypedJson();
+    
+    Map<String,BaseType> getAttributeNameTypeValues();
+            
     // MISCELLANEOUS
 
     Event copy();

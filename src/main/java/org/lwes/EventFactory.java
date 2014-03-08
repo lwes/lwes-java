@@ -13,6 +13,7 @@
 package org.lwes;
 
 import org.lwes.db.EventTemplateDB;
+import org.lwes.serializer.JsonDeserializer;
 
 import java.io.File;
 import java.io.InputStream;
@@ -188,6 +189,23 @@ public class EventFactory {
             throw new EventSystemException("Event template db not initialized");
         }
         return new MapEvent(bytes, validate, eventTemplateDB);
+    }
+    
+    /**
+     * Create an event from its json representation
+     * @param json
+     * @param type
+     * @return
+     */
+    public Event createEventFromJson(String json, EventImplementation type){
+        JsonDeserializer deSerializer = JsonDeserializer.getInstance();
+        switch (type) {
+        case MAP_EVENT:
+            return deSerializer.fromJson(json, new MapEvent());
+        case ARRAY_EVENT:
+            return deSerializer.fromJson(json, new ArrayEvent());
+        }
+        return null;
     }
 
 }

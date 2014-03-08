@@ -16,73 +16,78 @@ import java.util.Map;
 import org.lwes.util.IPAddress;
 
 public enum FieldType {
-    UINT16(0x01, "uint16", 0),
-    INT16(0x02, "int16", (short) 0),
-    UINT32(0x03, "uint32", 0L),
-    INT32(0x04, "int32", 0),
-    STRING(0x05, "string", ""),
-    IPADDR(0x06, "ip_addr", new IPAddress()),
-    INT64(0x07, "int64", 0L),
-    UINT64(0x08, "uint64", BigInteger.ZERO),
-    BOOLEAN(0x09, "boolean", true),
-    BYTE(0x0A, "byte", (byte) 0),
-    FLOAT(0x0B, "float", (float) 0.0),
-    DOUBLE(0x0C, "double", 0.0),
+    UINT16(0x01, "uint16", 0, "uint16"),
+    INT16(0x02, "int16", (short) 0, "int16"),
+    UINT32(0x03, "uint32", 0L, "uint32"),
+    INT32(0x04, "int32", 0, "int32"),
+    STRING(0x05, "string", "", "string"),
+    IPADDR(0x06, "ip_addr", new IPAddress(), "ip_addr"),
+    INT64(0x07, "int64", 0L, "int64"),
+    UINT64(0x08, "uint64", BigInteger.ZERO, "uint64"),
+    BOOLEAN(0x09, "boolean", true, "boolean"),
+    BYTE(0x0A, "byte", (byte) 0, "byte"),
+    FLOAT(0x0B, "float", (float) 0.0, "float"),
+    DOUBLE(0x0C, "double", 0.0, "double"),
 
     // Primitive Arrays
-    UINT16_ARRAY(0x81, "[Luint16", new short[0]),
-    INT16_ARRAY(0x82, "[Lint16", new int[0]),
-    UINT32_ARRAY(0x83, "[Luint32", new int[0]),
-    INT32_ARRAY(0x84, "[Lint32", new long[0]),
-    STRING_ARRAY(0x85, "[Lstring", new String[0]),
-    IP_ADDR_ARRAY(0x86, "[Lip_addr", new IPAddress[0]),
-    INT64_ARRAY(0x87, "[Lint64", new long[0]),
-    UINT64_ARRAY(0x88, "[Luint64", new BigInteger[0]),
-    BOOLEAN_ARRAY(0x89, "[Lboolean", new boolean[0]),
-    BYTE_ARRAY(0x8A, "[Lbyte", new byte[0]),
-    FLOAT_ARRAY(0x8B, "[Lfloat", new float[0]),
-    DOUBLE_ARRAY(0x8C, "[Ldouble", new double[0]),
+    UINT16_ARRAY(0x81, "[Luint16", new short[0], "uint16_array"),
+    INT16_ARRAY(0x82, "[Lint16", new int[0], "int16_array"),
+    UINT32_ARRAY(0x83, "[Luint32", new int[0], "uint32_array"),
+    INT32_ARRAY(0x84, "[Lint32", new long[0], "int32_array"),
+    STRING_ARRAY(0x85, "[Lstring", new String[0], "string_array"),
+    IP_ADDR_ARRAY(0x86, "[Lip_addr", new IPAddress[0], "ip_addr_array"),
+    INT64_ARRAY(0x87, "[Lint64", new long[0], "int64_array"),
+    UINT64_ARRAY(0x88, "[Luint64", new BigInteger[0], "uint64_array"),
+    BOOLEAN_ARRAY(0x89, "[Lboolean", new boolean[0], "boolean_array"),
+    BYTE_ARRAY(0x8A, "[Lbyte", new byte[0], "byte_array"),
+    FLOAT_ARRAY(0x8B, "[Lfloat", new float[0], "float_array"),
+    DOUBLE_ARRAY(0x8C, "[Ldouble", new double[0], "double_array"),
 
     // Nullable, object backed arrays
-    NUINT16_ARRAY(0x8D, "[LNuint16", new Short[0]),
-    NINT16_ARRAY(0x8E, "[LNint16", new Integer[0]),
-    NUINT32_ARRAY(0x8F, "[LNuint32", new Integer[0]),
-    NINT32_ARRAY(0x90, "[LNint32", new Long[0]),
-    NSTRING_ARRAY(0x91, "[LString", new String[0]),
+    NUINT16_ARRAY(0x8D, "[LNuint16", new Short[0], "nullable_uint16_array"),
+    NINT16_ARRAY(0x8E, "[LNint16", new Integer[0], "nullable_int16_array"),
+    NUINT32_ARRAY(0x8F, "[LNuint32", new Integer[0], "nullable_uint32_array"),
+    NINT32_ARRAY(0x90, "[LNint32", new Long[0], "nullable_int32_array"),
+    NSTRING_ARRAY(0x91, "[LString", new String[0], "nullable_string_array"),
     // N_IP_ADDR_ARRAY not implemented... 0x92
-    NINT64_ARRAY(0x93, "[LNint64", new Long[0]),
-    NUINT64_ARRAY(0x94, "[LNuint64", new BigInteger[0]),
-    NBOOLEAN_ARRAY(0x95, "[LBoolean", new Boolean[0]),
-    NBYTE_ARRAY(0x96, "[LByte", new Byte[0]),
-    NFLOAT_ARRAY(0x97, "[LFloat", new Float[0]),
-    NDOUBLE_ARRAY(0x98, "[LDouble", new Double[0]);
+    NINT64_ARRAY(0x93, "[LNint64", new Long[0], "nullable_int64_array"),
+    NUINT64_ARRAY(0x94, "[LNuint64", new BigInteger[0], "nullable_uint64_array"),
+    NBOOLEAN_ARRAY(0x95, "[LBoolean", new Boolean[0], "nullable_boolean_array"),
+    NBYTE_ARRAY(0x96, "[LByte", new Byte[0], "nullable_byte_array"),
+    NFLOAT_ARRAY(0x97, "[LFloat", new Float[0], "nullable_float_array"),
+    NDOUBLE_ARRAY(0x98, "[LDouble", new Double[0], "nullable_double_array");
 
     public final byte                           token;
     public final String                         name;
+    public final String                         typeDesc;
     private Integer                             constantSize;
     private final boolean                       array, nullableArray;
     private FieldType                           componentType, arrayType, nullableArrayType;
     private final Object                        defaultValue;
     private static final FieldType[]            TYPES_BY_TOKEN = new FieldType[256];
     private static final Map<String, FieldType> TYPES_BY_NAME;
+    private static final Map<String, FieldType> TYPES_BY_DESC;
 
     private FieldType(int token, String name) {
-        this(token, name, null);
+        this(token, name, null, null);
     }
 
-    private FieldType(int token, String name, Object defaultValue) {
+    private FieldType(int token, String name, Object defaultValue, String typeDesc) {
         this.token = (byte) token;
         this.name = name;
         this.array = name.startsWith("[L");
         this.nullableArray = this.array && name().startsWith("N");
         this.defaultValue = defaultValue;
+        this.typeDesc = typeDesc;
     }
 
     static {
         TYPES_BY_NAME        = new HashMap<String, FieldType>();
+        TYPES_BY_DESC        = new HashMap<String, FieldType>();
         for (FieldType type : values()) {
             TYPES_BY_TOKEN[type.token & 0xff] = type;
             TYPES_BY_NAME.put(type.name, type);
+            TYPES_BY_DESC.put(type.typeDesc, type);
             
             if (type.isArray()) {
                 // This will fail if our naming becomes inconsistent or a type starts with N.
@@ -128,6 +133,14 @@ public enum FieldType {
         return type;
     }
 
+    public static FieldType byTypeDesc(String typeDesc) {
+        final FieldType type = TYPES_BY_DESC.get(typeDesc);
+        if (type == null) {
+            throw new IllegalArgumentException("Bad type description: " + typeDesc);
+        }
+        return type;
+    }
+    
     @Override
     public String toString() {
         return name;

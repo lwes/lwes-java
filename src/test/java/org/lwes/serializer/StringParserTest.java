@@ -17,6 +17,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.math.BigInteger;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -148,13 +150,13 @@ public class StringParserTest {
     @Test
     public void testFromStringUINT64() {
         try {
-            Long val = Long.MAX_VALUE;
-            Long v = (Long) StringParser.fromStringUINT64(val.toString());
+            BigInteger val = BigInteger.valueOf(Long.MAX_VALUE);
+            BigInteger v = (BigInteger) StringParser.fromStringUINT64(val.toString());
             assertNotNull(v);
             assertEquals("fromStringINT64 failed", Long.MAX_VALUE, v.longValue());
 
             // now try it as a hex string...
-            v = (Long) StringParser.fromStringUINT64("0x7fffffffffffffff");
+            v = (BigInteger) StringParser.fromStringUINT64("0x7fffffffffffffff");
             assertNotNull(v);
             assertEquals("fromStringINT64 failed", Long.MAX_VALUE, v.longValue());
         }

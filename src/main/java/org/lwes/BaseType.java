@@ -13,9 +13,12 @@
 package org.lwes;
 
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 
+import org.lwes.serializer.StringConverter;
 import org.lwes.serializer.StringParser;
 import org.lwes.util.EncodedString;
+import org.lwes.util.IPAddress;
 
 /**
  * This class provides a base type for the base types in the event system. acts
@@ -366,6 +369,84 @@ public class BaseType {
     public String toString() {
         return typeObject.toString();
     }
+    
+    /**
+     * This method returns the correct string representation of the underlying data,
+     * 
+     * e.g. for cases where the data is an array of integers, the default toString will just print out 
+     * the internal java representation of array class type, but this method would convert the
+     * individual elements into strings and return a string array
+     * @return
+     */
+    
+    public Object stringyfy(){
+        
+        if(typeObject == null)
+            return null;
+        
+        switch (type) {
+             case BOOLEAN:
+             case BYTE:
+             case DOUBLE:
+             case FLOAT:
+             case INT16:
+             case INT32:
+             case INT64:
+             case UINT16:
+             case UINT32:
+             case UINT64:
+             case STRING:
+             case IPADDR:
+                 return typeObject.toString();
+             case BOOLEAN_ARRAY:
+                 return StringConverter.strArray((boolean[]) typeObject);
+             case BYTE_ARRAY:
+                 return StringConverter.strArray((byte[]) typeObject);
+             case DOUBLE_ARRAY:
+                 return StringConverter.strArray((double[]) typeObject);
+             case FLOAT_ARRAY:
+                 return StringConverter.strArray((float[]) typeObject);
+             case INT16_ARRAY:
+                 return StringConverter.strArray((short[]) typeObject);
+             case INT32_ARRAY:
+                 return StringConverter.strArray((int[]) typeObject);
+             case INT64_ARRAY:
+                 return StringConverter.strArray((long[]) typeObject);
+             case IP_ADDR_ARRAY:
+                 return StringConverter.<IPAddress>strArray((IPAddress[]) typeObject);
+             case STRING_ARRAY:
+                 return StringConverter.<String>strArray((String[]) typeObject);
+             case UINT16_ARRAY:
+                 return StringConverter.strArray((int[]) typeObject);
+             case UINT32_ARRAY:
+                 return StringConverter.strArray((long[]) typeObject);
+             case UINT64_ARRAY:
+                 return StringConverter.<BigInteger>strArray((BigInteger[]) typeObject);
+             case NBOOLEAN_ARRAY:
+                 return StringConverter.<Boolean>strArray((Boolean[]) typeObject);
+             case NBYTE_ARRAY:
+                 return StringConverter.<Byte>strArray((Byte[]) typeObject);
+             case NDOUBLE_ARRAY:
+                 return StringConverter.<Double>strArray((Double[]) typeObject);
+             case NFLOAT_ARRAY:
+                 return StringConverter.<Float>strArray((Float[]) typeObject);
+             case NINT16_ARRAY:
+                 return StringConverter.<Short>strArray((Short[]) typeObject);
+             case NINT32_ARRAY:
+                 return StringConverter.<Integer>strArray((Integer[]) typeObject);
+             case NINT64_ARRAY:
+                 return StringConverter.<Long>strArray((Long[]) typeObject);
+             case NSTRING_ARRAY:
+                 return StringConverter.<String>strArray((String[]) typeObject);
+             case NUINT16_ARRAY:
+                 return StringConverter.<Integer>strArray((Integer[]) typeObject);
+             case NUINT32_ARRAY:
+                 return StringConverter.<Long>strArray((Long[]) typeObject);
+             case NUINT64_ARRAY:
+                 return StringConverter.<BigInteger>strArray((BigInteger[]) typeObject);
+         }
+         return null;
+     }
 
     public String getComment() {
         return comment;

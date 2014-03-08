@@ -13,6 +13,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -23,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.lwes.db.EventTemplateDB;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
+import org.lwes.serializer.JsonSerializer;
 import org.lwes.serializer.Serializer;
 
 public class MapEvent extends DefaultEvent {
@@ -605,5 +608,17 @@ public class MapEvent extends DefaultEvent {
     @Override
     public int getBytesSize() {
         return bytesStoreSize;
+    }
+
+    public String json() {
+        return JsonSerializer.getInstance().json(name, attributes);
+    }
+    
+    public String unTypedJson() {
+        return JsonSerializer.getInstance().unTypedJson(name, attributes);
+    }
+    
+    public Map<String,BaseType> getAttributeNameTypeValues(){
+        return attributes;
     }
 }

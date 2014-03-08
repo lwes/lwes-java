@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
@@ -26,8 +27,10 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
+import org.lwes.serializer.JsonSerializer;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.EncodedString;
+import org.lwes.util.EventTranslator;
 
 public final class ArrayEvent extends DefaultEvent {
 
@@ -678,5 +681,17 @@ public final class ArrayEvent extends DefaultEvent {
             }
             return value;
         }
+    }
+    
+    public String json() {
+        return EventTranslator.arrayToMapEvent(this).json();
+    }
+    
+    public String unTypedJson() {
+        return EventTranslator.arrayToMapEvent(this).unTypedJson();
+    }
+    
+    public Map<String,BaseType> getAttributeNameTypeValues(){
+        return EventTranslator.arrayToMapEvent(this).getAttributeNameTypeValues();
     }
 }

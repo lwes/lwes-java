@@ -12,7 +12,7 @@
     <groupId>org.lwes</groupId>
     <artifactId>lwes-java</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <name>lwes-java</name>
     <description>Lightweight event system, java implementation</description>
     <url>http://lwes.org</url>
@@ -48,6 +48,13 @@
     </developers>
 
     <dependencies>
+    
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+    
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
