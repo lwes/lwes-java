@@ -232,8 +232,8 @@ public interface Event extends Iterable<FieldAccessor> {
     
     String unTypedJson();
     
-    Map<String, Object> exportTypedAndUnTypedAttributes();
-        
+    Map<String,BaseType> getAttributeNameTypeValues();
+            
     // MISCELLANEOUS
 
     Event copy();

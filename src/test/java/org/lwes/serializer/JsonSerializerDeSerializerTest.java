@@ -54,13 +54,6 @@ public class JsonSerializerDeSerializerTest {
         System.out.println(evt.unTypedJson());
     }
     
-    @Test
-    public void testExportEventAttributes(){
-        Event evt = new ArrayEvent("json-event");
-        setEventProperties(evt);
-        System.out.println(evt.exportTypedAndUnTypedAttributes());
-    }
-    
     public void setEventProperties(Event evt){
         
         evt.set("key", FieldType.STRING, "value");

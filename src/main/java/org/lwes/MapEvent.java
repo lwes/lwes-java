@@ -618,12 +618,7 @@ public class MapEvent extends DefaultEvent {
         return JsonSerializer.getInstance().unTypedJson(name, attributes);
     }
     
-    public Map<String, Object> exportTypedAndUnTypedAttributes(){
-        JsonSerializer helper = JsonSerializer.getInstance();
-        Map<String, Object> container = new HashMap<String, Object>();
-        container.put("typed", helper.getTypedAttributes(attributes));
-        container.put("attributes", helper.getUnTypedAttributes(name, attributes));
-        return container;
+    public Map<String,BaseType> getAttributeNameTypeValues(){
+        return attributes;
     }
-    
 }

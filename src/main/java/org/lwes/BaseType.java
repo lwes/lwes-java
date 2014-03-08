@@ -370,6 +370,15 @@ public class BaseType {
         return typeObject.toString();
     }
     
+    /**
+     * This method returns the correct string representation of the underlying data,
+     * 
+     * e.g. for cases where the data is an array of integers, the default toString will just print out 
+     * the internal java representation of array class type, but this method would convert the
+     * individual elements into strings and return a string array
+     * @return
+     */
+    
     public Object stringyfy(){
         
         if(typeObject == null)
@@ -387,7 +396,6 @@ public class BaseType {
              case UINT32:
              case UINT64:
              case STRING:
-                 return typeObject.toString();
              case IPADDR:
                  return typeObject.toString();
              case BOOLEAN_ARRAY:
