@@ -72,6 +72,19 @@ public final class ArrayEvent extends DefaultEvent {
         resetCaches();
     }
 
+    /**
+     * Returns an array event from bytes without copying the byte array, e.g. for read-only use.
+     * @param bytes
+     * @return
+     */
+    static ArrayEvent arrayEventNoCopy(final byte[] bytes) {
+        ArrayEvent e = new ArrayEvent();        
+        e.length = bytes.length;
+        e.bytes = bytes;
+        e.resetCaches();
+        return e;
+    }
+
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {
         this();
         this.bytes = Arrays.copyOfRange(bytes, offset, length + excess);

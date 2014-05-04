@@ -37,13 +37,14 @@ public final class ArrayEventTest extends EventTest {
         Assert.assertEquals(Event.UTF_8, evt.getEncoding());
     }
 
+    final byte[] testBytes = new byte[]{4, 'T', 'e', 's', 't', 0, 1, 2, 'a', 'b', FieldType.INT16.token, -10, 12};
+    
     @Test
     public void testBasicFunctions() throws EventSystemException {
-        final byte[] bytes = new byte[]{4, 'T', 'e', 's', 't', 0, 1, 2, 'a', 'b', FieldType.INT16.token, -10, 12};
+        
+        final ArrayEvent e1 = new ArrayEvent(testBytes);
 
-        final ArrayEvent e1 = new ArrayEvent(bytes);
-
-        assertTrue(Arrays.equals(bytes, e1.serialize()));
+        assertTrue(Arrays.equals(testBytes, e1.serialize()));
         assertEquals("Test { \tab = -2548; }", e1.toOneLineString());
         assertEquals("Test { \tab = -2548; }", e1.copy().toOneLineString());
         assertTrue(e1.isSet("ab"));
@@ -92,6 +93,17 @@ public final class ArrayEventTest extends EventTest {
         assertFalse(e1.isSet("ab"));
 
         System.gc();
+    }
+    
+    @Test
+    public void testReadOnly() {
+        final ArrayEvent e1 = new ArrayEvent(testBytes);
+        final ArrayEvent e2 = ArrayEvent.arrayEventNoCopy(testBytes);
+        assertEquals(e1, e2);
+        assertFalse(e2.equals(null));
+        // e2.setEventName("New event name"); // gives out of bounds exception
+        final ArrayEvent e3 = ArrayEvent.arrayEventNoCopy(testBytes);
+        assertEquals(e2, e3);
     }
 
     @Test
