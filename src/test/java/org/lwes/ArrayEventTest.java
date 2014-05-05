@@ -102,7 +102,9 @@ public final class ArrayEventTest extends EventTest {
         assertEquals(e1, e2);
         assertFalse(e2.equals(null));
         // e2.setEventName("New event name"); // gives out of bounds exception
-        final ArrayEvent e3 = ArrayEvent.arrayEventNoCopy(testBytes);
+        final ArrayEvent e3 = ArrayEvent.arrayEventNoCopy(testBytes);        
+        assertEquals(e2, e3);
+        e3.updateFromBytesNoCopy(testBytes);
         assertEquals(e2, e3);
     }
 
