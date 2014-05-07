@@ -88,11 +88,16 @@ public final class ArrayEvent extends DefaultEvent {
     /**
      * To reuse an event without needing to do a new() (which allocates a new byte array each time).
      * @param bytes
+     * @param len - length of the bytes array prefix that will be used
      */
-    public void updateFromBytesNoCopy(final byte[] bytes) {
+    public void updateFromBytesNoCopy(final byte[] bytes, final int len) {
         this.bytes = bytes;
-        this.length = bytes.length;
+        this.length = len;
         this.resetCaches();
+    }
+    
+    public void updateFromBytesNoCopy(final byte[] bytes) {
+        updateFromBytesNoCopy(bytes, bytes.length);
     }
 
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {
