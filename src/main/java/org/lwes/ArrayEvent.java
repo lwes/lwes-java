@@ -65,39 +65,29 @@ public final class ArrayEvent extends DefaultEvent {
         setEventName(name);
     }
 
-    public ArrayEvent(byte[] bytes) {
+    /**
+     * Creates a new event from the given byte array, copying it only if the copy flag is true.
+     * @param bytes
+     * @param copy
+     */
+    public ArrayEvent(final byte[] bytes, final boolean copy) {
         this();
         this.length = bytes.length;
-        System.arraycopy(bytes, 0, this.bytes, 0, length);
+        if (copy) {
+            System.arraycopy(bytes, 0, this.bytes, 0, length);
+        }
+        else {
+            this.bytes = bytes;
+        }
         resetCaches();
     }
-
-    /**
-     * Returns an array event from bytes without copying the byte array, e.g. for read-only use.
-     * @param bytes
-     * @return
-     */
-    static ArrayEvent arrayEventNoCopy(final byte[] bytes) {
-        ArrayEvent e = new ArrayEvent();        
-        e.length = bytes.length;
-        e.bytes = bytes;
-        e.resetCaches();
-        return e;
-    }
     
     /**
-     * To reuse an event without needing to do a new() (which allocates a new byte array each time).
+     * Creates a new event, making a copy of the given byte array.
      * @param bytes
-     * @param len - length of the bytes array prefix that will be used
      */
-    public void updateFromBytesNoCopy(final byte[] bytes, final int len) {
-        this.bytes = bytes;
-        this.length = len;
-        this.resetCaches();
-    }
-    
-    public void updateFromBytesNoCopy(final byte[] bytes) {
-        updateFromBytesNoCopy(bytes, bytes.length);
+    public ArrayEvent(final byte[] bytes) {
+        this(bytes, true);
     }
 
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {

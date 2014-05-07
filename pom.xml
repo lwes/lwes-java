@@ -117,7 +117,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <pluginManagement>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -154,7 +153,6 @@
                     </execution>
                 </executions>
             </plugin>
-            
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
@@ -248,7 +246,7 @@
                     </replacements>
                 </configuration>
             </plugin>
- 
+
             <!-- optionally build an RPM for some of the utilities -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -309,6 +307,5 @@
                 </configuration>
             </plugin>
         </plugins>
-        </pluginManagement>
     </build>
 </project>
