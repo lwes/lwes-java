@@ -98,25 +98,29 @@ public final class ArrayEventTest extends EventTest {
     @Test
     public void testReadOnly() {
         final ArrayEvent e1 = new ArrayEvent(testBytes);
+        assertEquals(testBytes.length, e1.getBytesSize());
+        assertEquals(Event.MAX_MESSAGE_SIZE, e1.getCapacity());
         final ArrayEvent e2 = new ArrayEvent(testBytes, false); // no copy
         assertEquals(e1, e2);
-        assertEquals(e2.getBytesSize(), testBytes.length);
+        assertEquals(testBytes.length, e2.getBytesSize());
+        assertEquals(testBytes.length, e2.getCapacity());
         assertFalse(e2.equals(null));
         // e2.setEventName("New event name"); // gives out of bounds exception
-        final ArrayEvent e3 = new ArrayEvent(testBytes, false); // no copy        
+        final ArrayEvent e3 = new ArrayEvent(testBytes, false); // no copy
+        assertEquals(testBytes.length, e3.getCapacity());
         assertEquals(e2, e3);
         final ArrayEvent e4 = new ArrayEvent(testBytes, true); // copy
         assertEquals(e2, e4);
-        assertEquals(e4.getBytesSize(), testBytes.length);
+        assertEquals(testBytes.length, e4.getBytesSize());
+        assertEquals(Event.MAX_MESSAGE_SIZE, e4.getCapacity());
         
-        /** Does not work:
         final int bigSize = testBytes.length * 3;
         byte[] big = new byte[bigSize];
         System.arraycopy(testBytes, 0, big, 0, testBytes.length);        
-        final ArrayEvent e5 = new ArrayEvent(big, false); // no copy
+        final ArrayEvent e5 = new ArrayEvent(big, testBytes.length, false); // no copy
         assertEquals(e5, e1);
-        assertEquals(e5.getBytesSize(), bigSize);
-        ***/
+        assertEquals(testBytes.length, e5.getBytesSize());
+        assertEquals(big.length, e5.getCapacity());
     }
 
     @Test

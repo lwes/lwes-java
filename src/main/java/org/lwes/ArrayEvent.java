@@ -80,19 +80,20 @@ public final class ArrayEvent extends DefaultEvent {
     /**
      * Creates a new event from the given byte array, copying it only if the copy flag is true.
      * @param bytes
-     * @param copy
+     * @param len - Portion of the byte array to use. Must be smaller than total length.
+     * @param copy - If true, the bytes prefix is copied to a newly allocated array.
      */
-    public ArrayEvent(final byte[] bytes, final boolean copy) {
+    public ArrayEvent(final byte[] bytes, final int len, final boolean copy) {
         // We assume that bytes has the right encoding, no need to set it.
         if (copy) {
             this.bytes = new byte[MAX_MESSAGE_SIZE];
-            this.length = bytes.length;
+            this.length = len;
             updateCreationStats();
-            System.arraycopy(bytes, 0, this.bytes, 0, length);
+            System.arraycopy(bytes, 0, this.bytes, 0, this.length);
         }
         else {
             this.bytes = bytes;
-            this.length = bytes.length;
+            this.length = len;
             // we could add a new stat for "wraps"
         }        
         resetCaches();
@@ -103,9 +104,13 @@ public final class ArrayEvent extends DefaultEvent {
      * @param bytes
      */
     public ArrayEvent(final byte[] bytes) {
-        this(bytes, true);
+        this(bytes, bytes.length, true);
     }
 
+    public ArrayEvent(final byte[] bytes, boolean copy) {
+        this(bytes, bytes.length, copy);
+    }
+    
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {
         this.bytes = Arrays.copyOfRange(bytes, offset, length + excess);
         this.length = length;
@@ -255,14 +260,15 @@ public final class ArrayEvent extends DefaultEvent {
             appendField(ENCODING, FieldType.INT16, encoding);
             return;
         }
-        else if (ENCODING.equals(Deserializer.deserializeATTRIBUTEWORD(tempState, bytes))) {
-            if (FieldType.INT16.token == Deserializer.deserializeBYTE(tempState, bytes)) {
-                // Encoding was already the first field and the right type.  Just change the value.
-                Serializer.serializeINT16(encoding, bytes, tempState.currentIndex());
-                return;
-            }
-            else {
-                // Encoding was the first field, but had the wrong type.  Clear it and recreate below.
+        else {
+            if (ENCODING.equals(Deserializer.deserializeATTRIBUTEWORD(tempState, bytes))) {
+                if (FieldType.INT16.token == Deserializer.deserializeBYTE(tempState, bytes)) {
+                    // Encoding was already the first field and the right type.  Just change the value.
+                    Serializer.serializeINT16(encoding, bytes, tempState.currentIndex());
+                    return;
+                } else {
+                    // Encoding was the first field, but had the wrong type.  Clear it and recreate below.
+                }
             }
         }
 
@@ -399,6 +405,10 @@ public final class ArrayEvent extends DefaultEvent {
     @Override
     public int getBytesSize() {
         return length;
+    }
+    
+    public int getCapacity() {
+        return bytes.length;
     }
 
     @Override
@@ -576,7 +586,7 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     public static enum ArrayEventStats {
-        CREATIONS, DELETIONS, HIGHWATER, SHIFTS, FINDS, PARSES, COPIES, SWAPS;
+        CREATIONS, DELETIONS, HIGHWATER, SHIFTS, FINDS, PARSES, COPIES, SWAPS
     }
 
     /**
