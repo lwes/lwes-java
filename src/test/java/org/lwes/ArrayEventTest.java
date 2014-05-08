@@ -105,7 +105,6 @@ public final class ArrayEventTest extends EventTest {
         assertEquals(e1, e2);
         assertEquals(testBytes.length, e2.getBytesSize());
         assertEquals(testBytes.length, e2.getCapacity());
-        assertFalse(e2.equals(null));
         final ArrayEvent e3 = new ArrayEvent(testBytes, false); // no copy
         assertEquals(testBytes.length, e3.getCapacity());
         assertEquals(e2, e3);
