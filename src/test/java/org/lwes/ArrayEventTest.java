@@ -14,9 +14,9 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 import org.junit.Test;
+import org.lwes.ArrayEvent.ArrayEventStats;
 
 import junit.framework.Assert;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -97,7 +97,8 @@ public final class ArrayEventTest extends EventTest {
     
     @Test
     public void testReadOnly() {
-        final ArrayEvent e1 = new ArrayEvent(testBytes);
+        ArrayEvent.resetStats();
+        final ArrayEvent e1 = new ArrayEvent(testBytes); // copy
         assertEquals(testBytes.length, e1.getBytesSize());
         assertEquals(Event.MAX_MESSAGE_SIZE, e1.getCapacity());
         final ArrayEvent e2 = new ArrayEvent(testBytes, false); // no copy
@@ -105,7 +106,6 @@ public final class ArrayEventTest extends EventTest {
         assertEquals(testBytes.length, e2.getBytesSize());
         assertEquals(testBytes.length, e2.getCapacity());
         assertFalse(e2.equals(null));
-        // e2.setEventName("New event name"); // gives out of bounds exception
         final ArrayEvent e3 = new ArrayEvent(testBytes, false); // no copy
         assertEquals(testBytes.length, e3.getCapacity());
         assertEquals(e2, e3);
@@ -121,6 +121,10 @@ public final class ArrayEventTest extends EventTest {
         assertEquals(e5, e1);
         assertEquals(testBytes.length, e5.getBytesSize());
         assertEquals(big.length, e5.getCapacity());
+        
+        assertEquals(3, ArrayEvent.getStats().get(ArrayEventStats.WRAPS).intValue());
+        assertEquals(5, ArrayEvent.getStats().get(ArrayEventStats.CREATIONS).intValue());
+        System.out.print(e5.toStringDetailed());
     }
 
     @Test

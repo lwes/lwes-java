@@ -13,6 +13,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -88,14 +89,14 @@ public final class ArrayEvent extends DefaultEvent {
         if (copy) {
             this.bytes = new byte[MAX_MESSAGE_SIZE];
             this.length = len;
-            updateCreationStats();
             System.arraycopy(bytes, 0, this.bytes, 0, this.length);
         }
         else {
             this.bytes = bytes;
             this.length = len;
-            // we could add a new stat for "wraps"
-        }        
+            STATS.get(ArrayEventStats.WRAPS).increment();
+        }
+        updateCreationStats();
         resetCaches();
     }
     
@@ -398,6 +399,12 @@ public final class ArrayEvent extends DefaultEvent {
         resetCaches();
     }
 
+    public void deserialize(ByteBuffer buffer, int length) {
+        this.length = length;
+        buffer.get(bytes, 0, length);
+        resetCaches();
+    }
+
     private void resetCaches() {
         this.encoding = readEncoding();
     }
@@ -586,7 +593,7 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     public static enum ArrayEventStats {
-        CREATIONS, DELETIONS, HIGHWATER, SHIFTS, FINDS, PARSES, COPIES, SWAPS
+        CREATIONS, DELETIONS, HIGHWATER, SHIFTS, FINDS, PARSES, COPIES, SWAPS, WRAPS
     }
 
     /**
@@ -631,11 +638,11 @@ public final class ArrayEvent extends DefaultEvent {
     public String toStringDetailed() {
         final StringBuilder buf = new StringBuilder();
         try {
-            buf.append(String.format("Event name:        \"%s\"\n", getEventName()));
-            buf.append(String.format("Serialized length: %d\n", length));
-            buf.append(String.format("tempState index:   %d\n", tempState.currentIndex()));
-            buf.append(String.format("Encoding:          %s\n", Event.ENCODING_STRINGS[encoding].getEncodingString()));
-            buf.append(String.format("Number of fields:  %d\n", getNumEventAttributes()));
+            buf.append(String.format("Event name:        \"%s\"%n", getEventName()));
+            buf.append(String.format("Serialized length: %d%n", length));
+            buf.append(String.format("tempState index:   %d%n", tempState.currentIndex()));
+            buf.append(String.format("Encoding:          %s%n", Event.ENCODING_STRINGS[encoding].getEncodingString()));
+            buf.append(String.format("Number of fields:  %d%n", getNumEventAttributes()));
             final DeserializerState ds = new DeserializerState();
             ds.set(getValueListIndex());
             while (ds.currentIndex() < length) {
@@ -663,11 +670,11 @@ public final class ArrayEvent extends DefaultEvent {
                 if (value.getClass().isArray()) {
                     value = Arrays.deepToString(new Object[]{value});
                 }
-                buf.append(String.format("  field \"%s\" (%s): %s\n", field, type, value));
+                buf.append(String.format("  field \"%s\" (%s): %s%n", field, type, value));
             }
         }
         catch (Exception e) {
-            buf.append("\nEXCEPTION: ").append(e.getMessage());
+            buf.append("%nEXCEPTION: ").append(e.getMessage());
         }
         return buf.toString();
     }
