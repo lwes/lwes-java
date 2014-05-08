@@ -32,7 +32,7 @@ import org.lwes.util.EncodedString;
 public final class ArrayEvent extends DefaultEvent {
 
     private static final int SERIALIZED_ENCODING_LENGTH;
-    private byte[] bytes = new byte[MAX_MESSAGE_SIZE];
+    private byte[] bytes;
     private final DeserializerState tempState = new DeserializerState();
     private int length = 3;
     private short encoding = DEFAULT_ENCODING;
@@ -50,9 +50,20 @@ public final class ArrayEvent extends DefaultEvent {
     //  * ...ATTRIBUTEWORD,TYPETOKEN(UINT16|INT16|UINT32|INT32|
     //  * UINT64|INT64|BOOLEAN|STRING)
 
+    /**
+     * Makes a new event, allocating a new buffer of size MAX_MESSAGE_SIZE
+     */
     public ArrayEvent() {
+        bytes = new byte[MAX_MESSAGE_SIZE];
         length = getValueListIndex();
         setEncoding(DEFAULT_ENCODING);
+        updateCreationStats();
+    }
+    
+    /**
+     * All constructors call this aux function once, except for the case where we wrap an existing event byte array
+     */
+    private void updateCreationStats() {
         final MutableInt creations = STATS.get(ArrayEventStats.CREATIONS);
         final MutableInt deletions = STATS.get(ArrayEventStats.DELETIONS);
         final MutableInt highwater = STATS.get(ArrayEventStats.HIGHWATER);
@@ -65,25 +76,30 @@ public final class ArrayEvent extends DefaultEvent {
         setEventName(name);
     }
 
+    
     /**
      * Creates a new event from the given byte array, copying it only if the copy flag is true.
      * @param bytes
      * @param copy
      */
     public ArrayEvent(final byte[] bytes, final boolean copy) {
-        this();
-        this.length = bytes.length;
+        // We assume that bytes has the right encoding, no need to set it.
         if (copy) {
+            this.bytes = new byte[MAX_MESSAGE_SIZE];
+            this.length = bytes.length;
+            updateCreationStats();
             System.arraycopy(bytes, 0, this.bytes, 0, length);
         }
         else {
             this.bytes = bytes;
-        }
+            this.length = bytes.length;
+            // we could add a new stat for "wraps"
+        }        
         resetCaches();
     }
     
     /**
-     * Creates a new event, making a copy of the given byte array.
+     * Creates a new event, making a copy of the given byte array into a newly allocated buffer
      * @param bytes
      */
     public ArrayEvent(final byte[] bytes) {
@@ -91,9 +107,9 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {
-        this();
         this.bytes = Arrays.copyOfRange(bytes, offset, length + excess);
         this.length = length;
+        updateCreationStats();
         resetCaches();
     }
 

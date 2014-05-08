@@ -100,10 +100,23 @@ public final class ArrayEventTest extends EventTest {
         final ArrayEvent e1 = new ArrayEvent(testBytes);
         final ArrayEvent e2 = new ArrayEvent(testBytes, false); // no copy
         assertEquals(e1, e2);
+        assertEquals(e2.getBytesSize(), testBytes.length);
         assertFalse(e2.equals(null));
         // e2.setEventName("New event name"); // gives out of bounds exception
         final ArrayEvent e3 = new ArrayEvent(testBytes, false); // no copy        
         assertEquals(e2, e3);
+        final ArrayEvent e4 = new ArrayEvent(testBytes, true); // copy
+        assertEquals(e2, e4);
+        assertEquals(e4.getBytesSize(), testBytes.length);
+        
+        /** Does not work:
+        final int bigSize = testBytes.length * 3;
+        byte[] big = new byte[bigSize];
+        System.arraycopy(testBytes, 0, big, 0, testBytes.length);        
+        final ArrayEvent e5 = new ArrayEvent(big, false); // no copy
+        assertEquals(e5, e1);
+        assertEquals(e5.getBytesSize(), bigSize);
+        ***/
     }
 
     @Test
