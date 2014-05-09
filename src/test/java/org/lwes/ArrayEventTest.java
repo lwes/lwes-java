@@ -123,7 +123,7 @@ public final class ArrayEventTest extends EventTest {
         
         assertEquals(3, ArrayEvent.getStats().get(ArrayEventStats.WRAPS).intValue());
         assertEquals(5, ArrayEvent.getStats().get(ArrayEventStats.CREATIONS).intValue());
-        System.out.print(e5.toStringDetailed());
+        // System.out.print(e5.toStringDetailed());
     }
 
     @Test

@@ -81,12 +81,14 @@ public final class ArrayEvent extends DefaultEvent {
     /**
      * Creates a new event from the given byte array, copying it only if the copy flag is true.
      * @param bytes
-     * @param len - Portion of the byte array to use. Must be smaller than total length.
+     * @param len - Portion of the byte array to use. Must be no greater than total length.
      * @param copy - If true, the bytes prefix is copied to a newly allocated array.
      */
     public ArrayEvent(final byte[] bytes, final int len, final boolean copy) {
         // We assume that bytes has the right encoding, no need to set it.
+        assert len <= bytes.length;
         if (copy) {
+            assert len <= MAX_MESSAGE_SIZE;
             this.bytes = new byte[MAX_MESSAGE_SIZE];
             this.length = len;
             System.arraycopy(bytes, 0, this.bytes, 0, this.length);
@@ -113,7 +115,7 @@ public final class ArrayEvent extends DefaultEvent {
     }
     
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {
-        this.bytes = Arrays.copyOfRange(bytes, offset, length + excess);
+        this.bytes = Arrays.copyOfRange(bytes, offset, offset + length + excess);
         this.length = length;
         updateCreationStats();
         resetCaches();
@@ -121,6 +123,8 @@ public final class ArrayEvent extends DefaultEvent {
 
     private ArrayEvent(byte[] bytes, int length, short encoding) {
         this();
+        assert length <= bytes.length;
+        assert length <= this.bytes.length;
         System.arraycopy(bytes, 0, this.bytes, 0, length);
         this.length = length;
         this.encoding = encoding;
