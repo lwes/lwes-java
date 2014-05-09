@@ -47,7 +47,9 @@ public abstract class EventTest {
     @Before
     public void setUp() {
         eventTemplate = new EventTemplateDB();
-        eventTemplate.setESFFile(new File("src/test/java/org/lwes/EventTest.esf"));
+        final String path = this.getClass().getResource("EventTest.esf").getPath();
+        File f = new File(path);
+        eventTemplate.setESFFile(f);
         eventTemplate.initialize();
     }
 
