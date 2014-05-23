@@ -13,6 +13,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -32,7 +33,7 @@ import org.lwes.util.EncodedString;
 public final class ArrayEvent extends DefaultEvent {
 
     private static final int SERIALIZED_ENCODING_LENGTH;
-    private byte[] bytes = new byte[MAX_MESSAGE_SIZE];
+    private byte[] bytes;
     private final DeserializerState tempState = new DeserializerState();
     private int length = 3;
     private short encoding = DEFAULT_ENCODING;
@@ -50,9 +51,20 @@ public final class ArrayEvent extends DefaultEvent {
     //  * ...ATTRIBUTEWORD,TYPETOKEN(UINT16|INT16|UINT32|INT32|
     //  * UINT64|INT64|BOOLEAN|STRING)
 
+    /**
+     * Makes a new event, allocating a new buffer of size MAX_MESSAGE_SIZE
+     */
     public ArrayEvent() {
+        bytes = new byte[MAX_MESSAGE_SIZE];
         length = getValueListIndex();
         setEncoding(DEFAULT_ENCODING);
+        updateCreationStats();
+    }
+    
+    /**
+     * All constructors call this aux function once
+     */
+    private static void updateCreationStats() {
         final MutableInt creations = STATS.get(ArrayEventStats.CREATIONS);
         final MutableInt deletions = STATS.get(ArrayEventStats.DELETIONS);
         final MutableInt highwater = STATS.get(ArrayEventStats.HIGHWATER);
@@ -65,22 +77,54 @@ public final class ArrayEvent extends DefaultEvent {
         setEventName(name);
     }
 
-    public ArrayEvent(byte[] bytes) {
-        this();
-        this.length = bytes.length;
-        System.arraycopy(bytes, 0, this.bytes, 0, length);
+    
+    /**
+     * Creates a new event from the given byte array, copying it only if the copy flag is true.
+     * @param bytes
+     * @param len - Portion of the byte array to use. Must be no greater than total length.
+     * @param copy - If true, the bytes prefix is copied to a newly allocated array.
+     */
+    public ArrayEvent(final byte[] bytes, final int len, final boolean copy) {
+        // We assume that bytes has the right encoding, no need to set it.
+        assert len <= bytes.length;
+        if (copy) {
+            assert len <= MAX_MESSAGE_SIZE;
+            this.bytes = new byte[MAX_MESSAGE_SIZE];
+            this.length = len;
+            System.arraycopy(bytes, 0, this.bytes, 0, this.length);
+        }
+        else {
+            this.bytes = bytes;
+            this.length = len;
+            STATS.get(ArrayEventStats.WRAPS).increment();
+        }
+        updateCreationStats();
         resetCaches();
     }
+    
+    /**
+     * Creates a new event, making a copy of the given byte array into a newly allocated buffer
+     * @param bytes
+     */
+    public ArrayEvent(final byte[] bytes) {
+        this(bytes, bytes.length, true);
+    }
 
+    public ArrayEvent(final byte[] bytes, boolean copy) {
+        this(bytes, bytes.length, copy);
+    }
+    
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {
-        this();
-        this.bytes = Arrays.copyOfRange(bytes, offset, length + excess);
+        this.bytes = Arrays.copyOfRange(bytes, offset, offset + length + excess);
         this.length = length;
+        updateCreationStats();
         resetCaches();
     }
 
     private ArrayEvent(byte[] bytes, int length, short encoding) {
         this();
+        assert length <= bytes.length;
+        assert length <= this.bytes.length;
         System.arraycopy(bytes, 0, this.bytes, 0, length);
         this.length = length;
         this.encoding = encoding;
@@ -221,14 +265,15 @@ public final class ArrayEvent extends DefaultEvent {
             appendField(ENCODING, FieldType.INT16, encoding);
             return;
         }
-        else if (ENCODING.equals(Deserializer.deserializeATTRIBUTEWORD(tempState, bytes))) {
-            if (FieldType.INT16.token == Deserializer.deserializeBYTE(tempState, bytes)) {
-                // Encoding was already the first field and the right type.  Just change the value.
-                Serializer.serializeINT16(encoding, bytes, tempState.currentIndex());
-                return;
-            }
-            else {
-                // Encoding was the first field, but had the wrong type.  Clear it and recreate below.
+        else {
+            if (ENCODING.equals(Deserializer.deserializeATTRIBUTEWORD(tempState, bytes))) {
+                if (FieldType.INT16.token == Deserializer.deserializeBYTE(tempState, bytes)) {
+                    // Encoding was already the first field and the right type.  Just change the value.
+                    Serializer.serializeINT16(encoding, bytes, tempState.currentIndex());
+                    return;
+                } else {
+                    // Encoding was the first field, but had the wrong type.  Clear it and recreate below.
+                }
             }
         }
 
@@ -358,6 +403,12 @@ public final class ArrayEvent extends DefaultEvent {
         resetCaches();
     }
 
+    public void deserialize(ByteBuffer buffer, int length) {
+        this.length = length;
+        buffer.get(bytes, 0, length);
+        resetCaches();
+    }
+
     private void resetCaches() {
         this.encoding = readEncoding();
     }
@@ -365,6 +416,10 @@ public final class ArrayEvent extends DefaultEvent {
     @Override
     public int getBytesSize() {
         return length;
+    }
+    
+    public int getCapacity() {
+        return bytes.length;
     }
 
     @Override
@@ -542,7 +597,7 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     public static enum ArrayEventStats {
-        CREATIONS, DELETIONS, HIGHWATER, SHIFTS, FINDS, PARSES, COPIES, SWAPS;
+        CREATIONS, DELETIONS, HIGHWATER, SHIFTS, FINDS, PARSES, COPIES, SWAPS, WRAPS
     }
 
     /**
@@ -559,7 +614,8 @@ public final class ArrayEvent extends DefaultEvent {
         return new ArrayEvent(bytes, 0, length, excess);
     }
 
-    private boolean arrayEquals(byte[] b1, int o1, int l1, byte[] b2, int o2, int l2) {
+    
+    private static boolean arrayEquals(final byte[] b1, int o1, final int l1, final byte[] b2, final int o2, final int l2) {
         if (l1 != l2) {
             return false;
         }
@@ -587,11 +643,11 @@ public final class ArrayEvent extends DefaultEvent {
     public String toStringDetailed() {
         final StringBuilder buf = new StringBuilder();
         try {
-            buf.append(String.format("Event name:        \"%s\"\n", getEventName()));
-            buf.append(String.format("Serialized length: %d\n", length));
-            buf.append(String.format("tempState index:   %d\n", tempState.currentIndex()));
-            buf.append(String.format("Encoding:          %s\n", Event.ENCODING_STRINGS[encoding].getEncodingString()));
-            buf.append(String.format("Number of fields:  %d\n", getNumEventAttributes()));
+            buf.append(String.format("Event name:        \"%s\"%n", getEventName()));
+            buf.append(String.format("Serialized length: %d%n", length));
+            buf.append(String.format("tempState index:   %d%n", tempState.currentIndex()));
+            buf.append(String.format("Encoding:          %s%n", Event.ENCODING_STRINGS[encoding].getEncodingString()));
+            buf.append(String.format("Number of fields:  %d%n", getNumEventAttributes()));
             final DeserializerState ds = new DeserializerState();
             ds.set(getValueListIndex());
             while (ds.currentIndex() < length) {
@@ -619,11 +675,11 @@ public final class ArrayEvent extends DefaultEvent {
                 if (value.getClass().isArray()) {
                     value = Arrays.deepToString(new Object[]{value});
                 }
-                buf.append(String.format("  field \"%s\" (%s): %s\n", field, type, value));
+                buf.append(String.format("  field \"%s\" (%s): %s%n", field, type, value));
             }
         }
         catch (Exception e) {
-            buf.append("\nEXCEPTION: ").append(e.getMessage());
+            buf.append("%nEXCEPTION: ").append(e.getMessage());
         }
         return buf.toString();
     }
