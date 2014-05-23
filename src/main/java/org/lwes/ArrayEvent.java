@@ -62,9 +62,9 @@ public final class ArrayEvent extends DefaultEvent {
     }
     
     /**
-     * All constructors call this aux function once, except for the case where we wrap an existing event byte array
+     * All constructors call this aux function once
      */
-    private void updateCreationStats() {
+    private static void updateCreationStats() {
         final MutableInt creations = STATS.get(ArrayEventStats.CREATIONS);
         final MutableInt deletions = STATS.get(ArrayEventStats.DELETIONS);
         final MutableInt highwater = STATS.get(ArrayEventStats.HIGHWATER);
@@ -614,7 +614,8 @@ public final class ArrayEvent extends DefaultEvent {
         return new ArrayEvent(bytes, 0, length, excess);
     }
 
-    private boolean arrayEquals(byte[] b1, int o1, int l1, byte[] b2, int o2, int l2) {
+    
+    private static boolean arrayEquals(final byte[] b1, int o1, final int l1, final byte[] b2, final int o2, final int l2) {
         if (l1 != l2) {
             return false;
         }
