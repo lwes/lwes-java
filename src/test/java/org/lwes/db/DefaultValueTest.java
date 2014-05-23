@@ -30,13 +30,11 @@ import static org.junit.Assert.assertTrue;
 
 public class DefaultValueTest {
 
-    private static final String ESF = "src/test/java/org/lwes/db/DefaultValueTest.esf";
-
     @Test
     public void testDefaultValue() throws EventSystemException {
 
         EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFFile(new File(getClass().getResource(getClass().getSimpleName()+".esf").getPath()));
         template.initialize();
 
         assertTrue(template.checkForEvent("DefaultValueEvent"));
