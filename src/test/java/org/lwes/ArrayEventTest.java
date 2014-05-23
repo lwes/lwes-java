@@ -14,9 +14,9 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 import org.junit.Test;
+import org.lwes.ArrayEvent.ArrayEventStats;
 
 import junit.framework.Assert;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -37,13 +37,14 @@ public final class ArrayEventTest extends EventTest {
         Assert.assertEquals(Event.UTF_8, evt.getEncoding());
     }
 
+    final byte[] testBytes = new byte[]{4, 'T', 'e', 's', 't', 0, 1, 2, 'a', 'b', FieldType.INT16.token, -10, 12};
+    
     @Test
     public void testBasicFunctions() throws EventSystemException {
-        final byte[] bytes = new byte[]{4, 'T', 'e', 's', 't', 0, 1, 2, 'a', 'b', FieldType.INT16.token, -10, 12};
+        
+        final ArrayEvent e1 = new ArrayEvent(testBytes);
 
-        final ArrayEvent e1 = new ArrayEvent(bytes);
-
-        assertTrue(Arrays.equals(bytes, e1.serialize()));
+        assertTrue(Arrays.equals(testBytes, e1.serialize()));
         assertEquals("Test { \tab = -2548; }", e1.toOneLineString());
         assertEquals("Test { \tab = -2548; }", e1.copy().toOneLineString());
         assertTrue(e1.isSet("ab"));
@@ -92,6 +93,37 @@ public final class ArrayEventTest extends EventTest {
         assertFalse(e1.isSet("ab"));
 
         System.gc();
+    }
+    
+    @Test
+    public void testReadOnly() {
+        ArrayEvent.resetStats();
+        final ArrayEvent e1 = new ArrayEvent(testBytes); // copy
+        assertEquals(testBytes.length, e1.getBytesSize());
+        assertEquals(Event.MAX_MESSAGE_SIZE, e1.getCapacity());
+        final ArrayEvent e2 = new ArrayEvent(testBytes, false); // no copy
+        assertEquals(e1, e2);
+        assertEquals(testBytes.length, e2.getBytesSize());
+        assertEquals(testBytes.length, e2.getCapacity());
+        final ArrayEvent e3 = new ArrayEvent(testBytes, false); // no copy
+        assertEquals(testBytes.length, e3.getCapacity());
+        assertEquals(e2, e3);
+        final ArrayEvent e4 = new ArrayEvent(testBytes, true); // copy
+        assertEquals(e2, e4);
+        assertEquals(testBytes.length, e4.getBytesSize());
+        assertEquals(Event.MAX_MESSAGE_SIZE, e4.getCapacity());
+        
+        final int bigSize = testBytes.length * 3;
+        byte[] big = new byte[bigSize];
+        System.arraycopy(testBytes, 0, big, 0, testBytes.length);        
+        final ArrayEvent e5 = new ArrayEvent(big, testBytes.length, false); // no copy
+        assertEquals(e5, e1);
+        assertEquals(testBytes.length, e5.getBytesSize());
+        assertEquals(big.length, e5.getCapacity());
+        
+        assertEquals(3, ArrayEvent.getStats().get(ArrayEventStats.WRAPS).intValue());
+        assertEquals(5, ArrayEvent.getStats().get(ArrayEventStats.CREATIONS).intValue());
+        // System.out.print(e5.toStringDetailed());
     }
 
     @Test

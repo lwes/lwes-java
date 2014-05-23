@@ -27,7 +27,7 @@ import org.lwes.util.IPAddress;
 public interface Event extends Iterable<FieldAccessor> {
     static final int MAX_EVENT_NAME_SIZE = 127;
     static final int MAX_FIELD_NAME_SIZE = 255;
-    static final int MAX_MESSAGE_SIZE = 65507;
+    public static final int MAX_MESSAGE_SIZE = 65507;
 
     /**
      * Reserved metadata keywords
