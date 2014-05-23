@@ -34,13 +34,12 @@ import java.util.Map;
  */
 public class EventTemplateDBTest {
 
-    private static final String ESF = "src/test/java/org/lwes/db/EventTemplateDBTest.esf";
     private static final String TEST_EVENT = "TestEvent";
 
     @Test
     public void testTemplateFromFile() throws NoSuchAttributeTypeException {
         EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFFile(new File(getClass().getResource(getClass().getSimpleName()+".esf").getPath()));
         assertTrue("Template did not initialize", template.initialize());
 
         Enumeration<String> eventNames = template.getEventNames();
@@ -132,7 +131,7 @@ public class EventTemplateDBTest {
     public void testTemplateFromStream() {
         EventTemplateDB template = new EventTemplateDB();
         try {
-            template.setESFInputStream(new FileInputStream(ESF));
+            template.setESFInputStream(new FileInputStream(getClass().getResource(getClass().getSimpleName()+".esf").getPath()));
         }
         catch (FileNotFoundException e) {
             fail(e.getMessage());

@@ -17,7 +17,7 @@ package org.lwes;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -29,29 +29,34 @@ public class EventFactoryTest {
     @Test
     public void testEventFactoryInitializeFile() throws EventSystemException {
         EventFactory fact = new EventFactory();
-        fact.setESFFile(new File("src/test/java/org/lwes/EventFactoryTest.esf"));
+        fact.setESFFile(new File(getClass().getResource(getClass().getSimpleName()+".esf").getPath()));
         fact.initialize();
     }
 
     @Test
     public void testEventFactoryInitializePath() throws EventSystemException {
         EventFactory fact = new EventFactory();
-        fact.setESFFilePath("src/test/java/org/lwes/EventFactoryTest.esf");
+        fact.setESFFilePath(getClass().getResource(getClass().getSimpleName()+".esf").getPath());
         fact.initialize();
     }
 
     @Test
     public void testEventFactoryInitializeStream()
-            throws EventSystemException, FileNotFoundException {
-        EventFactory fact = new EventFactory();
-        fact.setESFInputStream(new FileInputStream("src/test/java/org/lwes/EventFactoryTest.esf"));
-        fact.initialize();
+            throws EventSystemException, IOException {
+        final FileInputStream stream = new FileInputStream(getClass().getResource(getClass().getSimpleName()+".esf").getPath());
+        try {
+            EventFactory fact = new EventFactory();
+            fact.setESFInputStream(stream);
+            fact.initialize();
+        } finally {
+          stream.close();
+        }
     }
 
     @Test
     public void testEventFactoryCreateEvent() throws EventSystemException {
         EventFactory fact = new EventFactory();
-        fact.setESFFile(new File("src/test/java/org/lwes/EventFactoryTest.esf"));
+        fact.setESFFilePath(getClass().getResource(getClass().getSimpleName()+".esf").getPath());
         fact.initialize();
 
         Event evt = fact.createEvent("TestEvent");

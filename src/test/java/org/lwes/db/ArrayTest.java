@@ -40,7 +40,6 @@ public class ArrayTest {
 
     private static transient Log log = LogFactory.getLog(ArrayTest.class);
 
-    private static final String ESF = "src/test/java/org/lwes/db/ArrayTest.esf";
     private static final String TEST_EVENT = "TestEvent";
 
     private EventTemplateDB template = null;
@@ -48,17 +47,12 @@ public class ArrayTest {
     @Before
     public void setUp() {
         template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
+        template.setESFFile(new File(getClass().getResource(getClass().getSimpleName()+".esf").getPath()));
         template.initialize();
     }
 
     @Test
     public void testArrayWithNulls() {
-
-        EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
-        assertTrue("Template did not initialize", template.initialize());
-
         Double[] doubleArray = new Double[]{
                 2.1, null, 5.5, 1.1, 3.2
         };
@@ -81,10 +75,6 @@ public class ArrayTest {
 
     @Test
     public void testStringArrayWithNulls() {
-        EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
-        assertTrue("Template did not initialize", template.initialize());
-
         String[] strArray = new String[]{
                 "a", null, "bc"
         };
@@ -102,11 +92,6 @@ public class ArrayTest {
 
     @Test
     public void testArrayParse() {
-
-        EventTemplateDB template = new EventTemplateDB();
-        template.setESFFile(new File(ESF));
-        assertTrue("Template did not initialize", template.initialize());
-
         Enumeration<String> eventNames = template.getEventNames();
         assertNotNull("Event names enum was null", eventNames);
 
