@@ -90,10 +90,12 @@ public class BaseType {
                     boolean required,
                     int sizeRestriction,
                     Object defaultValue) {
+        final FieldType newType = FieldType.byToken(typeToken);
+        newType.checkCompatibilityWith(typeObject);
         this.required = required;
         this.sizeRestriction = sizeRestriction;
         this.typeObject = typeObject;
-        this.type = FieldType.byToken(typeToken);
+        this.type = newType;
         this.defaultValue = defaultValue;
         if (!typeName.equals(type.name)) {
             throw new IllegalStateException("Inconsistent type name and token: " + typeName + " vs. " + type.name);
@@ -129,6 +131,7 @@ public class BaseType {
                     int sizeRestriction,
                     Object defaultValue,
                     String comment) {
+        type.checkCompatibilityWith(typeObject);
         this.required = required;
         this.sizeRestriction = sizeRestriction;
         this.type = type;
@@ -182,9 +185,7 @@ public class BaseType {
     }
 
     public void setTypeObject(Object typeObject) throws NoSuchAttributeTypeException {
-        if (!type.isCompatibleWith(typeObject)) {
-            throw new NoSuchAttributeTypeException("Wrong type '" + typeObject.getClass().getName());
-        }
+        type.checkCompatibilityWith(typeObject);
         this.typeObject = typeObject;
     }
 

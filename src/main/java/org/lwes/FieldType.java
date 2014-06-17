@@ -30,10 +30,10 @@ public enum FieldType {
     DOUBLE(0x0C, "double", 0.0),
 
     // Primitive Arrays
-    UINT16_ARRAY(0x81, "[Luint16", new short[0]),
-    INT16_ARRAY(0x82, "[Lint16", new int[0]),
-    UINT32_ARRAY(0x83, "[Luint32", new int[0]),
-    INT32_ARRAY(0x84, "[Lint32", new long[0]),
+    UINT16_ARRAY(0x81, "[Luint16", new int[0]),
+    INT16_ARRAY(0x82, "[Lint16", new short[0]),
+    UINT32_ARRAY(0x83, "[Luint32", new long[0]),
+    INT32_ARRAY(0x84, "[Lint32", new int[0]),
     STRING_ARRAY(0x85, "[Lstring", new String[0]),
     IP_ADDR_ARRAY(0x86, "[Lip_addr", new IPAddress[0]),
     INT64_ARRAY(0x87, "[Lint64", new long[0]),
@@ -44,10 +44,10 @@ public enum FieldType {
     DOUBLE_ARRAY(0x8C, "[Ldouble", new double[0]),
 
     // Nullable, object backed arrays
-    NUINT16_ARRAY(0x8D, "[LNuint16", new Short[0]),
-    NINT16_ARRAY(0x8E, "[LNint16", new Integer[0]),
-    NUINT32_ARRAY(0x8F, "[LNuint32", new Integer[0]),
-    NINT32_ARRAY(0x90, "[LNint32", new Long[0]),
+    NUINT16_ARRAY(0x8D, "[LNuint16", new Integer[0]),
+    NINT16_ARRAY(0x8E, "[LNint16", new Short[0]),
+    NUINT32_ARRAY(0x8F, "[LNuint32", new Long[0]),
+    NINT32_ARRAY(0x90, "[LNint32", new Integer[0]),
     NSTRING_ARRAY(0x91, "[LString", new String[0]),
     // N_IP_ADDR_ARRAY not implemented... 0x92
     NINT64_ARRAY(0x93, "[LNint64", new Long[0]),
@@ -266,5 +266,13 @@ public enum FieldType {
                 return value instanceof BigInteger[];
         }
         throw new IllegalStateException("Unsupported type: " + this);
+    }
+
+    public void checkCompatibilityWith(Object typeObject) {
+        if (! this.isCompatibleWith(typeObject)) {
+            throw new NoSuchAttributeTypeException(String.format(
+                "Wrong class '%s' for LWES type %s",
+                typeObject.getClass().getName(), name()));
+        }
     }
 }
