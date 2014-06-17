@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.lwes.ArrayAttributeLengthException;
 import org.lwes.AttributeRequiredException;
 import org.lwes.BaseType;
 import org.lwes.Event;
@@ -918,22 +919,39 @@ public class EventTemplateDB {
 
             final BaseType baseType = eventTypes.get(fieldName);
             if (baseType == null) {
-                if (ve == null) {
-                    ve = new ValidationExceptions(eventName);
-                }
-                ve.addException(new NoSuchAttributeException(
+                ve = ValidationExceptions.append(ve, new NoSuchAttributeException(
                         "Attribute " + fieldName + " does not exist for event " + eventName));
                 continue;
             }
 
             if (baseType.getType() != field.getType()) {
-                if (ve == null) {
-                    ve = new ValidationExceptions(eventName);
-                }
-                ve.addException(new NoSuchAttributeTypeException(
-                        "Wrong type " + field.getType() + " for field " + eventName + "."
-                        + fieldName + "; should be " + baseType.getType()));
+                ve = ValidationExceptions.append(ve, new NoSuchAttributeTypeException(String.format(
+                    "Wrong type %s for field %s.%s; should be %s",
+                    field.getType(), eventName, fieldName, baseType.getType())));
                 continue;
+            }
+
+            final Object fieldValue = field.getValue();
+            if (! baseType.getType().isCompatibleWith(fieldValue)) {
+                ve = ValidationExceptions.append(ve, new NoSuchAttributeTypeException(String.format(
+                    "Wrong class %s for field %s.%s; should be compatible with %s",
+                    fieldValue.getClass().getSimpleName(), eventName, fieldName, baseType.getType().name())));
+                continue;
+            }
+            
+            if (baseType.getType().isArray() && baseType.getSizeRestriction() >= 0) {
+                if (! fieldValue.getClass().isArray()) {
+                    ve = ValidationExceptions.append(ve, new NoSuchAttributeTypeException(String.format(
+                        "Non-array class %s value in field %s.%s, a %s",
+                        fieldValue.getClass().getSimpleName(), eventName, fieldName, baseType.getType().name())));
+                    continue;
+                }
+                final int length = Array.getLength(fieldValue);
+                if (length > baseType.getSizeRestriction()) {
+                    ve = ValidationExceptions.append(ve,
+                        new ArrayAttributeLengthException(eventName, fieldName, length, baseType.getSizeRestriction()));
+                    continue;
+                }
             }
         }
 
@@ -944,10 +962,7 @@ public class EventTemplateDB {
             }
             if (entry.getValue().isRequired()) {
                 if (!event.isSet(key)) {
-                    if (ve == null) {
-                        ve = new ValidationExceptions(eventName);
-                    }
-                    ve.addException(new AttributeRequiredException(key));
+                    ve = ValidationExceptions.append(ve, new AttributeRequiredException(key));
                 }
             }
         }
