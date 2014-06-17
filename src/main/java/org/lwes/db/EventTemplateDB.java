@@ -907,8 +907,8 @@ public class EventTemplateDB {
 
         final Map<String, BaseType> eventTypes = events.get(eventName);
         if (eventTypes == null) {
-            throw new ValidationExceptions(new NoSuchEventException(
-                    "Event " + eventName + " does not exist in event definition"));
+            throw ValidationExceptions.append(ve, new NoSuchEventException(
+                "Event " + eventName + " does not exist in event definition"));
         }
 
         for (FieldAccessor field : event) {

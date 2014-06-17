@@ -25,10 +25,12 @@ public class ValidationExceptions extends EventSystemException {
 
     List<EventSystemException> allExceptions = new LinkedList<EventSystemException>();
 
+    @Deprecated // unused
     public ValidationExceptions(Throwable e) {
         super(e);
     }
 
+    @Deprecated // unused
     public ValidationExceptions(EventSystemException e) {
         super(e);
         allExceptions.add(e);
@@ -38,6 +40,7 @@ public class ValidationExceptions extends EventSystemException {
         super(s);
     }
 
+    @Deprecated // unused
     public ValidationExceptions(String s, Throwable e) {
         super(s, e);
     }
