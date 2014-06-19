@@ -15,6 +15,7 @@ package org.lwes;
  * @author fmaritato
  */
 
+@Deprecated // unused; remove after a suitable interval
 public class AttributeSizeException extends EventSystemException {
 
     public AttributeSizeException(Throwable e) {

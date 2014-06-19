@@ -39,21 +39,21 @@ public class MapEventTest extends EventTest {
         Assert.assertNull(evt.getLongObjArray("long[]")[1]);
         Assert.assertEquals("testing", evt.getString("str"));
 
-        evt.set("double[]", FieldType.NDOUBLE_ARRAY, new Double[] { 1.23, null, 1.26 });
-        Assert.assertEquals(1.23, evt.getDoubleObjArray("double[]")[0]);
-        Assert.assertNull(evt.getDoubleObjArray("double[]")[1]);
+        evt.set("Double[]", FieldType.NDOUBLE_ARRAY, new Double[] { 1.23, null, 1.26 });
+        Assert.assertEquals(1.23, evt.getDoubleObjArray("Double[]")[0]);
+        Assert.assertNull(evt.getDoubleObjArray("Double[]")[1]);
 
-        evt.set("float[]", FieldType.NFLOAT_ARRAY, new Float[] { 1.11f, 1.12f, null });
-        Assert.assertEquals(1.11f, evt.getFloatObjArray("float[]")[0]);
-        Assert.assertNull(evt.getFloatObjArray("float[]")[2]);
+        evt.set("Float[]", FieldType.NFLOAT_ARRAY, new Float[] { 1.11f, 1.12f, null });
+        Assert.assertEquals(1.11f, evt.getFloatObjArray("Float[]")[0]);
+        Assert.assertNull(evt.getFloatObjArray("Float[]")[2]);
 
-        evt.set("integer[]", FieldType.NUINT32_ARRAY, new Integer[] { 5000, null, 12345 });
-        Assert.assertEquals(5000, evt.getIntegerObjArray("integer[]")[0].intValue());
-        Assert.assertNull(evt.getIntegerObjArray("integer[]")[1]);
+        evt.set("Long[]", FieldType.NUINT32_ARRAY, new Long[] { 5000L, null, 12345L });
+        Assert.assertEquals(5000, evt.getLongObjArray("Long[]")[0].longValue());
+        Assert.assertNull(evt.getLongObjArray("Long[]")[1]);
 
-        evt.set("short[]", FieldType.NUINT16_ARRAY, new Short[] { 5, null, 10 });
-        Assert.assertEquals(5, evt.getShortObjArray("short[]")[0].shortValue());
-        Assert.assertNull(evt.getShortObjArray("short[]")[1]);
+        evt.set("Integer[]", FieldType.NUINT16_ARRAY, new Integer[] { 5, null, 10 });
+        Assert.assertEquals(5, evt.getIntegerObjArray("Integer[]")[0].shortValue());
+        Assert.assertNull(evt.getIntegerObjArray("Integer[]")[1]);
     }
 
     @Test
