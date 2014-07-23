@@ -1,3 +1,6 @@
+* Wed Jul 23 2014 Mohammad Kolahdouzan <mohammad.kolahdouzan@gmail.com> 1.5.0
+- all emit methods now return number of bytes that were emitted.
+
 * Tue Aug 07 08:00:00 PDT 2013 Robert Wong <rob@openx.com> 1.4.1
 Fix bug where sampleRate was not correctly set.
 * Tue Jul 30 08:00:00 PDT 2013 Robert Wong <rob@openx.com> 1.4.0

@@ -18,48 +18,56 @@ import org.lwes.Event;
 /**
  * A nesting of {@link EmitterGroup} that emits events
  * using the same strategy as {@link MOfNEmitterGroup}
- * 
+ *
  */
 public class NestedEmitterGroup extends EmitterGroup {
-	private EmitterGroup[] emitterGroups;
-	private AtomicInteger i;
-	private int m;
-	private int n;
-	
-	/**
+  private EmitterGroup[] emitterGroups;
+  private AtomicInteger i;
+  private int m;
+  private int n;
+
+  /**
    * @param emittergroups
-     * @param m
-     * @param filter
+   * @param m
+   * @param filter
    */
   public NestedEmitterGroup(EmitterGroup[] emittergroups, int m, EmitterGroupFilter filter) {
     this(emittergroups, m, filter, 1.0);
   }
 
-	public NestedEmitterGroup(EmitterGroup[] emittergroups, int m, EmitterGroupFilter filter, double sampleRate) {
-	  super(filter, sampleRate);
-		this.m = m;
-		this.n = emittergroups.length;
-		this.emitterGroups = emittergroups;
-		i = new AtomicInteger();
-	}
+  public NestedEmitterGroup(EmitterGroup[] emittergroups, int m, EmitterGroupFilter filter, double sampleRate) {
+    super(filter, sampleRate);
+    this.m = m;
+    this.n = emittergroups.length;
+    this.emitterGroups = emittergroups;
+    i = new AtomicInteger();
+  }
 
-	@Override
-	protected void emit(Event e) {
+  /**
+   * Emits the event to the network.
+   *
+   * @param event the event to emit
+   * @return number of bytes emitted
+   */
+  @Override
+  protected int emit(Event e) {
     int start = i.getAndIncrement();
     int index = 0;
+    int bytesEmitted = 0;
     for (int j = 0; j < m; j++) {
-    	index = Math.abs((start + j) % n);
-	    emitterGroups[index].emit(e);
-	  }
-	}
+      index = Math.abs((start + j) % n);
+      bytesEmitted += emitterGroups[index].emit(e);
+    }
+    return bytesEmitted;
+  }
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder().append("NestedEmitterGroup [m=" + m + ", n=" + n + "]:\n");
-		for (EmitterGroup g : emitterGroups) {
-			sb.append("\t").append(g).append("\n");
-		}
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder().append("NestedEmitterGroup [m=" + m + ", n=" + n + "]:\n");
+    for (EmitterGroup g : emitterGroups) {
+      sb.append("\t").append(g).append("\n");
+    }
 
-		return sb.toString();
-	}
+    return sb.toString();
+  }
 }
