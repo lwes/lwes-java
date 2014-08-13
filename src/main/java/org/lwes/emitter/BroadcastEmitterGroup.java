@@ -18,7 +18,7 @@ import org.lwes.Event;
 
 /**
  * This class emits an event to all members of the group.
- * 
+ *
  * @author Joel Meyer
  */
 public class BroadcastEmitterGroup extends EmitterGroup {
@@ -29,21 +29,23 @@ public class BroadcastEmitterGroup extends EmitterGroup {
   public BroadcastEmitterGroup(PreserializedUnicastEventEmitter[] emitters, EmitterGroupFilter filter) {
     this(emitters, filter, 1.0);
   }
-  
+
   public BroadcastEmitterGroup(PreserializedUnicastEventEmitter[] emitters, EmitterGroupFilter filter, double sampleRate) {
     super(filter, sampleRate);
     this.emitters = emitters;
   }
 
   @Override
-  protected void emit(Event e) {
+  protected int emit(Event e) {
     byte[] bytes = e.serialize();
+    int bytesEmitted = 0;
     for (int i = 0; i < emitters.length; i++) {
       try {
-        emitters[i].emitSerializedEvent(bytes);
+        bytesEmitted += emitters[i].emitSerializedEvent(bytes);
       } catch (IOException ioe) {
         LOG.error(String.format("Problem emitting event to emitter %s", emitters[i].getAddress()), ioe);
       }
     }
+    return bytesEmitted;
   }
 }

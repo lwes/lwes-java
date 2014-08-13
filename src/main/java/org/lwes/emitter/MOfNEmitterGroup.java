@@ -23,7 +23,7 @@ import org.lwes.Event;
  * emit an event to M of the total emitters. To choose the M emitters an
  * {@link AtomicInteger} is retrieved and incremented and the values of
  * [index + 0, ... , index + M] mod N are used to select the emitters.
- * 
+ *
  * @author Joel Meyer
  */
 public class MOfNEmitterGroup extends BroadcastEmitterGroup {
@@ -36,7 +36,7 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
   public MOfNEmitterGroup(PreserializedUnicastEventEmitter[] emitters, int m, EmitterGroupFilter filter) {
     this(emitters, m, filter, 1.0);
   }
-  
+
   /**
    * @param emitters
    */
@@ -51,30 +51,32 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
    * @see org.lwes.emitter.BroadcastEmitterGroup#emitToGroup(org.lwes.Event)
    */
   @Override
-  protected void emit(Event e) {
+  protected int emit(Event e) {
+    int bytesEmitted = 0;
     if (m == n) {
       // Just call parent if we're emitting to all listeners
-      super.emit(e);
+      bytesEmitted = super.emit(e);
     } else {
       // Choose M emitters to emit to
       byte[] bytes = e.serialize();
-      
+
       int start = i.getAndIncrement();
       int index = 0;
       for (int j = 0; j < m; j++) {
         index = Math.abs((start + j) % n);
         try {
-          emitters[index].emitSerializedEvent(bytes);
+          bytesEmitted += emitters[index].emitSerializedEvent(bytes);
         } catch (IOException ioe) {
           LOG.error(String.format("Problem emitting event to emitter %s", emitters[index].getAddress()), ioe);
         }
       }
     }
+    return bytesEmitted;
   }
 
   @Override
   public String toString() {
-	return "MOfNEmitterGroup [m=" + m + ", n=" + n + ", emitters=" + Arrays.toString(emitters) + "]";
+  return "MOfNEmitterGroup [m=" + m + ", n=" + n + ", emitters=" + Arrays.toString(emitters) + "]";
   }
-  
+
 }

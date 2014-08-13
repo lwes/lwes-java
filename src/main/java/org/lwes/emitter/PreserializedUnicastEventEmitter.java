@@ -18,13 +18,13 @@ import java.io.IOException;
  *
  */
 public class PreserializedUnicastEventEmitter extends UnicastEventEmitter {
-  public void emitSerializedEvent(byte[] bytes) throws IOException {
-    emit(bytes);
+  public int emitSerializedEvent(byte[] bytes) throws IOException {
+    return emit(bytes);
   }
 
   @Override
   public String toString() {
-	return "PreserializedUnicastEventEmitter [" + getAddress() + ":" + getPort() + "]";
+  return "PreserializedUnicastEventEmitter [" + getAddress() + ":" + getPort() + "]";
   }
-  
+
 }

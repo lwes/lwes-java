@@ -26,13 +26,14 @@ public class MockMulticastEventEmitter extends MulticastEventEmitter {
     private LinkedList<Event> events = new LinkedList<Event>();
 
     @Override
-    protected void emit(byte[] bytes) {
+    protected int emit(byte[] bytes) {
         try {
             events.add(getFactory().createEvent(bytes, false));
         }
         catch (EventSystemException e) {
             e.printStackTrace();
         }
+        return (bytes == null ? 0 : bytes.length);
     }
 
     public List<Event> getEvents() {

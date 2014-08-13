@@ -48,200 +48,204 @@ import java.net.InetAddress;
 
 public class UnicastEventEmitter implements EventEmitter {
 
-    private static transient Log log = LogFactory.getLog(UnicastEventEmitter.class);
+  private static transient Log log = LogFactory.getLog(UnicastEventEmitter.class);
 
-	/* an EventFactory */
-	private EventFactory factory = new EventFactory();
+  /* an EventFactory */
+  private EventFactory factory = new EventFactory();
 
-	/* the unicast socket being used */
-	private DatagramSocket socket = null;
+  /* the unicast socket being used */
+  private DatagramSocket socket = null;
 
-	/* the address */
-	private InetAddress address = null;
+  /* the address */
+  private InetAddress address = null;
 
-	/* the port */
-	private int port = 9191;
+  /* the port */
+  private int port = 9191;
 
-	/* a lock variable to synchronize events */
-	private Object lock = new Object();
+  /* a lock variable to synchronize events */
+  private Object lock = new Object();
 
-	/**
-	 * Default constructor.
-	 */
-	public UnicastEventEmitter() {
-	}
+  /**
+   * Default constructor.
+   */
+  public UnicastEventEmitter() {
+  }
 
-	/**
-	 * Sets the destination address for this emitter.
-	 *
-	 * @param address the multicast address
-	 *
-	 */
-	public void setAddress(InetAddress address) {
-		this.address = address;
-	}
+  /**
+   * Sets the destination address for this emitter.
+   *
+   * @param address the multicast address
+   *
+   */
+  public void setAddress(InetAddress address) {
+    this.address = address;
+  }
 
-	/**
-	 * Gets the address for this emitter.
-	 *
-	 * @return the address
-	 */
-	public InetAddress getAddress() {
-		return this.address;
-	}
+  /**
+   * Gets the address for this emitter.
+   *
+   * @return the address
+   */
+  public InetAddress getAddress() {
+    return this.address;
+  }
 
-	/**
-	 * Sets the destination port for this emitter.
-	 *
-	 * @param port the multicast port
-	 *
-	 */
-	public void setPort(int port) {
-		this.port = port;
-	}
+  /**
+   * Sets the destination port for this emitter.
+   *
+   * @param port the multicast port
+   *
+   */
+  public void setPort(int port) {
+    this.port = port;
+  }
 
-	/**
-	 * Gets the destination port for this emitter.
-	 *
-	 * @return the multicast port
-	 */
-	public int getPort() {
-		return this.port;
-	}
+  /**
+   * Gets the destination port for this emitter.
+   *
+   * @return the multicast port
+   */
+  public int getPort() {
+    return this.port;
+  }
 
-	/**
-	 * Sets the ESF file used for event validation.
-	 * @param esfFilePath the path of the ESF file
-	 */
-	public void setESFFilePath(String esfFilePath) {
-		if(factory != null) {
-			factory.setESFFilePath(esfFilePath);
-		}
-	}
+  /**
+   * Sets the ESF file used for event validation.
+   * @param esfFilePath the path of the ESF file
+   */
+  public void setESFFilePath(String esfFilePath) {
+    if(factory != null) {
+      factory.setESFFilePath(esfFilePath);
+    }
+  }
 
-	/**
-	 * Gets the ESF file used for event validation
-	 * @return the ESF file path
-	 */
-	public String getESFFilePath() {
-		if(factory != null) {
-			return factory.getESFFilePath();
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Gets the ESF file used for event validation
+   * @return the ESF file path
+   */
+  public String getESFFilePath() {
+    if(factory != null) {
+      return factory.getESFFilePath();
+    } else {
+      return null;
+    }
+  }
 
-	/**
-	 * Sets an InputStream to be used for event validation.
-	 * @param esfInputStream an InputStream used for event validation
-	 */
-	public void setESFInputStream(InputStream esfInputStream) {
-		if(factory != null) {
-			factory.setESFInputStream(esfInputStream);
-		}
-	}
+  /**
+   * Sets an InputStream to be used for event validation.
+   * @param esfInputStream an InputStream used for event validation
+   */
+  public void setESFInputStream(InputStream esfInputStream) {
+    if(factory != null) {
+      factory.setESFInputStream(esfInputStream);
+    }
+  }
 
-	/**
-	 * Gets the InputStream being used for event validation.
-	 * @return the InputStream of the ESF validator
-	 */
-	public InputStream getESFInputStream() {
-		if(factory != null) {
-			return factory.getESFInputStream();
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Gets the InputStream being used for event validation.
+   * @return the InputStream of the ESF validator
+   */
+  public InputStream getESFInputStream() {
+    if(factory != null) {
+      return factory.getESFInputStream();
+    } else {
+      return null;
+    }
+  }
 
 
-	/**
-	 * Initializes the emitter.
-	 */
-	public void initialize() throws IOException {
-		try {
-			factory.initialize();
-			socket = new DatagramSocket();
-			socket.setReuseAddress(true);
-		} catch(IOException ie) {
-			throw ie;
-		} catch(Exception e) {
-			log.error("Unable to initialize UnicastEventEmitter", e);
-		}
-	}
+  /**
+   * Initializes the emitter.
+   */
+  public void initialize() throws IOException {
+    try {
+      factory.initialize();
+      socket = new DatagramSocket();
+      socket.setReuseAddress(true);
+    } catch(IOException ie) {
+      throw ie;
+    } catch(Exception e) {
+      log.error("Unable to initialize UnicastEventEmitter", e);
+    }
+  }
 
-	/**
-     * @throws IOException only to allow potential subclasses to throw it. 
-     */
-	public void shutdown() throws IOException {
-		socket.close();
-	}
+  /**
+   * @throws IOException only to allow potential subclasses to throw it.
+   */
+  public void shutdown() throws IOException {
+    socket.close();
+  }
 
-	/**
-	 * Creates a new event named <tt>eventName</tt>.
-	 * @param eventName the name of the event to be created
-	 * @return a new Event
-	 * @exception EventSystemException if there is a problem creating the event
-	 */
-	public Event createEvent(String eventName) throws EventSystemException {
-		return createEvent(eventName, true);
-	}
+  /**
+   * Creates a new event named <tt>eventName</tt>.
+   * @param eventName the name of the event to be created
+   * @return a new Event
+   * @exception EventSystemException if there is a problem creating the event
+   */
+  public Event createEvent(String eventName) throws EventSystemException {
+    return createEvent(eventName, true);
+  }
 
-	/**
-	 * Creates a new event named <tt>eventName</tt>.
-	 * @param eventName the name of the event to be created
-	 * @param validate whether or not to validate the event against the EventTemplateDB
-	 * @return a new Event
-	 * @exception EventSystemException if there is a problem creating the event
-	 */
-	public Event createEvent(String eventName, boolean validate) throws EventSystemException {
-		if(factory != null) {
-			return factory.createEvent(eventName, validate);
-		} else {
-			throw new EventSystemException("EventFactory not initialized");
-		}
-	}
+  /**
+   * Creates a new event named <tt>eventName</tt>.
+   * @param eventName the name of the event to be created
+   * @param validate whether or not to validate the event against the EventTemplateDB
+   * @return a new Event
+   * @exception EventSystemException if there is a problem creating the event
+   */
+  public Event createEvent(String eventName, boolean validate) throws EventSystemException {
+    if(factory != null) {
+      return factory.createEvent(eventName, validate);
+    } else {
+      throw new EventSystemException("EventFactory not initialized");
+    }
+  }
 
-	/**
-	 * Emits the event to the network.
-	 *
-	 * @param event the event to emit
-	 * @exception IOException throws an IOException is there is a network error.
-     * @throws EventSystemException if unable to serialize the event
-	 */
-	public void emit(Event event) throws IOException, EventSystemException {
-		byte[] msg = event.serialize();
+  /**
+   * Emits the event to the network.
+   *
+   * @param event the event to emit
+   * @exception IOException throws an IOException is there is a network error.
+   * @throws EventSystemException if unable to serialize the event
+   * @return number of bytes emitted
+   */
+  public int emit(Event event) throws IOException, EventSystemException {
+    byte[] msg = event.serialize();
 
-		synchronized(lock) {
-			emit(msg);
-		}
-	}
+    synchronized(lock) {
+      return emit(msg);
+    }
+  }
 
-	/**
-	 * Emits a byte array to the network.
-	 *
-	 * @param bytes the byte array to emit
-	 * @exception IOException throws an IOException if there is a network error.
-	 */
-	protected void emit(byte[] bytes) throws IOException {
-		emit(bytes, this.address, this.port);
-	}
+  /**
+   * Emits a byte array to the network.
+   *
+   * @param bytes the byte array to emit
+   * @exception IOException throws an IOException if there is a network error.
+   * @return number of bytes emitted
+   */
+  protected int emit(byte[] bytes) throws IOException {
+    return emit(bytes, this.address, this.port);
+  }
 
-	/**
-	 * @param bytes the byte array to emit
-	 * @param address the address to use
-	 * @param port the port to use
-	 * @throws IOException throws an IOException if there is a network error
-	 */
-	protected void emit(byte[] bytes, InetAddress address, int port) throws IOException {
-		/* don't send null bytes */
-		if(bytes == null) return;
+  /**
+   * @param bytes the byte array to emit
+   * @param address the address to use
+   * @param port the port to use
+   * @throws IOException throws an IOException if there is a network error
+   * @return number of bytes emitted
+   */
+  protected int emit(byte[] bytes, InetAddress address, int port) throws IOException {
+    /* don't send null bytes */
+    if(bytes == null) return 0;
 
-		DatagramPacket dp = new DatagramPacket(bytes, bytes.length, address, port);
-		socket.send(dp);
+    DatagramPacket dp = new DatagramPacket(bytes, bytes.length, address, port);
+    socket.send(dp);
 
-        if (log.isTraceEnabled()) {
-            log.trace("Sent to network '" +
-                      NumberCodec.byteArrayToHexString(dp.getData(), 0, dp.getLength()));
-        }
-	}
+    if (log.isTraceEnabled()) {
+      log.trace("Sent to network '" +
+          NumberCodec.byteArrayToHexString(dp.getData(), 0, dp.getLength()));
+    }
+    return bytes.length;
+  }
 }
