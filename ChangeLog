@@ -1,3 +1,7 @@
+* Thu Oct 02 2014 Kenneth Kharma <kenneth.kharma@openx.com> 2.1.0
+- added DatagramSocketEventEmitter abstract class, which UnicastEventEmitter
+and MulticastEventEmitter both extend
+
 * Wed Jul 23 2014 Mohammad Kolahdouzan <mohammad.kolahdouzan@gmail.com> 2.0.0
 - all emit methods now return number of bytes that were emitted.
 

@@ -44,27 +44,15 @@ import java.net.MulticastSocket;
  * @author Anthony Molinaro
  * @since 0.0.1
  */
-public class MulticastEventEmitter extends AbstractEventEmitter {
+public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastSocket> {
 
   private static transient Log log = LogFactory.getLog(MulticastEventEmitter.class);
 
-  /* the actual multicast socket being used */
-  private MulticastSocket socket = null;
-
-  /* the multicast address */
-  private InetAddress address = null;
-
-  /* the multicast port */
-  private int port = 9191;
-
   /* the multicast interface */
-  private InetAddress iface = null;
+  protected InetAddress iface = null;
 
   /* the multicast time-to-live */
-  private int ttl = 31;
-
-  /* a lock variable to synchronize events */
-  private final Object lock = new Object();
+  protected int ttl = 31;
 
   /**
    * Default constructor.
@@ -73,39 +61,39 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
   }
 
   /**
-   * Sets the multicast address for this emitter.
+   * Sets the multicast address for this emitter.  Preserved for backwards compatibility.
    *
    * @param address the multicast address
    */
   public void setMulticastAddress(InetAddress address) {
-    this.address = address;
+    super.setAddress(address);
   }
 
   /**
-   * Gets the multicast address for this emitter.
+   * Gets the multicast address for this emitter.  Preserved for backwards compatibility.
    *
    * @return the address
    */
   public InetAddress getMulticastAddress() {
-    return this.address;
+    return super.getAddress();
   }
 
   /**
-   * Sets the multicast port for this emitter.
+   * Sets the multicast port for this emitter.  Preserved for backwards compatibility.
    *
    * @param port the multicast port
    */
   public void setMulticastPort(int port) {
-    this.port = port;
+    super.setPort(port);
   }
 
   /**
-   * Gets the multicast port for this emitter.
+   * Gets the multicast port for this emitter.  Preserved for backwards compatibility.
    *
    * @return the multicast port
    */
   public int getMulticastPort() {
-    return this.port;
+    return super.getPort();
   }
 
   /**
@@ -145,60 +133,10 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
   }
 
   /**
-   * Sets the ESF file used for event validation.
-   *
-   * @param esfFilePath the path of the ESF file
-   */
-  public void setESFFilePath(String esfFilePath) {
-    if (getFactory() != null) {
-      getFactory().setESFFilePath(esfFilePath);
-    }
-  }
-
-  /**
-   * Gets the ESF file used for event validation
-   *
-   * @return the ESF file path
-   */
-  public String getESFFilePath() {
-    if (getFactory() != null) {
-      return getFactory().getESFFilePath();
-    }
-    else {
-      return null;
-    }
-  }
-
-  /**
-   * Sets an InputStream to be used for event validation.
-   *
-   * @param esfInputStream an InputStream used for event validation
-   */
-  public void setESFInputStream(InputStream esfInputStream) {
-    if (getFactory() != null) {
-      getFactory().setESFInputStream(esfInputStream);
-    }
-  }
-
-  /**
-   * Gets the InputStream being used for event validation.
-   *
-   * @return the InputStream of the ESF validator
-   */
-  public InputStream getESFInputStream() {
-    if (getFactory() != null) {
-      return getFactory().getESFInputStream();
-    }
-    else {
-      return null;
-    }
-  }
-
-  /**
-   * Initializes the emitter.
+   * Creates the multicast <code>MulticastSocket</code>.
    */
   @Override
-  public void initialize() throws IOException {
+  protected void createSocket() throws IOException {
     socket = new MulticastSocket();
 
     if (iface != null) {
@@ -206,93 +144,5 @@ public class MulticastEventEmitter extends AbstractEventEmitter {
     }
 
     socket.setTimeToLive(ttl);
-    super.initialize();
-  }
-
-  /**
-   * Shuts down the emitter.
-   */
-  @Override
-  public void shutdown() throws IOException {
-    // FM: close the socket AFTER calling super shutdown since
-    // that is trying to send a shutdown message.
-    super.shutdown();
-    if (socket != null) {
-      socket.close();
-    }
-  }
-
-  /**
-   * Creates a new event named <tt>eventName</tt>.
-   *
-   * @param eventName the name of the event to be created
-   * @return a new Event
-   * @throws EventSystemException if there is a problem creating the event
-   */
-  public Event createEvent(String eventName) throws EventSystemException {
-    return createEvent(eventName, true);
-  }
-
-  /**
-   * Creates a new event named <tt>eventName</tt>.
-   *
-   * @param eventName the name of the event to be created
-   * @param validate  whether or not to validate the event against the EventTemplateDB
-   * @return a new Event
-   * @throws EventSystemException if there is a problem creating the event
-   */
-  public Event createEvent(String eventName, boolean validate) throws EventSystemException {
-    if (getFactory() != null) {
-      return getFactory().createEvent(eventName, validate);
-    }
-    else {
-      throw new EventSystemException("EventFactory not initialized");
-    }
-  }
-
-  /**
-   * Emits the event to the network.
-   *
-   * @param event the event to emit
-   * @throws IOException throws an IOException is there is a network error.
-   * @throws EventSystemException if unable to serialize the event
-   * @return number of bytes emitted
-   */
-  public int emit(Event event) throws IOException, EventSystemException {
-    byte[] msg = event.serialize();
-    int bytesEmitted = 0;
-    synchronized (lock) {
-      bytesEmitted = emit(msg);
-      try {
-        collectStatistics();
-      }
-      catch (EventSystemException e) {
-        log.error(e.getMessage(), e);
-      }
-    }
-    return bytesEmitted;
-  }
-
-  /**
-   * Emits a byte array to the network.
-   *
-   * @param bytes the byte array to emit
-   * @throws IOException throws an IOException if there is a network error.
-   * @return number of bytes emitted
-   */
-  @Override
-  protected int emit(byte[] bytes) throws IOException {
-    /* don't bother with empty arrays */
-    if (bytes == null) {
-      return 0;
-    }
-    if (socket == null || socket.isClosed()) {
-      throw new IOException("Socket wasn't initialized or was closed.");
-    }
-
-    /* construct a datagram */
-    DatagramPacket dp = new DatagramPacket(bytes, bytes.length, address, port);
-    socket.send(dp);
-    return bytes.length;
   }
 }
