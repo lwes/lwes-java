@@ -66,7 +66,7 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
    * @param address the multicast address
    */
   public void setMulticastAddress(InetAddress address) {
-    super.setAddress(address);
+    setAddress(address);
   }
 
   /**
@@ -75,7 +75,7 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
    * @return the address
    */
   public InetAddress getMulticastAddress() {
-    return super.getAddress();
+    return getAddress();
   }
 
   /**
@@ -84,7 +84,7 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
    * @param port the multicast port
    */
   public void setMulticastPort(int port) {
-    super.setPort(port);
+    setPort(port);
   }
 
   /**
@@ -93,7 +93,7 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
    * @return the multicast port
    */
   public int getMulticastPort() {
-    return super.getPort();
+    return getPort();
   }
 
   /**
