@@ -48,9 +48,6 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
 
   private static transient Log log = LogFactory.getLog(MulticastEventEmitter.class);
 
-  /* the multicast interface */
-  protected InetAddress iface = null;
-
   /* the multicast time-to-live */
   protected int ttl = 31;
 
@@ -94,24 +91,6 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
    */
   public int getMulticastPort() {
     return getPort();
-  }
-
-  /**
-   * Sets the network interface for this emitter.
-   *
-   * @param iface the network interface
-   */
-  public void setInterface(InetAddress iface) {
-    this.iface = iface;
-  }
-
-  /**
-   * Gets the network interface for this emitter.
-   *
-   * @return the interface address
-   */
-  public InetAddress getInterface() {
-    return this.iface;
   }
 
   /**

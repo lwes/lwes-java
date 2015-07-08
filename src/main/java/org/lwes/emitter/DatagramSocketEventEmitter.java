@@ -47,6 +47,9 @@ public abstract class DatagramSocketEventEmitter<T extends DatagramSocket>
   /* the port */
   protected int port = 9191;
 
+  /* the socket interface */
+  protected InetAddress iface = null;
+
   /* a lock variable to synchronize events */
   protected Object lock = new Object();
 
@@ -92,6 +95,24 @@ public abstract class DatagramSocketEventEmitter<T extends DatagramSocket>
    */
   public int getPort() {
     return this.port;
+  }
+
+  /**
+   * Sets the network interface for this emitter.
+   *
+   * @param iface the network interface
+   */
+  public void setInterface(InetAddress iface) {
+    this.iface = iface;
+  }
+
+  /**
+   * Gets the network interface for this emitter.
+   *
+   * @return the interface address
+   */
+  public InetAddress getInterface() {
+    return this.iface;
   }
 
   /**
