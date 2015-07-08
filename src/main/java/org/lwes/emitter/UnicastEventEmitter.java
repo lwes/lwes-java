@@ -61,12 +61,7 @@ public class UnicastEventEmitter extends DatagramSocketEventEmitter<DatagramSock
    */
   @Override
   protected void createSocket() throws IOException {
-    if (iface != null) {
-      socket = new DatagramSocket(0, iface);
-    } else {
-      socket = new DatagramSocket();
-    }
-
+    socket = new DatagramSocket(0, iface);
     socket.setReuseAddress(true);
   }
 }
