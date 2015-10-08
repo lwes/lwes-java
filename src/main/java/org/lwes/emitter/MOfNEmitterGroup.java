@@ -76,7 +76,7 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
 
   @Override
   public String toString() {
-  return "MOfNEmitterGroup [m=" + m + ", n=" + n + ", emitters=" + Arrays.toString(emitters) + "]";
+    return "MOfNEmitterGroup [m=" + m + ", n=" + n + ", emitters=" + Arrays.toString(emitters) + "]";
   }
 
 }

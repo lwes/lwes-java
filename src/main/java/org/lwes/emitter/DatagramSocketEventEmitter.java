@@ -1,5 +1,5 @@
 /*======================================================================*
- * Copyright (c) 2008, Yahoo! Inc. All rights reserved.                 *
+ * Copyright (c) 2015, OpenX. All rights reserved.                      *
  *                                                                      *
  * Licensed under the New BSD License (the "License"); you may not use  *
  * this file except in compliance with the License.  Unless required    *
@@ -269,5 +269,10 @@ public abstract class DatagramSocketEventEmitter<T extends DatagramSocket>
           NumberCodec.byteArrayToHexString(dp.getData(), 0, dp.getLength()));
     }
     return bytes.length;
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + " [" + getAddress() + ":" + getPort() + "]";
   }
 }

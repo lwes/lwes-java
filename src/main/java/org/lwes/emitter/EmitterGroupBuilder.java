@@ -147,7 +147,6 @@ public class EmitterGroupBuilder {
   List<EmitterGroup> emitterGroups = new ArrayList<EmitterGroup>();
   while (groupMatcher.find()) {
     String group = groupMatcher.group();
-    System.out.println(group);
     String groupHosts = group.replaceAll("\\(|\\)", "");
     DatagramSocketEventEmitter<?>[] emitters = createEmitters(group, prefix, groupHosts, port);
     MOfNEmitterGroup meg = new MOfNEmitterGroup(emitters, hostEmitCount == -1 ? emitters.length : hostEmitCount, filter);
@@ -186,6 +185,8 @@ public class EmitterGroupBuilder {
       String portStr = null;
       String ttlStr = null;
 
+      // accepted formats:
+      // HOST, IFACE:HOST, HOST:PORT, IFACE:HOST:PORT, HOST:PORT:TTL, IFACE:HOST:PORT:TTL
       if (host.indexOf(":") > 0) {
         String[] parts = host.split(":");
         if (parts.length == 2) {
@@ -252,6 +253,7 @@ public class EmitterGroupBuilder {
       emitters[i].initialize();
     }
 
+    System.out.println(java.util.Arrays.toString(emitters));
     return emitters;
   }
 }

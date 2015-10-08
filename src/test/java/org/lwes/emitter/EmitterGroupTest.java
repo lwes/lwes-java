@@ -1,5 +1,5 @@
 /*======================================================================*
- * Copyright (c) 2015, Openx All rights reserved.                       *
+ * Copyright (c) 2015, OpenX. All rights reserved.                      *
  *                                                                      *
  * Licensed under the New BSD License (the "License"); you may not use  *
  * this file except in compliance with the License.  Unless required    *
@@ -76,6 +76,19 @@ public class EmitterGroupTest {
     props.setProperty("lwes.emitter_groups", "a");
     props.setProperty("lwes.a.strategy", "2ofN");
     props.setProperty("lwes.a.hosts", "224.0.0.a:9191:3,224.0.0.69:9191:4");
+    props.setProperty("lwes.a.port", "9191");
+
+    EmitterGroup[] groups = EmitterGroupBuilder.createGroups(props);
+  }
+
+  @Test(expected=NumberFormatException.class)
+  public void testBadTimeToLive() throws Exception {
+
+    Properties props = new Properties();
+
+    props.setProperty("lwes.emitter_groups", "a");
+    props.setProperty("lwes.a.strategy", "2ofN");
+    props.setProperty("lwes.a.hosts", "224.0.0.69:9191:a,224.0.0.69:9191:4");
     props.setProperty("lwes.a.port", "9191");
 
     EmitterGroup[] groups = EmitterGroupBuilder.createGroups(props);
