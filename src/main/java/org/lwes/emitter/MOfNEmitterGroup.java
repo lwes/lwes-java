@@ -33,14 +33,14 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
   private final int n;
   private final AtomicInteger i;
 
-  public MOfNEmitterGroup(PreserializedUnicastEventEmitter[] emitters, int m, EmitterGroupFilter filter) {
+  public MOfNEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, int m, EmitterGroupFilter filter) {
     this(emitters, m, filter, 1.0);
   }
 
   /**
    * @param emitters
    */
-  public MOfNEmitterGroup(PreserializedUnicastEventEmitter[] emitters, int m, EmitterGroupFilter filter, double sampleRate) {
+  public MOfNEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, int m, EmitterGroupFilter filter, double sampleRate) {
     super(emitters, filter, sampleRate);
     this.m = m;
     this.n = emitters.length;
@@ -65,7 +65,7 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
       for (int j = 0; j < m; j++) {
         index = Math.abs((start + j) % n);
         try {
-          bytesEmitted += emitters[index].emitSerializedEvent(bytes);
+          bytesEmitted += emitters[index].emit(bytes);
         } catch (IOException ioe) {
           LOG.error(String.format("Problem emitting event to emitter %s", emitters[index].getAddress()), ioe);
         }

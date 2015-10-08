@@ -49,7 +49,7 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
   private static transient Log log = LogFactory.getLog(MulticastEventEmitter.class);
 
   /* the multicast time-to-live */
-  protected int ttl = 31;
+  protected int ttl = 5;
 
   /**
    * Default constructor.

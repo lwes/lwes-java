@@ -37,7 +37,7 @@ public class EmitterGroupBuilder {
   private static Pattern STRATEGY_NESTED = Pattern.compile("(([\\d|]*)ofN|all)_(([\\d]*)ofN|all)", Pattern.CASE_INSENSITIVE);
   private static Pattern nestedTuplePattern = Pattern.compile("^((\\([^\\(]+?\\))(,)*)+$", Pattern.CASE_INSENSITIVE);
   private static Pattern tuplePattern = Pattern.compile("\\([^\\(]+?\\)", Pattern.CASE_INSENSITIVE);
-  
+
   public static EmitterGroup[] createGroups(Properties props) throws IOException {
     String groupsStr = props.getProperty("lwes.emitter_groups");
     String[] groups = groupsStr.split(",");
@@ -90,7 +90,6 @@ public class EmitterGroupBuilder {
     int defaultPort = (defaultPortStr != null) ? Integer.parseInt(defaultPortStr) : -1;
 
     String hostsStr = props.getProperty(prefix + "hosts");
-    String[] hosts = hostsStr.split(",");
     String strategy = props.getProperty(prefix + "strategy");
 
     String rateStr = props.getProperty(prefix + "sample_rate");
@@ -102,34 +101,12 @@ public class EmitterGroupBuilder {
     }
 
     if (STRATEGY_NESTED.matcher(strategy).matches()) {
-    	return buildNestedEmitterGroup(hostsStr, strategy, defaultPort, filter, defaultSampleRate);
+      return buildNestedEmitterGroup(prefix, hostsStr, strategy, defaultPort, filter, defaultSampleRate);
     }
 
-    PreserializedUnicastEventEmitter[] emitters = new PreserializedUnicastEventEmitter[hosts.length];
+    DatagramSocketEventEmitter<?>[] emitters =
+      createEmitters(groupName, prefix, hostsStr, defaultPort);
 
-    for (int i = 0; i < hosts.length; i++) {
-      String host = hosts[i];
-      int port = defaultPort;
-
-      if (host.indexOf(":") > 0) {
-        String[] parts = host.split(":");
-        host = parts[0];
-        port = Integer.parseInt(parts[1]);
-      } else if (defaultPort < 0) {
-        throw new RuntimeException(
-            String.format(
-                "Unable to get port information for LWES emitter group %s - not specified " +
-                "in %s or as part of the host definition (e.g. host1:port1,host2:port2).",
-                groupName, prefix + "port"));
-      }
-
-      emitters[i] = new PreserializedUnicastEventEmitter();
-      emitters[i].setAddress(InetAddress.getByName(host));
-      emitters[i].setPort(port);
-      emitters[i].initialize();
-    }
-
-    
     if (strategy == null || strategy.isEmpty()) {
       throw new RuntimeException(
           String.format(
@@ -153,71 +130,128 @@ public class EmitterGroupBuilder {
               prefix + "strategy"));
     }
   }
-  
-  private static EmitterGroup buildNestedEmitterGroup(String hostsStr, String strategyStr, int port, EmitterGroupFilter filter, double sampleRate) throws IOException {
-	String[] ratioConfig = strategyStr.split("_");	
-	if (null == ratioConfig || ratioConfig.length != 2) {
-		throw new IllegalArgumentException("Invalid nested strategy config " + strategyStr);
-	}
-	if (!nestedTuplePattern.matcher(hostsStr).find()) {
-		throw new IllegalArgumentException("Invalid nested hosts config " + hostsStr);
-	}
-	
-	
-	int hostEmitCount = getEmitCount(ratioConfig[1]);
-	
-	Matcher groupMatcher = tuplePattern.matcher(hostsStr);
-	List<EmitterGroup> emitterGroups = new ArrayList<EmitterGroup>();
-	while (groupMatcher.find()) {
-	  String group = groupMatcher.group();
-	  System.out.println(group);
-	  String groupHosts = group.replaceAll("\\(|\\)", ""); 
-	  PreserializedUnicastEventEmitter[] emitters = createEmitters(groupHosts, port);
-	  MOfNEmitterGroup meg = new MOfNEmitterGroup(emitters, hostEmitCount == -1 ? emitters.length : hostEmitCount, filter);
-	  emitterGroups.add(meg);
-	}
-	
-	int groupEmitCount = getEmitCount(ratioConfig[0]);
-	EmitterGroup[] emitterGroupsArray = emitterGroups.toArray(new EmitterGroup[emitterGroups.size()]);
-	return new NestedEmitterGroup(emitterGroupsArray, groupEmitCount == -1 ? emitterGroupsArray.length : groupEmitCount, filter, sampleRate);
+
+  private static EmitterGroup buildNestedEmitterGroup(String prefix, String hostsStr, String strategyStr, int port, EmitterGroupFilter filter, double sampleRate) throws IOException {
+  String[] ratioConfig = strategyStr.split("_");
+  if (null == ratioConfig || ratioConfig.length != 2) {
+    throw new IllegalArgumentException("Invalid nested strategy config " + strategyStr);
   }
-  
+  if (!nestedTuplePattern.matcher(hostsStr).find()) {
+    throw new IllegalArgumentException("Invalid nested hosts config " + hostsStr);
+  }
+
+
+  int hostEmitCount = getEmitCount(ratioConfig[1]);
+
+  Matcher groupMatcher = tuplePattern.matcher(hostsStr);
+  List<EmitterGroup> emitterGroups = new ArrayList<EmitterGroup>();
+  while (groupMatcher.find()) {
+    String group = groupMatcher.group();
+    System.out.println(group);
+    String groupHosts = group.replaceAll("\\(|\\)", "");
+    DatagramSocketEventEmitter<?>[] emitters = createEmitters(group, prefix, groupHosts, port);
+    MOfNEmitterGroup meg = new MOfNEmitterGroup(emitters, hostEmitCount == -1 ? emitters.length : hostEmitCount, filter);
+    emitterGroups.add(meg);
+  }
+
+  int groupEmitCount = getEmitCount(ratioConfig[0]);
+  EmitterGroup[] emitterGroupsArray = emitterGroups.toArray(new EmitterGroup[emitterGroups.size()]);
+  return new NestedEmitterGroup(emitterGroupsArray, groupEmitCount == -1 ? emitterGroupsArray.length : groupEmitCount, filter, sampleRate);
+  }
+
   /**
    * Get emit count for a MOfN type configuration string, -1 implies all of N.
    * @param config
    * @return
    */
   private static int getEmitCount(String config) {
-	if (STRATEGY_ALL.equalsIgnoreCase(config)) {
-	  return -1;
-	} else {
-	  Matcher mOfN = STRATEGY_M_OF_N.matcher(config);
-	  if (!mOfN.matches()) {
-		throw new IllegalArgumentException("Unable to parse nested strategy config " + config);
-	  }
-	  return Integer.parseInt(mOfN.group(1));
+  if (STRATEGY_ALL.equalsIgnoreCase(config)) {
+    return -1;
+  } else {
+    Matcher mOfN = STRATEGY_M_OF_N.matcher(config);
+    if (!mOfN.matches()) {
+    throw new IllegalArgumentException("Unable to parse nested strategy config " + config);
+    }
+    return Integer.parseInt(mOfN.group(1));
     }
   }
-  
-  private static PreserializedUnicastEventEmitter[] createEmitters(String hostsStr, int defaultPort) throws IOException {
-	String[] hosts = hostsStr.split(",");
-	PreserializedUnicastEventEmitter[] emitters = new PreserializedUnicastEventEmitter[hosts.length];
-	for (int i = 0; i < hosts.length; i++) {
-	  String host = hosts[i];
-	  int port = defaultPort;
-	  if (host.indexOf(":") > 0) {
+
+  private static DatagramSocketEventEmitter<?>[] createEmitters(String groupName, String prefix, String hostsStr, int defaultPort) throws IOException {
+    String[] hosts = hostsStr.split(",");
+    DatagramSocketEventEmitter<?>[] emitters = new DatagramSocketEventEmitter<?>[hosts.length];
+
+    for (int i = 0; i < hosts.length; i++) {
+      String host = hosts[i];
+      String ifaceStr = null;
+      String portStr = null;
+      String ttlStr = null;
+
+      if (host.indexOf(":") > 0) {
         String[] parts = host.split(":");
-		host = parts[0];
-		port = Integer.parseInt(parts[1]);
-	  } else if (defaultPort < 0) {
-		throw new RuntimeException(String.format("Unable to get port information for LWES emitter hosts: %s ",
-				hostsStr));
-	  }
-	  emitters[i] = new PreserializedUnicastEventEmitter();
-	  emitters[i].setAddress(InetAddress.getByName(host));
-	  emitters[i].setPort(port);
-	  emitters[i].initialize();
-	}
-	return emitters;
-  }  
+        if (parts.length == 2) {
+          if (parts[1].indexOf(".") > 0) {
+            ifaceStr = parts[0];
+            host = parts[1];
+          } else {
+            host = parts[0];
+            portStr = parts[1];
+          }
+        } else if (parts.length == 3) {
+          if (parts[1].indexOf(".") > 0) {
+            ifaceStr = parts[0];
+            host = parts[1];
+            portStr = parts[2];
+          } else {
+            host = parts[0];
+            portStr = parts[1];
+            ttlStr = parts[2];
+          }
+        } else if (parts.length == 4) {
+          ifaceStr = parts[0];
+          host = parts[1];
+          portStr = parts[2];
+          ttlStr = parts[3];
+        } else {
+          throw new RuntimeException(
+            String.format("Unable to parse LWES emitter group %s host config %s",
+                          groupName, host));
+        }
+      }
+
+      InetAddress address = InetAddress.getByName(host);
+      InetAddress iface = (ifaceStr == null ? null : InetAddress.getByName(ifaceStr));
+      int ttl = (ttlStr == null ? -1 : Integer.parseInt(ttlStr));
+      int port = defaultPort;
+
+      if (portStr != null) {
+        port = Integer.parseInt(portStr);
+      } else if (defaultPort < 0) {
+        throw new RuntimeException(
+            String.format(
+                "Unable to get port information for LWES emitter group %s - not specified " +
+                "in %s or as part of the host definition (e.g. host1:port1,host2:port2).",
+                groupName, prefix + "port"));
+      }
+
+      if (address.isMulticastAddress()) {
+        MulticastEventEmitter mee = new MulticastEventEmitter();
+
+        mee.setInterface(iface);
+
+        if (ttl > 0) {
+          mee.setTimeToLive(ttl);
+        }
+
+        emitters[i] = mee;
+      } else {
+        emitters[i] = new UnicastEventEmitter();
+      }
+
+      emitters[i].setAddress(address);
+      emitters[i].setPort(port);
+      emitters[i].initialize();
+    }
+
+    return emitters;
+  }
 }

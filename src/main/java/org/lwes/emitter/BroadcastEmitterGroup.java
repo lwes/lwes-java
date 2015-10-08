@@ -24,13 +24,13 @@ import org.lwes.Event;
 public class BroadcastEmitterGroup extends EmitterGroup {
   private static final Logger LOG = Logger.getLogger(BroadcastEmitterGroup.class);
 
-  protected final PreserializedUnicastEventEmitter[] emitters;
+  protected final DatagramSocketEventEmitter<?>[] emitters;
 
-  public BroadcastEmitterGroup(PreserializedUnicastEventEmitter[] emitters, EmitterGroupFilter filter) {
+  public BroadcastEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, EmitterGroupFilter filter) {
     this(emitters, filter, 1.0);
   }
 
-  public BroadcastEmitterGroup(PreserializedUnicastEventEmitter[] emitters, EmitterGroupFilter filter, double sampleRate) {
+  public BroadcastEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, EmitterGroupFilter filter, double sampleRate) {
     super(filter, sampleRate);
     this.emitters = emitters;
   }
@@ -41,7 +41,7 @@ public class BroadcastEmitterGroup extends EmitterGroup {
     int bytesEmitted = 0;
     for (int i = 0; i < emitters.length; i++) {
       try {
-        bytesEmitted += emitters[i].emitSerializedEvent(bytes);
+        bytesEmitted += emitters[i].emit(bytes);
       } catch (IOException ioe) {
         LOG.error(String.format("Problem emitting event to emitter %s", emitters[i].getAddress()), ioe);
       }
