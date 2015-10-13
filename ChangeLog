@@ -4,6 +4,7 @@ and MulticastEventEmitter both extend
 - moved socket interface to parent class
 - made emitter group configs more flexible and added support for multicast
 emitters
+- added shutdown method for emitter groups
 
 * Wed Jul 23 2014 Mohammad Kolahdouzan <mohammad.kolahdouzan@gmail.com> 2.0.0
 - all emit methods now return number of bytes that were emitted.
