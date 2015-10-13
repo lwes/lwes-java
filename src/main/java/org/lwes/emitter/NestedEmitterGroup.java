@@ -11,6 +11,7 @@
  *======================================================================*/
 package org.lwes.emitter;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.lwes.Event;
@@ -59,6 +60,13 @@ public class NestedEmitterGroup extends EmitterGroup {
       bytesEmitted += emitterGroups[index].emit(e);
     }
     return bytesEmitted;
+  }
+
+  @Override
+  public void shutdown() throws IOException {
+    for (EmitterGroup eg : emitterGroups) {
+      eg.shutdown();
+    }
   }
 
   @Override

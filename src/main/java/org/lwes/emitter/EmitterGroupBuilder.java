@@ -253,7 +253,6 @@ public class EmitterGroupBuilder {
       emitters[i].initialize();
     }
 
-    System.out.println(java.util.Arrays.toString(emitters));
     return emitters;
   }
 }

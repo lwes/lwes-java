@@ -48,4 +48,11 @@ public class BroadcastEmitterGroup extends EmitterGroup {
     }
     return bytesEmitted;
   }
+
+  @Override
+  public void shutdown() throws IOException {
+    for (int i = 0; i < emitters.length; i++) {
+      emitters[i].shutdown();
+    }
+  }
 }

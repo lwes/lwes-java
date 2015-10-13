@@ -11,6 +11,7 @@
  *======================================================================*/
 package org.lwes.emitter;
 
+import java.io.IOException;
 import java.util.Random;
 
 import org.lwes.Event;
@@ -45,4 +46,6 @@ public abstract class EmitterGroup {
   }
 
   protected abstract int emit(Event e);
+
+  public abstract void shutdown() throws IOException;
 }
