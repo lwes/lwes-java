@@ -27,7 +27,7 @@ public abstract class AbstractEventEmitter implements EventEmitter {
 
   private static transient Log log = LogFactory.getLog(AbstractEventEmitter.class);
 
-  private EventFactory factory = new EventFactory();
+  private EventFactory factory;
 
   private boolean emitHeartbeat = false;
   private long eventCount = 0;
@@ -35,6 +35,14 @@ public abstract class AbstractEventEmitter implements EventEmitter {
   private long frequency = 60000;
   private long lastBeatTime = 0;
   private long sequence = 0;
+
+  public AbstractEventEmitter() {
+    this.factory = new EventFactory();
+  }
+
+  public AbstractEventEmitter(EventFactory factory) {
+    this.factory = factory;
+  }
 
   public void initialize() throws IOException {
     try {

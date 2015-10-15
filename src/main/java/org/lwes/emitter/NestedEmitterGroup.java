@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.lwes.Event;
+import org.lwes.EventFactory;
 
 /**
  * A nesting of {@link EmitterGroup} that emits events
@@ -38,6 +39,18 @@ public class NestedEmitterGroup extends EmitterGroup {
 
   public NestedEmitterGroup(EmitterGroup[] emittergroups, int m, EmitterGroupFilter filter, double sampleRate) {
     super(filter, sampleRate);
+    this.m = m;
+    this.n = emittergroups.length;
+    this.emitterGroups = emittergroups;
+    i = new AtomicInteger();
+  }
+
+  public NestedEmitterGroup(EmitterGroup[] emittergroups, int m, EmitterGroupFilter filter, EventFactory factory) {
+    this(emittergroups, m, filter, 1.0, factory);
+  }
+
+  public NestedEmitterGroup(EmitterGroup[] emittergroups, int m, EmitterGroupFilter filter, double sampleRate, EventFactory factory) {
+    super(filter, sampleRate, factory);
     this.m = m;
     this.n = emittergroups.length;
     this.emitterGroups = emittergroups;

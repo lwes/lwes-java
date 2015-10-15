@@ -14,6 +14,7 @@ package org.lwes.emitter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.lwes.EventFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -51,6 +52,11 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
    * Default constructor.
    */
   public MulticastEventEmitter() {
+    super();
+  }
+
+  public MulticastEventEmitter(EventFactory factory) {
+    super(factory);
   }
 
   /**

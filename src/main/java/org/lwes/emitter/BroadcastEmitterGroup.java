@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.lwes.Event;
+import org.lwes.EventFactory;
 
 /**
  * This class emits an event to all members of the group.
@@ -32,6 +33,15 @@ public class BroadcastEmitterGroup extends EmitterGroup {
 
   public BroadcastEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, EmitterGroupFilter filter, double sampleRate) {
     super(filter, sampleRate);
+    this.emitters = emitters;
+  }
+
+  public BroadcastEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, EmitterGroupFilter filter, EventFactory factory) {
+    this(emitters, filter, 1.0, factory);
+  }
+
+  public BroadcastEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, EmitterGroupFilter filter, double sampleRate, EventFactory factory) {
+    super(filter, sampleRate, factory);
     this.emitters = emitters;
   }
 

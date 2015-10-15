@@ -57,6 +57,11 @@ public abstract class DatagramSocketEventEmitter<T extends DatagramSocket>
    * Default constructor.
    */
   public DatagramSocketEventEmitter() {
+    super();
+  }
+
+  public DatagramSocketEventEmitter(EventFactory factory) {
+    super(factory);
   }
 
   /**

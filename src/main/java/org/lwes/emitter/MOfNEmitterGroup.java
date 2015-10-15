@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.lwes.Event;
+import org.lwes.EventFactory;
 
 /**
  * This class extends {@link BroadcastEmitterGroup} and modifies it to
@@ -37,11 +38,19 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
     this(emitters, m, filter, 1.0);
   }
 
-  /**
-   * @param emitters
-   */
   public MOfNEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, int m, EmitterGroupFilter filter, double sampleRate) {
     super(emitters, filter, sampleRate);
+    this.m = m;
+    this.n = emitters.length;
+    this.i = new AtomicInteger(0);
+  }
+
+  public MOfNEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, int m, EmitterGroupFilter filter, EventFactory factory) {
+    this(emitters, m, filter, 1.0, factory);
+  }
+
+  public MOfNEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, int m, EmitterGroupFilter filter, double sampleRate, EventFactory factory) {
+    super(emitters, filter, sampleRate, factory);
     this.m = m;
     this.n = emitters.length;
     this.i = new AtomicInteger(0);

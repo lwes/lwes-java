@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.lwes.EventFactory;
 import org.lwes.emitter.EmitterGroupFilter.FilterType;
 
 /**
@@ -38,17 +39,23 @@ public class EmitterGroupBuilder {
   private static Pattern nestedTuplePattern = Pattern.compile("^((\\([^\\(]+?\\))(,)*)+$", Pattern.CASE_INSENSITIVE);
   private static Pattern tuplePattern = Pattern.compile("\\([^\\(]+?\\)", Pattern.CASE_INSENSITIVE);
 
-  public static EmitterGroup[] createGroups(Properties props) throws IOException {
+  public static EmitterGroup[] createGroups(Properties props,
+                                            EventFactory factory)
+      throws IOException {
     String groupsStr = props.getProperty("lwes.emitter_groups");
     String[] groups = groupsStr.split(",");
 
     EmitterGroup[] emitterGroups = new EmitterGroup[groups.length];
 
     for (int i = 0; i < groups.length; i++) {
-      emitterGroups[i] = createGroup(props, groups[i]);
+      emitterGroups[i] = createGroup(props, groups[i], factory);
     }
 
     return emitterGroups;
+  }
+
+  public static EmitterGroup[] createGroups(Properties props) throws IOException {
+    return createGroups(props, null);
   }
 
   public static EmitterGroupFilter getEmitterGroupFilter(Properties props, String prefix) {
@@ -83,7 +90,9 @@ public class EmitterGroupBuilder {
     }
   }
 
-  public static EmitterGroup createGroup(Properties props, String groupName) throws IOException {
+  public static EmitterGroup createGroup(Properties props, String groupName,
+                                         EventFactory factory)
+      throws IOException {
     String prefix = "lwes." + groupName + ".";
 
     String defaultPortStr = props.getProperty(prefix + "port");
@@ -101,11 +110,11 @@ public class EmitterGroupBuilder {
     }
 
     if (STRATEGY_NESTED.matcher(strategy).matches()) {
-      return buildNestedEmitterGroup(prefix, hostsStr, strategy, defaultPort, filter, defaultSampleRate);
+      return buildNestedEmitterGroup(prefix, hostsStr, strategy, defaultPort, filter, defaultSampleRate, factory);
     }
 
     DatagramSocketEventEmitter<?>[] emitters =
-      createEmitters(groupName, prefix, hostsStr, defaultPort);
+      createEmitters(groupName, prefix, hostsStr, defaultPort, factory);
 
     if (strategy == null || strategy.isEmpty()) {
       throw new RuntimeException(
@@ -118,9 +127,9 @@ public class EmitterGroupBuilder {
     Matcher mOfN = STRATEGY_M_OF_N.matcher(strategy);
 
     if (STRATEGY_ALL.equalsIgnoreCase(strategy)) {
-      return new BroadcastEmitterGroup(emitters, filter, defaultSampleRate);
+      return new BroadcastEmitterGroup(emitters, filter, defaultSampleRate, factory);
     } else if (mOfN.matches()) {
-      return new MOfNEmitterGroup(emitters, Integer.parseInt(mOfN.group(1)), filter, defaultSampleRate);
+      return new MOfNEmitterGroup(emitters, Integer.parseInt(mOfN.group(1)), filter, defaultSampleRate, factory);
     } else {
       throw new RuntimeException(
           String.format(
@@ -131,7 +140,11 @@ public class EmitterGroupBuilder {
     }
   }
 
-  private static EmitterGroup buildNestedEmitterGroup(String prefix, String hostsStr, String strategyStr, int port, EmitterGroupFilter filter, double sampleRate) throws IOException {
+  public static EmitterGroup createGroup(Properties props, String groupName) throws IOException {
+    return createGroup(props, groupName, null);
+  }
+
+  private static EmitterGroup buildNestedEmitterGroup(String prefix, String hostsStr, String strategyStr, int port, EmitterGroupFilter filter, double sampleRate, EventFactory factory) throws IOException {
   String[] ratioConfig = strategyStr.split("_");
   if (null == ratioConfig || ratioConfig.length != 2) {
     throw new IllegalArgumentException("Invalid nested strategy config " + strategyStr);
@@ -148,14 +161,14 @@ public class EmitterGroupBuilder {
   while (groupMatcher.find()) {
     String group = groupMatcher.group();
     String groupHosts = group.replaceAll("\\(|\\)", "");
-    DatagramSocketEventEmitter<?>[] emitters = createEmitters(group, prefix, groupHosts, port);
-    MOfNEmitterGroup meg = new MOfNEmitterGroup(emitters, hostEmitCount == -1 ? emitters.length : hostEmitCount, filter);
+    DatagramSocketEventEmitter<?>[] emitters = createEmitters(group, prefix, groupHosts, port, factory);
+    MOfNEmitterGroup meg = new MOfNEmitterGroup(emitters, hostEmitCount == -1 ? emitters.length : hostEmitCount, filter, factory);
     emitterGroups.add(meg);
   }
 
   int groupEmitCount = getEmitCount(ratioConfig[0]);
   EmitterGroup[] emitterGroupsArray = emitterGroups.toArray(new EmitterGroup[emitterGroups.size()]);
-  return new NestedEmitterGroup(emitterGroupsArray, groupEmitCount == -1 ? emitterGroupsArray.length : groupEmitCount, filter, sampleRate);
+  return new NestedEmitterGroup(emitterGroupsArray, groupEmitCount == -1 ? emitterGroupsArray.length : groupEmitCount, filter, sampleRate, factory);
   }
 
   /**
@@ -175,7 +188,7 @@ public class EmitterGroupBuilder {
     }
   }
 
-  private static DatagramSocketEventEmitter<?>[] createEmitters(String groupName, String prefix, String hostsStr, int defaultPort) throws IOException {
+  private static DatagramSocketEventEmitter<?>[] createEmitters(String groupName, String prefix, String hostsStr, int defaultPort, EventFactory factory) throws IOException {
     String[] hosts = hostsStr.split(",");
     DatagramSocketEventEmitter<?>[] emitters = new DatagramSocketEventEmitter<?>[hosts.length];
 
@@ -236,7 +249,9 @@ public class EmitterGroupBuilder {
       }
 
       if (address.isMulticastAddress()) {
-        MulticastEventEmitter mee = new MulticastEventEmitter();
+        MulticastEventEmitter mee =
+          (factory == null ? new MulticastEventEmitter() :
+                             new MulticastEventEmitter(factory));
 
         mee.setInterface(iface);
 
@@ -246,7 +261,9 @@ public class EmitterGroupBuilder {
 
         emitters[i] = mee;
       } else {
-        emitters[i] = new UnicastEventEmitter();
+        emitters[i] =
+          (factory == null ? new UnicastEventEmitter() :
+                             new UnicastEventEmitter(factory));
       }
 
       emitters[i].setAddress(address);

@@ -14,6 +14,7 @@ package org.lwes.emitter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.lwes.EventFactory;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -47,6 +48,11 @@ public class UnicastEventEmitter extends DatagramSocketEventEmitter<DatagramSock
    * Default constructor.
    */
   public UnicastEventEmitter() {
+    super();
+  }
+
+  public UnicastEventEmitter(EventFactory factory) {
+    super(factory);
   }
 
   /**
