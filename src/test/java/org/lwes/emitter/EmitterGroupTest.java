@@ -50,7 +50,7 @@ public class EmitterGroupTest {
 
     props.setProperty("lwes.emitter_groups", "a");
     props.setProperty("lwes.a.strategy", "2ofN");
-    props.setProperty("lwes.a.hosts", "224.0.0.69:a:3,224.0.0.69:9191:4");
+    props.setProperty("lwes.a.hosts", "224.0.0.69:a:a,224.0.0.69:9191:4");
     props.setProperty("lwes.a.port", "9191");
 
     EmitterGroup[] groups = EmitterGroupBuilder.createGroups(props);

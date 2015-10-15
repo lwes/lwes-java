@@ -182,7 +182,7 @@ public class EmitterGroupBuilder {
     for (int i = 0; i < hosts.length; i++) {
       String host = hosts[i];
       String ifaceStr = null;
-      String portStr = null;
+      Integer port = null;
       String ttlStr = null;
 
       // accepted formats:
@@ -190,27 +190,27 @@ public class EmitterGroupBuilder {
       if (host.indexOf(":") > 0) {
         String[] parts = host.split(":");
         if (parts.length == 2) {
-          if (parts[1].indexOf(".") > 0) {
+          try {
+            port = Integer.parseInt(parts[1]);
+            host = parts[0];
+          } catch (NumberFormatException nfe) {
             ifaceStr = parts[0];
             host = parts[1];
-          } else {
-            host = parts[0];
-            portStr = parts[1];
           }
         } else if (parts.length == 3) {
-          if (parts[1].indexOf(".") > 0) {
+          try {
+            port = Integer.parseInt(parts[1]);
+            host = parts[0];
+            ttlStr = parts[2];
+          } catch (NumberFormatException nfe) {
             ifaceStr = parts[0];
             host = parts[1];
-            portStr = parts[2];
-          } else {
-            host = parts[0];
-            portStr = parts[1];
-            ttlStr = parts[2];
+            port = Integer.parseInt(parts[2]);
           }
         } else if (parts.length == 4) {
           ifaceStr = parts[0];
           host = parts[1];
-          portStr = parts[2];
+          port = Integer.parseInt(parts[2]);
           ttlStr = parts[3];
         } else {
           throw new RuntimeException(
@@ -222,16 +222,17 @@ public class EmitterGroupBuilder {
       InetAddress address = InetAddress.getByName(host);
       InetAddress iface = (ifaceStr == null ? null : InetAddress.getByName(ifaceStr));
       int ttl = (ttlStr == null ? -1 : Integer.parseInt(ttlStr));
-      int port = defaultPort;
 
-      if (portStr != null) {
-        port = Integer.parseInt(portStr);
-      } else if (defaultPort < 0) {
-        throw new RuntimeException(
-            String.format(
-                "Unable to get port information for LWES emitter group %s - not specified " +
-                "in %s or as part of the host definition (e.g. host1:port1,host2:port2).",
-                groupName, prefix + "port"));
+      if (port == null) {
+        if (defaultPort < 0) {
+          throw new RuntimeException(
+              String.format(
+                  "Unable to get port information for LWES emitter group %s - not specified " +
+                  "in %s or as part of the host definition (e.g. host1:port1,host2:port2).",
+                  groupName, prefix + "port"));
+        } else {
+          port = defaultPort;
+        }
       }
 
       if (address.isMulticastAddress()) {
