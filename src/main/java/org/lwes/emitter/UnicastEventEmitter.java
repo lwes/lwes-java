@@ -14,16 +14,9 @@ package org.lwes.emitter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.lwes.Event;
-import org.lwes.EventFactory;
-import org.lwes.EventSystemException;
-import org.lwes.util.NumberCodec;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 
 /**
  * UnicastEventEmitter emits events as unicast datagrams on the network.

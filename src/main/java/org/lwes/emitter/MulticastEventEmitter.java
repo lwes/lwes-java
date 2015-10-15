@@ -14,12 +14,8 @@ package org.lwes.emitter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.lwes.Event;
-import org.lwes.EventSystemException;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
