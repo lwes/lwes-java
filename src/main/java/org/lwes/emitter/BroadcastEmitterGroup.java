@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.lwes.Event;
+import org.lwes.EventFactory;
 
 /**
  * This class emits an event to all members of the group.
@@ -24,14 +25,23 @@ import org.lwes.Event;
 public class BroadcastEmitterGroup extends EmitterGroup {
   private static final Logger LOG = Logger.getLogger(BroadcastEmitterGroup.class);
 
-  protected final PreserializedUnicastEventEmitter[] emitters;
+  protected final DatagramSocketEventEmitter<?>[] emitters;
 
-  public BroadcastEmitterGroup(PreserializedUnicastEventEmitter[] emitters, EmitterGroupFilter filter) {
+  public BroadcastEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, EmitterGroupFilter filter) {
     this(emitters, filter, 1.0);
   }
 
-  public BroadcastEmitterGroup(PreserializedUnicastEventEmitter[] emitters, EmitterGroupFilter filter, double sampleRate) {
+  public BroadcastEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, EmitterGroupFilter filter, double sampleRate) {
     super(filter, sampleRate);
+    this.emitters = emitters;
+  }
+
+  public BroadcastEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, EmitterGroupFilter filter, EventFactory factory) {
+    this(emitters, filter, 1.0, factory);
+  }
+
+  public BroadcastEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, EmitterGroupFilter filter, double sampleRate, EventFactory factory) {
+    super(filter, sampleRate, factory);
     this.emitters = emitters;
   }
 
@@ -41,11 +51,18 @@ public class BroadcastEmitterGroup extends EmitterGroup {
     int bytesEmitted = 0;
     for (int i = 0; i < emitters.length; i++) {
       try {
-        bytesEmitted += emitters[i].emitSerializedEvent(bytes);
+        bytesEmitted += emitters[i].emit(bytes);
       } catch (IOException ioe) {
         LOG.error(String.format("Problem emitting event to emitter %s", emitters[i].getAddress()), ioe);
       }
     }
     return bytesEmitted;
+  }
+
+  @Override
+  public void shutdown() throws IOException {
+    for (int i = 0; i < emitters.length; i++) {
+      emitters[i].shutdown();
+    }
   }
 }

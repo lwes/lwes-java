@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.lwes.Event;
+import org.lwes.EventFactory;
 
 /**
  * This class extends {@link BroadcastEmitterGroup} and modifies it to
@@ -33,15 +34,23 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
   private final int n;
   private final AtomicInteger i;
 
-  public MOfNEmitterGroup(PreserializedUnicastEventEmitter[] emitters, int m, EmitterGroupFilter filter) {
+  public MOfNEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, int m, EmitterGroupFilter filter) {
     this(emitters, m, filter, 1.0);
   }
 
-  /**
-   * @param emitters
-   */
-  public MOfNEmitterGroup(PreserializedUnicastEventEmitter[] emitters, int m, EmitterGroupFilter filter, double sampleRate) {
+  public MOfNEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, int m, EmitterGroupFilter filter, double sampleRate) {
     super(emitters, filter, sampleRate);
+    this.m = m;
+    this.n = emitters.length;
+    this.i = new AtomicInteger(0);
+  }
+
+  public MOfNEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, int m, EmitterGroupFilter filter, EventFactory factory) {
+    this(emitters, m, filter, 1.0, factory);
+  }
+
+  public MOfNEmitterGroup(DatagramSocketEventEmitter<?>[] emitters, int m, EmitterGroupFilter filter, double sampleRate, EventFactory factory) {
+    super(emitters, filter, sampleRate, factory);
     this.m = m;
     this.n = emitters.length;
     this.i = new AtomicInteger(0);
@@ -65,7 +74,7 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
       for (int j = 0; j < m; j++) {
         index = Math.abs((start + j) % n);
         try {
-          bytesEmitted += emitters[index].emitSerializedEvent(bytes);
+          bytesEmitted += emitters[index].emit(bytes);
         } catch (IOException ioe) {
           LOG.error(String.format("Problem emitting event to emitter %s", emitters[index].getAddress()), ioe);
         }
@@ -76,7 +85,7 @@ public class MOfNEmitterGroup extends BroadcastEmitterGroup {
 
   @Override
   public String toString() {
-  return "MOfNEmitterGroup [m=" + m + ", n=" + n + ", emitters=" + Arrays.toString(emitters) + "]";
+    return "MOfNEmitterGroup [m=" + m + ", n=" + n + ", emitters=" + Arrays.toString(emitters) + "]";
   }
 
 }

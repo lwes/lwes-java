@@ -11,9 +11,12 @@
  *======================================================================*/
 package org.lwes.emitter;
 
+import java.io.IOException;
 import java.util.Random;
 
 import org.lwes.Event;
+import org.lwes.EventFactory;
+import org.lwes.EventSystemException;
 
 /**
  * @author Joel Meyer
@@ -22,7 +25,7 @@ public abstract class EmitterGroup {
   protected final EmitterGroupFilter filter;
   protected static final Random random = new Random();
   protected double sampleRate;
-
+  protected EventFactory factory;
 
   public EmitterGroup(EmitterGroupFilter filter) {
     this(filter, 1.0);
@@ -36,6 +39,42 @@ public abstract class EmitterGroup {
     this.filter = filter;
   }
 
+  public EmitterGroup(EmitterGroupFilter filter, EventFactory factory) {
+    this(filter);
+    this.factory = factory;
+  }
+
+  public EmitterGroup(EmitterGroupFilter filter, double sampleRate,
+                      EventFactory factory) {
+    this(filter, sampleRate);
+    this.factory = factory;
+  }
+
+  /**
+   * Creates a new event named <tt>eventName</tt>.
+   * @param eventName the name of the event to be created
+   * @return a new Event
+   * @exception EventSystemException if there is a problem creating the event
+   */
+  public Event createEvent(String eventName) throws EventSystemException {
+    return createEvent(eventName, true);
+  }
+
+  /**
+   * Creates a new event named <tt>eventName</tt>.
+   * @param eventName the name of the event to be created
+   * @param validate whether or not to validate the event against the EventTemplateDB
+   * @return a new Event
+   * @exception EventSystemException if there is a problem creating the event
+   */
+  public Event createEvent(String eventName, boolean validate) throws EventSystemException {
+    if (getFactory() != null) {
+      return getFactory().createEvent(eventName, validate);
+    } else {
+      throw new EventSystemException("EventFactory not initialized");
+    }
+  }
+
   public int emitToGroup(Event e) {
     if (sampleRate == 1.0 || (sampleRate > 0.0 && random.nextDouble() <= sampleRate)) {
       if (filter == null || filter.shouldEmit(e.getEventName()))
@@ -44,5 +83,15 @@ public abstract class EmitterGroup {
     return 0;
   }
 
+  protected EventFactory getFactory() {
+    return factory;
+  }
+
+  protected void setFactory(EventFactory factory) {
+    this.factory = factory;
+  }
+
   protected abstract int emit(Event e);
+
+  public abstract void shutdown() throws IOException;
 }
