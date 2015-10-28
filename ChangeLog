@@ -1,4 +1,4 @@
-* Thu Oct 08 2015 Kenneth Kharma <kenneth.kharma@openx.com> 2.1.0
+* Thu Oct 08 2015 Kenneth Kharma <kenneth.kharma@openx.com> 2.1.1
 - added DatagramSocketEventEmitter abstract class, which UnicastEventEmitter
 and MulticastEventEmitter both extend
 - moved socket interface to parent class
