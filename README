@@ -14,10 +14,6 @@ To create a release:
 % mvn versions:set -DnewVersion=VERSION
 % mvn clean deploy
 
-NOTE: you cannot use batch-mode anymore. Deploying to central requires a gpg key
-and it needs to prompt you for your passphrase. It will error out if you have
-specified batch-mode.
-
 NOTE: Read this document for deploying releases to central:
 http://central.sonatype.org/pages/ossrh-guide.html
 
