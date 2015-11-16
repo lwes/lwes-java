@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lwes/lwes-java.svg?branch=master)](https://travis-ci.org/lwes/lwes-java)
+
 This is the Java API for the Light Weight Event System.
 
 ***
