@@ -1,3 +1,8 @@
+* Fri Nov 20 2015 Kenneth Kharma <kenneth.kharma@openx.com> 2.2.0
+- only emit System::Startup and System::Shutdown when heartbeats are enabled
+- added heartbeat support to emitter groups
+- removed SNAPSHOT from version
+
 * Thu Oct 08 2015 Kenneth Kharma <kenneth.kharma@openx.com> 2.1.1
 - added DatagramSocketEventEmitter abstract class, which UnicastEventEmitter
 and MulticastEventEmitter both extend

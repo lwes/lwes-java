@@ -13,7 +13,6 @@ How to build:
 % mvn clean package
 
 To create a release:
-% mvn versions:set -DnewVersion=VERSION
 % mvn clean deploy -P release
 
 NOTE: Read this document for deploying releases to central:

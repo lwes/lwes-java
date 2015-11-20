@@ -100,6 +100,8 @@ public class EmitterGroupBuilder {
 
     String hostsStr = props.getProperty(prefix + "hosts");
     String strategy = props.getProperty(prefix + "strategy");
+    boolean emitHeartbeat =
+      Boolean.parseBoolean(props.getProperty(prefix + "emit_heartbeat"));
 
     String rateStr = props.getProperty(prefix + "sample_rate");
     double defaultSampleRate = null == rateStr ? 1.0 : Double.parseDouble(rateStr);
@@ -110,11 +112,11 @@ public class EmitterGroupBuilder {
     }
 
     if (STRATEGY_NESTED.matcher(strategy).matches()) {
-      return buildNestedEmitterGroup(prefix, hostsStr, strategy, defaultPort, filter, defaultSampleRate, factory);
+      return buildNestedEmitterGroup(prefix, hostsStr, strategy, defaultPort, filter, defaultSampleRate, emitHeartbeat, factory);
     }
 
     DatagramSocketEventEmitter<?>[] emitters =
-      createEmitters(groupName, prefix, hostsStr, defaultPort, factory);
+      createEmitters(groupName, prefix, hostsStr, defaultPort, emitHeartbeat, factory);
 
     if (strategy == null || strategy.isEmpty()) {
       throw new RuntimeException(
@@ -144,7 +146,7 @@ public class EmitterGroupBuilder {
     return createGroup(props, groupName, null);
   }
 
-  private static EmitterGroup buildNestedEmitterGroup(String prefix, String hostsStr, String strategyStr, int port, EmitterGroupFilter filter, double sampleRate, EventFactory factory) throws IOException {
+  private static EmitterGroup buildNestedEmitterGroup(String prefix, String hostsStr, String strategyStr, int port, EmitterGroupFilter filter, double sampleRate, boolean emitHeartbeat, EventFactory factory) throws IOException {
   String[] ratioConfig = strategyStr.split("_");
   if (null == ratioConfig || ratioConfig.length != 2) {
     throw new IllegalArgumentException("Invalid nested strategy config " + strategyStr);
@@ -161,7 +163,8 @@ public class EmitterGroupBuilder {
   while (groupMatcher.find()) {
     String group = groupMatcher.group();
     String groupHosts = group.replaceAll("\\(|\\)", "");
-    DatagramSocketEventEmitter<?>[] emitters = createEmitters(group, prefix, groupHosts, port, factory);
+    DatagramSocketEventEmitter<?>[] emitters =
+      createEmitters(group, prefix, groupHosts, port, emitHeartbeat, factory);
     MOfNEmitterGroup meg = new MOfNEmitterGroup(emitters, hostEmitCount == -1 ? emitters.length : hostEmitCount, filter, factory);
     emitterGroups.add(meg);
   }
@@ -188,7 +191,7 @@ public class EmitterGroupBuilder {
     }
   }
 
-  private static DatagramSocketEventEmitter<?>[] createEmitters(String groupName, String prefix, String hostsStr, int defaultPort, EventFactory factory) throws IOException {
+  private static DatagramSocketEventEmitter<?>[] createEmitters(String groupName, String prefix, String hostsStr, int defaultPort, boolean emitHeartbeat, EventFactory factory) throws IOException {
     String[] hosts = hostsStr.split(",");
     DatagramSocketEventEmitter<?>[] emitters = new DatagramSocketEventEmitter<?>[hosts.length];
 
@@ -268,6 +271,7 @@ public class EmitterGroupBuilder {
 
       emitters[i].setAddress(address);
       emitters[i].setPort(port);
+      emitters[i].setEmitHeartbeat(emitHeartbeat);
       emitters[i].initialize();
     }
 

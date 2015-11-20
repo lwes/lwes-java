@@ -48,8 +48,11 @@ public abstract class AbstractEventEmitter implements EventEmitter {
     try {
       factory.initialize();
       lastBeatTime = System.currentTimeMillis();
-      Event e = factory.createEvent("System::Startup", false);
-      emit(e);
+
+      if (emitHeartbeat) {
+        Event e = factory.createEvent("System::Startup", false);
+        emit(e);
+      }
     }
     catch (EventSystemException e) {
       log.error(e.getMessage(), e);
@@ -58,10 +61,12 @@ public abstract class AbstractEventEmitter implements EventEmitter {
 
   public void shutdown() throws IOException {
     try {
-      Event e = factory.createEvent("System::Shutdown", false);
-      long time = System.currentTimeMillis();
-      long freqThisPeriod = time - lastBeatTime;
-      sendEventWithStatistics(e, freqThisPeriod);
+      if (emitHeartbeat) {
+        Event e = factory.createEvent("System::Shutdown", false);
+        long time = System.currentTimeMillis();
+        long freqThisPeriod = time - lastBeatTime;
+        sendEventWithStatistics(e, freqThisPeriod);
+      }
     }
     catch (EventSystemException e) {
       log.error(e.getMessage(), e);
