@@ -174,6 +174,11 @@ public abstract class ThreadedDequeuer implements Runnable {
 	 * ThreadedDequeuer.
 	 */
 	public void shutdown() {
+	    synchronized (idleProcessors) {
+		for (ThreadedEventDispatcher d : idleProcessors) {
+		    d.shutdown();
+		}
+	    }
 	}
 
 	/**

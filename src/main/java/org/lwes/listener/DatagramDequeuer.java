@@ -20,12 +20,13 @@ import org.lwes.util.IPAddress;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.concurrent.TimeUnit;
 
 public class DatagramDequeuer extends ThreadedDequeuer {
 
     private static transient Log log = LogFactory.getLog(DatagramDequeuer.class);
 
-    private boolean running = false;
+    private volatile boolean running = false;
 
     /* an event factory */
     private EventFactory factory = new EventFactory();
@@ -40,6 +41,7 @@ public class DatagramDequeuer extends ThreadedDequeuer {
 
     @Override
     public synchronized void shutdown() {
+	super.shutdown();
         running = false;
     }
 
@@ -50,11 +52,12 @@ public class DatagramDequeuer extends ThreadedDequeuer {
         while (running) {
             try {
                 QueueElement element = null;
-                element = queue.take();
-                if (log.isTraceEnabled()) {
-                    log.trace("Removed from queue: " + element);
-                }
-                handleElement((DatagramQueueElement) element);
+		if ((element = queue.poll(1,TimeUnit.SECONDS)) != null) {
+		    if (log.isTraceEnabled()) {
+			log.trace("Removed from queue: " + element);
+		    }
+		    handleElement((DatagramQueueElement) element);
+		}
             }
             catch (UnsupportedOperationException uoe) {
                 // not a problem, someone grabbed the event before we did
