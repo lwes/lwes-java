@@ -14,6 +14,8 @@ package org.lwes.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.lwes.MemoryPool;
+import org.lwes.MemoryPool.Buffer;
 
 import java.math.BigInteger;
 
@@ -562,8 +564,9 @@ public final class NumberCodec {
         for (int k = 0; k < (length / 2); k++) {
             bytes[k] = (byte) 0;
         }
-        byte[] str_bytes = aString.getBytes();
-        if (str_bytes.length != length) {
+        Buffer buffer = EncodedString.encode(aString);
+        byte[] str_bytes = buffer.getEncoderOutputBuffer().array();
+        if (buffer.getEncoderOutputBuffer().position() != length) {
             log.error("ERROR: Mismatching lengths");
             return null;
         }
@@ -759,9 +762,11 @@ public final class NumberCodec {
 
                 default:
                     log.error("ERROR: non-hex character");
+                    MemoryPool.putBack(buffer);
                     return null;
             }
         }
+        MemoryPool.putBack(buffer);
         return bytes;
     }
 
@@ -879,32 +884,32 @@ public final class NumberCodec {
      * @param pBytes the byte array from which the encoded form should be read
      * @return int decoded from bytes
      */
-	public static int decodeInt (byte[] pBytes)
-	throws NumberFormatException
-	{
-		if (pBytes == null)
-		{
-			throw new NumberFormatException("null byte array passed");
-		}
-		if (pBytes.length != NumberCodec.LONG_BYTES)
-		{
-			throw new NumberFormatException("expecting byte array length of: " +
-					NumberCodec.INT_BYTES + " got: " + pBytes.length);
-		}
-		return NumberCodec.decodeInt(pBytes, 0, pBytes.length);
-	}
+    public static int decodeInt (byte[] pBytes)
+    throws NumberFormatException
+    {
+        if (pBytes == null)
+        {
+            throw new NumberFormatException("null byte array passed");
+        }
+        if (pBytes.length != NumberCodec.LONG_BYTES)
+        {
+            throw new NumberFormatException("expecting byte array length of: " +
+              NumberCodec.INT_BYTES + " got: " + pBytes.length);
+        }
+        return NumberCodec.decodeInt(pBytes, 0, pBytes.length);
+    }
 
-	/**
+  /**
      * Encode a int into a byte-array buffer. (convienience method)
      *
      * @param pInt the int to be encoded
      * @return encoded bytes of the int
      */
-	public static byte[] encodeInt (int pInt)
-	throws NumberFormatException
-	{
-		byte[] bytes = new byte[NumberCodec.INT_BYTES];
-		NumberCodec.encodeInt(pInt, bytes, 0, bytes.length);
-		return bytes;
-	}
+    public static byte[] encodeInt (int pInt)
+    throws NumberFormatException
+    {
+        byte[] bytes = new byte[NumberCodec.INT_BYTES];
+        NumberCodec.encodeInt(pInt, bytes, 0, bytes.length);
+        return bytes;
+    }
 }

@@ -209,7 +209,7 @@ public class BaseType {
         this.sizeRestriction = sizeRestriction;
     }
 
-    public int getNullableArrayByteSize(short encoding) {
+    public int getNullableArrayByteSize() {
         // Size of the array (* n bytes) + 2 bytes for the length number
         int count = 2 + 2; // start with the length of the array + length of bitset
         int arrayLen = Array.getLength(typeObject);
@@ -220,7 +220,7 @@ public class BaseType {
                 switch (type.getComponentType()) {
                     case STRING:
                         // length of each string in bytes + 2 for the length number
-                        count += EncodedString.getBytes((String) o, Event.ENCODING_STRINGS[encoding]).length + 2;
+                        count += EncodedString.getEncodedLength((String) o) + 2;
                         break;
                     default:
                         count += type.getComponentType().getConstantSize();
@@ -232,9 +232,9 @@ public class BaseType {
         return count;
     }
 
-    public int getByteSize(short encoding) {
+    public int getByteSize() {
         if (type.isNullableArray()) {
-            return getNullableArrayByteSize(encoding);
+            return getNullableArrayByteSize();
         }
         else if (type.isConstantSize()) {
             return type.getConstantSize();
@@ -243,14 +243,13 @@ public class BaseType {
             switch (type) {
                 case STRING:
                 /* add size of string plus two bytes for the length */
-                    return EncodedString.getBytes((String) typeObject,
-                                                  Event.ENCODING_STRINGS[encoding]).length + 2;
+                    return EncodedString.getEncodedLength((String) typeObject) + 2;
                 case STRING_ARRAY: {
                     int count = 2; // start with the length of the array
                     String[] anArray = (String[]) typeObject;
                     for (String s : anArray) {
                         if (s != null) {
-                            count += EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]).length + 2;
+                            count += EncodedString.getEncodedLength(s) + 2;
                         }
                     }
                     return count;
@@ -299,9 +298,9 @@ public class BaseType {
         throw new IllegalArgumentException("Unknown size of BaseType " + type.name);
     }
 
-    public int bytesStoreSize(short encoding) {
+    public int bytesStoreSize() {
         /* add size of data plus size of token denoting data type */
-        return getByteSize(encoding) + 1;
+        return getByteSize() + 1;
     }
 
     public Object parseFromString(String string) throws EventSystemException {

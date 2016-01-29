@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ArrayEventPerformanceTest {
   private static final Log                 LOG        = LogFactory.getLog(ArrayEventPerformanceTest.class);
-  private static final int                 NUM_EVENTS = 100, NUM_PASSES = 10000;
+  private static final int                 NUM_EVENTS = 500, NUM_PASSES = 10000;
   private static double                    CPU_SCALE;  // used to reduce CPU-dependent effects
   private static final double              TOLERANCE  = 1.5;
   private ArrayEvent[]                     events;
@@ -27,11 +27,11 @@ public class ArrayEventPerformanceTest {
   private static ThreadMXBean              tmx;
   private long                             t0;
   private Map<ArrayEventStats, Integer>    stats0;
-  
+
   // Change these values as performance shifts. If ArrayEvent gets faster, lower
   // them.  If we are forced to accept it getting slower, raise them.
   private static final double DIRECT_GET_CPU_TIME = 13500;
-  
+
   @BeforeClass
   public static void beforeClass() {
     tmx = ManagementFactory.getThreadMXBean();
@@ -65,12 +65,12 @@ public class ArrayEventPerformanceTest {
     t0     = tmx.getCurrentThreadCpuTime();
     stats0 = ArrayEvent.getStatsSnapshot();
   }
-  
+
   @After
   public void after() {
     events = null;
   }
-  
+
   @AfterClass
   public static void afterClass() {
     tmx = null;
@@ -79,7 +79,7 @@ public class ArrayEventPerformanceTest {
   @Test
   public void direct() throws Exception {
     t0  = tmx.getCurrentThreadCpuTime();
-    
+
     for (int p=0; p<NUM_PASSES; ++p) {
       for (ArrayEvent event : events) {
         event.getInt32("the_trax_time");
@@ -87,7 +87,7 @@ public class ArrayEventPerformanceTest {
         event.getInt64("the_event_id");
       }
     }
-    
+
     // Compute "stats" as the number of ArrayEvent operations performed during the test.
     final Map<ArrayEventStats, Integer> stats = getStatsChanges(stats0);
     assertEquals(0, stats.get(ArrayEventStats.CREATIONS).intValue());
@@ -95,7 +95,7 @@ public class ArrayEventPerformanceTest {
     assertEquals(0, stats.get(ArrayEventStats.SWAPS).intValue());
     assertEquals(3*(numFields-NUM_EVENTS)*NUM_PASSES, stats.get(ArrayEventStats.PARSES).intValue());
     assertEquals(3*NUM_PASSES*NUM_EVENTS, stats.get(ArrayEventStats.FINDS).intValue());
-    
+
     final long dt = tmx.getCurrentThreadCpuTime() - t0;
     LOG.info(String.format(
         "get() unpacked %d fields from %d events averaging %1.1f fields %d times in %f seconds, or %f ns/event, or %f ns/field",

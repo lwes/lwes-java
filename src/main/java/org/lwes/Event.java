@@ -21,12 +21,11 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.lwes.util.CharacterEncoding;
 import org.lwes.util.IPAddress;
 
 public interface Event extends Iterable<FieldAccessor> {
-    static final int MAX_EVENT_NAME_SIZE = 127;
-    static final int MAX_FIELD_NAME_SIZE = 255;
+    public static final int MAX_EVENT_NAME_SIZE = 127;
+    public static final int MAX_FIELD_NAME_SIZE = 255;
     public static final int MAX_MESSAGE_SIZE = 65507;
 
     /**
@@ -37,13 +36,9 @@ public interface Event extends Iterable<FieldAccessor> {
     static final String SENDER_IP = "SenderIP";
     static final String SENDER_PORT = "SenderPort";
 
-    /**
-     * Encoding variables
-     */
-    static final short ISO_8859_1 = 0;
-    static final short UTF_8 = 1;
-    static final short DEFAULT_ENCODING = UTF_8;
-    static final CharacterEncoding[] ENCODING_STRINGS = {CharacterEncoding.ISO_8859_1, CharacterEncoding.UTF_8};
+    // supported encoding
+    public static final short  UTF_8 = 1;
+    public static final String UTF_8_NAME = "UTF-8";
 
     // SETTERS
 
@@ -123,7 +118,7 @@ public interface Event extends Iterable<FieldAccessor> {
 
     void setFloatArray(String attributeName, Float[] value);
 
-    void setEncoding(short encoding);
+    void setEncoding();
 
     // GETTERS
 
@@ -208,8 +203,6 @@ public interface Event extends Iterable<FieldAccessor> {
     byte[] getIPAddress(String attributeName);
 
     IPAddress getIPAddressObj(String attributeName);
-
-    short getEncoding();
 
     // SERIALIZATION
 

@@ -20,7 +20,6 @@ import java.util.BitSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.lwes.Event;
 import org.lwes.EventSystemException;
 import org.lwes.FieldType;
 import org.lwes.util.EncodedString;
@@ -269,12 +268,11 @@ public class Deserializer {
     }
 
     public static String[] deserializeStringArray(DeserializerState state,
-                                                  byte[] bytes,
-                                                  short encoding) {
+                                                  byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
         String[] rtn = new String[length];
         for (int i = 0; i < length; i++) {
-            rtn[i] = deserializeSTRING(state, bytes, encoding);
+            rtn[i] = deserializeSTRING(state, bytes);
         }
         return rtn;
     }
@@ -396,15 +394,8 @@ public class Deserializer {
      *                in the byte array <tt>bytes</tt>
      * @param bytes   the bytes to deserialize
      * @return a String.
-     * @deprecated
      */
-    @Deprecated
     public static String deserializeSTRING(DeserializerState myState, byte[] bytes) {
-        return deserializeSTRING(myState, bytes, Event.DEFAULT_ENCODING);
-    }
-
-    public static String deserializeSTRING(DeserializerState myState,
-                                           byte[] bytes, short encoding) {
         String aString = null;
         int len = -1;
         try {
@@ -417,8 +408,7 @@ public class Deserializer {
 //                log.trace("State: " + myState);
 //            }
 
-            aString = EncodedString.bytesToString(bytes, myState.currentIndex(), len,
-                                                  Event.ENCODING_STRINGS[encoding]);
+            aString = EncodedString.decode(bytes, myState.currentIndex(), len);
             myState.incr(len);
         }
         catch (ArrayIndexOutOfBoundsException aioobe) {
@@ -444,11 +434,6 @@ public class Deserializer {
      */
     public static String deserializeEVENTWORD(DeserializerState myState,
                                               byte[] bytes) {
-        return deserializeEVENTWORD(myState, bytes, Event.DEFAULT_ENCODING);
-    }
-
-    public static String deserializeEVENTWORD(DeserializerState myState,
-                                              byte[] bytes, short encoding) {
         String aString = null;
         int len = -1;
         try {
@@ -461,8 +446,7 @@ public class Deserializer {
 //                log.trace("State: " + myState);
 //            }
 
-            aString = EncodedString.bytesToString(bytes, myState.currentIndex(), len,
-                                                  Event.ENCODING_STRINGS[encoding]);
+            aString = EncodedString.decode(bytes, myState.currentIndex(), len);
             myState.incr(len);
         }
         catch (ArrayIndexOutOfBoundsException aioobe) {
@@ -488,7 +472,7 @@ public class Deserializer {
      */
     public static String deserializeATTRIBUTEWORD(DeserializerState myState,
                                                   byte[] bytes) {
-        return deserializeEVENTWORD(myState, bytes, Event.DEFAULT_ENCODING);
+        return deserializeEVENTWORD(myState, bytes);
     }
 
     public static BitSet deserializeBitSet(DeserializerState myState, byte[] bytes) {
@@ -531,15 +515,14 @@ public class Deserializer {
     }
 
     public static String[] deserializeNStringArray(DeserializerState state,
-                                                   byte[] bytes,
-                                                   short encoding) {
+                                                   byte[] bytes) {
         int length = deserializeUINT16(state, bytes);
         BitSet bs = deserializeBitSet(state, bytes);
 
         String[] rtn = new String[length];
         for (int i = 0; i < length; i++) {
             if (bs.get(i)) {
-                rtn[i] = deserializeSTRING(state, bytes, encoding);
+                rtn[i] = deserializeSTRING(state, bytes);
             }
             else {
                 rtn[i] = null;
@@ -712,8 +695,7 @@ public class Deserializer {
 
     public static Object deserializeValue(DeserializerState state,
                                           byte[] bytes,
-                                          FieldType type,
-                                          short encoding) throws EventSystemException {
+                                          FieldType type) throws EventSystemException {
         switch (type) {
             case BOOLEAN:
                 return Deserializer.deserializeBOOLEAN(state, bytes);
@@ -736,11 +718,11 @@ public class Deserializer {
             case DOUBLE:
                 return Deserializer.deserializeDOUBLE(state, bytes);
             case STRING:
-                return Deserializer.deserializeSTRING(state, bytes, encoding);
+                return Deserializer.deserializeSTRING(state, bytes);
             case IPADDR:
                 return Deserializer.deserializeIPADDR(state, bytes);
             case STRING_ARRAY:
-                return Deserializer.deserializeStringArray(state, bytes, encoding);
+                return Deserializer.deserializeStringArray(state, bytes);
             case INT16_ARRAY:
                 return Deserializer.deserializeInt16Array(state, bytes);
             case INT32_ARRAY:
@@ -780,7 +762,7 @@ public class Deserializer {
             case NBOOLEAN_ARRAY:
                 return Deserializer.deserializeNBooleanArray(state, bytes);
             case NSTRING_ARRAY:
-                return Deserializer.deserializeNStringArray(state, bytes, encoding);
+                return Deserializer.deserializeNStringArray(state, bytes);
             case NUINT64_ARRAY:
                 return Deserializer.deserializeNUInt64Array(state, bytes);
             case NBYTE_ARRAY:

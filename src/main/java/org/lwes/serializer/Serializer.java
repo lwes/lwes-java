@@ -19,8 +19,9 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import org.lwes.Event;
 import org.lwes.FieldType;
+import org.lwes.MemoryPool;
+import org.lwes.MemoryPool.Buffer;
 import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 import org.lwes.util.NumberCodec;
@@ -131,26 +132,16 @@ public class Serializer {
         return (8);
     }
 
-    /**
-     * @deprecated
-     */
-    @Deprecated
     public static int serializeSTRING(String aString, byte[] bytes, int offset) {
-        return serializeSTRING(aString, bytes, offset, Event.DEFAULT_ENCODING);
-    }
-
-    public static int serializeSTRING(String aString, byte[] bytes, int offset,
-                                      short encoding) {
-        byte[] stringBytes =
-                EncodedString.getBytes(aString, Event.ENCODING_STRINGS[encoding]);
-        int length = stringBytes.length;
+        Buffer buffer = EncodedString.encode(aString);
+        byte[] stringBytes = buffer.getEncoderOutputBuffer().array();
+        int length = buffer.getEncoderOutputBuffer().position();
         if (length < 65535 && length >= 0) {
             offset += serializeUINT16(length, bytes, offset);
             System.arraycopy(stringBytes, 0, bytes, offset, length);
-            return (length + 2);
         }
-        return 0;
-
+        MemoryPool.putBack(buffer);
+        return (length < 65535 && length >= 0) ? (length + 2) : 0;
     }
 
     /**
@@ -161,20 +152,18 @@ public class Serializer {
      * @param value
      * @param bytes
      * @param offset
-     * @param encoding
      * @return the offset
      */
     public static int serializeStringArray(String[] value,
                                            byte[] bytes,
-                                           int offset,
-                                           short encoding) {
+                                           int offset) {
 
         int numbytes = 0;
         int offsetStart = offset;
         numbytes = serializeUINT16(value.length, bytes, offset);
         offset += numbytes;
         for (String s : value) {
-            numbytes = serializeSTRING(s, bytes, offset, encoding);
+            numbytes = serializeSTRING(s, bytes, offset);
             offset += numbytes;
         }
         return (offset - offsetStart);
@@ -331,28 +320,19 @@ public class Serializer {
     }
 
     public static int serializeEVENTWORD(String aString, byte[] bytes, int offset) {
-        return serializeEVENTWORD(aString, bytes, offset, Event.DEFAULT_ENCODING);
-    }
-
-    private static int serializeEVENTWORD(String aString,
-                                          byte[] bytes,
-                                          int offset,
-                                          short encoding) {
-        byte[] stringBytes =
-                EncodedString.getBytes(aString, Event.ENCODING_STRINGS[encoding]);
-        int length = stringBytes.length;
+        Buffer buffer = EncodedString.encode(aString);
+        int length = buffer.getEncoderOutputBuffer().position();
         if (0 <= length && length <= 255) {
             offset += serializeUBYTE((short) length, bytes, offset);
-            System.arraycopy(stringBytes, 0, bytes, offset, length);
-            return (length + 1);
+            System.arraycopy(buffer.getEncoderOutputBuffer().array(), 0, bytes, offset, length);
         }
-        return 0;
-
+        MemoryPool.putBack(buffer);
+        return (0 <= length && length <= 255) ? (length+1) : 0;
     }
 
     public static int serializeATTRIBUTEWORD(String aString, byte[] bytes,
                                              int offset) {
-        return serializeEVENTWORD(aString, bytes, offset, Event.DEFAULT_ENCODING);
+        return serializeEVENTWORD(aString, bytes, offset);
     }
 
     /**
@@ -412,7 +392,6 @@ public class Serializer {
 
     public static int serializeValue(FieldType type,
                                      Object data,
-                                     short encoding,
                                      byte[] bytes,
                                      final int offset) {
         switch (type) {
@@ -433,7 +412,7 @@ public class Serializer {
             case INT64:
                 return Serializer.serializeINT64((Long) data, bytes, offset);
             case STRING:
-                return Serializer.serializeSTRING(((String) data), bytes, offset, encoding);
+                return Serializer.serializeSTRING(((String) data), bytes, offset);
             case DOUBLE:
                 return Serializer.serializeDOUBLE(((Double) data), bytes, offset);
             case FLOAT:
@@ -441,8 +420,7 @@ public class Serializer {
             case IPADDR:
                 return Serializer.serializeIPADDR(((IPAddress) data), bytes, offset);
             case STRING_ARRAY:
-                return Serializer.serializeStringArray
-                        (((String[]) data), bytes, offset, encoding);
+                return Serializer.serializeStringArray (((String[]) data), bytes, offset);
             case NUINT32_ARRAY:
                 return Serializer.serializeNUInt32Array((Long[]) data, bytes, offset);
             case NINT32_ARRAY:
@@ -486,7 +464,7 @@ public class Serializer {
             case IP_ADDR_ARRAY:
                 return Serializer.serializeIPADDRArray((IPAddress[]) data, bytes, offset);
             case NSTRING_ARRAY:
-                return Serializer.serializeNStringArray((String[]) data, bytes, offset, encoding);
+                return Serializer.serializeNStringArray((String[]) data, bytes, offset);
 
         }
 
@@ -531,10 +509,9 @@ public class Serializer {
      * @param data array to serialize
      * @param bytes byte array to write to
      * @param offset index in byte array to start at
-     * @param encoding encoding to use for strings
      * @return number of bytes written
      */
-    public static int serializeNStringArray(String[] data, byte[] bytes, int offset, short encoding) {
+    public static int serializeNStringArray(String[] data, byte[] bytes, int offset) {
         int numbytes = 0;
         int offsetStart = offset;
 
@@ -550,10 +527,13 @@ public class Serializer {
         int i = 0;
         for (String s : data) {
             if (s != null) {
-                byte[] stringBytes = EncodedString.getBytes(s, Event.ENCODING_STRINGS[encoding]);
-                byte[] tmpArr = new byte[stringBytes.length + 2];
-                serializeUINT16(stringBytes.length, tmpArr, 0);
-                System.arraycopy(stringBytes, 0, tmpArr, 2, stringBytes.length);
+                Buffer buffer = EncodedString.encode(s);
+                byte[] stringBytes = buffer.getEncoderOutputBuffer().array();
+                int length = buffer.getEncoderOutputBuffer().position();
+                byte[] tmpArr = new byte[length + 2];
+                serializeUINT16(length, tmpArr, 0);
+                System.arraycopy(stringBytes, 0, tmpArr, 2, length);
+                MemoryPool.putBack(buffer);
                 tmp.add(i, tmpArr);
                 bitSet.set(i);
             }

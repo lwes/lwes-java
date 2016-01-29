@@ -109,7 +109,7 @@ public class SerializerTest {
                 new BigInteger("9812398123")
         };
         byte[] bytes = new byte[64];
-        int num = Serializer.serializeValue(FieldType.NUINT64_ARRAY, array, (short) 0, bytes, 0);
+        int num = Serializer.serializeValue(FieldType.NUINT64_ARRAY, array, bytes, 0);
 
         // length + bitSet_len + bitSet + values
         // 2 + 2 + 1 + (8*4)
@@ -153,10 +153,10 @@ public class SerializerTest {
         };
 
         byte[] bytes = new byte[64];
-        int num = Serializer.serializeValue(FieldType.NFLOAT_ARRAY, array, (short) 1, bytes, 0);
+        int num = Serializer.serializeValue(FieldType.NFLOAT_ARRAY, array, bytes, 0);
         Assert.assertEquals(17, num);
         DeserializerState state = new DeserializerState();
-        Float[] rtn = (Float[]) Deserializer.deserializeValue(state, bytes, FieldType.NFLOAT_ARRAY, (short) 1);
+        Float[] rtn = (Float[]) Deserializer.deserializeValue(state, bytes, FieldType.NFLOAT_ARRAY);
         Assert.assertNotNull(rtn);
         Assert.assertEquals(1.2f, rtn[0]);
         Assert.assertNull(rtn[1]);
@@ -265,14 +265,12 @@ public class SerializerTest {
 
         byte[] bytes = new byte[30];
         int offset = 0;
-        short encoding = 1;
         int numbytes = Serializer.serializeNStringArray(array,
                                                         bytes,
-                                                        offset,
-                                                        encoding);
+                                                        offset);
         assertEquals("Number of bytes serialized incorrect", 23, numbytes);
         DeserializerState state = new DeserializerState();
-        String[] a = Deserializer.deserializeNStringArray(state, bytes, encoding);
+        String[] a = Deserializer.deserializeNStringArray(state, bytes);
         assertNotNull(a);
         assertEquals("wrong number of elements", 4, a.length);
         int index = 0;
@@ -287,14 +285,12 @@ public class SerializerTest {
 
         byte[] bytes = new byte[30];
         int offset = 0;
-        short encoding = 1;
         int numbytes = Serializer.serializeStringArray(array,
                                                        bytes,
-                                                       offset,
-                                                       encoding);
+                                                       offset);
         assertEquals("Number of bytes serialized incorrect", 25, numbytes);
         DeserializerState state = new DeserializerState();
-        String[] a = Deserializer.deserializeStringArray(state, bytes, encoding);
+        String[] a = Deserializer.deserializeStringArray(state, bytes);
         assertNotNull(a);
         assertEquals("wrong number of elements", 4, a.length);
         int index = 0;

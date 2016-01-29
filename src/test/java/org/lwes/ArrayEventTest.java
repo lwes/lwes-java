@@ -16,6 +16,8 @@ import java.util.Enumeration;
 import org.junit.Test;
 import org.lwes.ArrayEvent.ArrayEventStats;
 
+import static org.lwes.Event.UTF_8;
+
 import junit.framework.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -24,24 +26,11 @@ import static org.junit.Assert.assertTrue;
 
 public final class ArrayEventTest extends EventTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidEncoding() {
-        ArrayEvent evt = new ArrayEvent("Event");
-        evt.setEncoding((short) 10);
-    }
-
-    @Test
-    public void testValidEncoding() {
-        ArrayEvent evt = new ArrayEvent("Event");
-        evt.setEncoding(Event.UTF_8);
-        Assert.assertEquals(Event.UTF_8, evt.getEncoding());
-    }
-
     final byte[] testBytes = new byte[]{4, 'T', 'e', 's', 't', 0, 1, 2, 'a', 'b', FieldType.INT16.token, -10, 12};
-    
+
     @Test
     public void testBasicFunctions() throws EventSystemException {
-        
+
         final ArrayEvent e1 = new ArrayEvent(testBytes);
 
         assertTrue(Arrays.equals(testBytes, e1.serialize()));
@@ -59,10 +48,6 @@ public final class ArrayEventTest extends EventTest {
         e3.setEventName("Different");
         assertEquals("Different { \tab = -2548; }", e3.toOneLineString());
         e3.set("cd", FieldType.STRING, "value");
-        assertEquals("Different { \tab = -2548; \tcd = value; \tenc = 1; }", e3.toOneLineString());
-        e3.setEncoding(Event.ISO_8859_1);
-        assertEquals("Different { \tab = -2548; \tcd = value; \tenc = 0; }", e3.toOneLineString());
-        e3.set("enc", FieldType.INT16, Event.DEFAULT_ENCODING);
         assertEquals("Different { \tab = -2548; \tcd = value; \tenc = 1; }", e3.toOneLineString());
         e3.set("ab", FieldType.INT16, (short) -1234);
         assertEquals("Different { \tab = -1234; \tcd = value; \tenc = 1; }", e3.toOneLineString());
@@ -94,7 +79,7 @@ public final class ArrayEventTest extends EventTest {
 
         System.gc();
     }
-    
+
     @Test
     public void testReadOnly() {
         ArrayEvent.resetStats();
@@ -112,15 +97,15 @@ public final class ArrayEventTest extends EventTest {
         assertEquals(e2, e4);
         assertEquals(testBytes.length, e4.getBytesSize());
         assertEquals(Event.MAX_MESSAGE_SIZE, e4.getCapacity());
-        
+
         final int bigSize = testBytes.length * 3;
         byte[] big = new byte[bigSize];
-        System.arraycopy(testBytes, 0, big, 0, testBytes.length);        
+        System.arraycopy(testBytes, 0, big, 0, testBytes.length);
         final ArrayEvent e5 = new ArrayEvent(big, testBytes.length, false); // no copy
         assertEquals(e5, e1);
         assertEquals(testBytes.length, e5.getBytesSize());
         assertEquals(big.length, e5.getCapacity());
-        
+
         assertEquals(3, ArrayEvent.getStats().get(ArrayEventStats.WRAPS).intValue());
         assertEquals(5, ArrayEvent.getStats().get(ArrayEventStats.CREATIONS).intValue());
         // System.out.print(e5.toStringDetailed());
@@ -207,7 +192,7 @@ public final class ArrayEventTest extends EventTest {
     @Test(expected = EventSystemException.class)
     public void testInvalidEncodingType() throws EventSystemException {
         final ArrayEvent event = new ArrayEvent("Event");
-        event.set("enc", FieldType.INT32, Event.DEFAULT_ENCODING);
+        event.set("enc", FieldType.INT32, UTF_8);
     }
 
     @Test
