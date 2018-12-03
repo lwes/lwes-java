@@ -12,6 +12,9 @@
 package org.lwes.emitter;
 
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Collections;
 
 public class EmitterGroupFilter {
   public static enum FilterType {
@@ -39,4 +42,39 @@ public class EmitterGroupFilter {
     for (String e : filtered) sb.append(e).append(" ");
     return sb.toString();
   }
+
+
+  // Helper method
+  public static EmitterGroupFilter fromProperties(Properties props, String prefix) {
+    String filterType = props.getProperty(prefix + "filter.type");
+    if (filterType == null) return null;
+
+    FilterType type = null;
+
+    if ("inclusion".equalsIgnoreCase(filterType) ||
+        "whitelist".equalsIgnoreCase(filterType) ||
+        "in".equalsIgnoreCase(filterType)) {
+      type = FilterType.Inclusion;
+    } else if ("exclusion".equalsIgnoreCase(filterType) ||
+               "blacklist".equalsIgnoreCase(filterType) ||
+               "out".equalsIgnoreCase(filterType)) {
+      type = FilterType.Exclusion;
+    } else {
+      throw new RuntimeException(
+          String.format(
+              "Invalid filter type: %s. Must be one of ['inclusion', 'whitelist', 'in'] or ['exclusion','blacklist','out']",
+              filterType));
+    }
+
+    String filteredNames = props.getProperty(prefix + "filter.names");
+    if (filteredNames == null || filteredNames.isEmpty()) {
+      return new EmitterGroupFilter(type, Collections.<String>emptySet());
+    } else {
+      Set<String> filtered = new HashSet<String>();
+      String[] items = filteredNames.split(",");
+      for (String item : items) filtered.add(item);
+      return new EmitterGroupFilter(type, filtered);
+    }
+  }
+
 }
