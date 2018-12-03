@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Arrays;
 
 /**
  * @author fmaritato
@@ -35,6 +36,12 @@ import java.util.Map;
 public class EventTemplateDBTest {
 
     private static final String TEST_EVENT = "TestEvent";
+
+    static boolean equalsUpToPermutation(String[] a, String[] b) {
+      Arrays.sort(a);
+      Arrays.sort(b);
+      return Arrays.equals(a,b);
+    }
 
     @Test
     public void testTemplateFromFile() throws NoSuchAttributeTypeException {
@@ -80,51 +87,55 @@ public class EventTemplateDBTest {
         Object obj = template.parseAttribute(TEST_EVENT, "field2", "100");
         assertNotNull(obj);
 
-        String testHtmlString =
-                new StringBuilder().append("<table>\n")
-                                   .append("<tr><th>MetaEventInfo</th><th>Type</th><th>Name</th></tr>\n")
-                                   .append("<tr><td></td><td>uint16</td><td>SiteID</td></tr>\n")
-                                   .append("<tr><td></td><td>int16</td><td>enc</td></tr>\n")
-                                   .append("<tr><td></td><td>ip_addr</td><td>SenderIP</td></tr>\n")
-                                   .append("<tr><td></td><td>int64</td><td>ReceiptTime</td></tr>\n")
-                                   .append("<tr><td></td><td>uint16</td><td>SenderPort</td></tr>\n")
-                                   .append("<tr><th>TestEvent</th><th>Type</th><th>Name</th></tr>\n")
-                                   .append("<tr><td></td><td>uint16</td><td>SiteID</td></tr>\n")
-                                   .append("<tr><td></td><td>int16</td><td>enc</td></tr>\n")
-                                   .append("<tr><td></td><td>string</td><td>field1</td></tr>\n")
-                                   .append("<tr><td></td><td>int64</td><td>field2</td></tr>\n")
-                                   .append("<tr><td></td><td>ip_addr</td><td>SenderIP</td></tr>\n")
-                                   .append("<tr><td></td><td>int64</td><td>ReceiptTime</td></tr>\n")
-                                   .append("<tr><td></td><td>uint16</td><td>SenderPort</td></tr>\n")
-                                   .append("</table>\n")
-                                   .toString();
-        String htmlString = template.toHtmlString();
-        assertNotNull("html string was null", htmlString);
-        assertEquals("html string did not match", testHtmlString, htmlString);
+        String[] htmlStringLines = template.toHtmlString().split("\n");
+        assert htmlStringLines[0].equals("<table>");
+        assert htmlStringLines[1].equals("<tr><th>MetaEventInfo</th><th>Type</th><th>Name</th></tr>");
+        assert equalsUpToPermutation(Arrays.copyOfRange(htmlStringLines, 2, 7),
+                                     new String[]{
+                                           "<tr><td></td><td>ip_addr</td><td>SenderIP</td></tr>",
+                                           "<tr><td></td><td>uint16</td><td>SenderPort</td></tr>",
+                                           "<tr><td></td><td>int64</td><td>ReceiptTime</td></tr>",
+                                           "<tr><td></td><td>int16</td><td>enc</td></tr>",
+                                           "<tr><td></td><td>uint16</td><td>SiteID</td></tr>"
+                                     });
+        assert htmlStringLines[7].equals("<tr><th>TestEvent</th><th>Type</th><th>Name</th></tr>");
+        assert equalsUpToPermutation(Arrays.copyOfRange(htmlStringLines, 8, 15),
+                                     new String[]{
+                                          "<tr><td></td><td>ip_addr</td><td>SenderIP</td></tr>",
+                                          "<tr><td></td><td>uint16</td><td>SenderPort</td></tr>",
+                                          "<tr><td></td><td>int64</td><td>ReceiptTime</td></tr>",
+                                          "<tr><td></td><td>int16</td><td>enc</td></tr>",
+                                          "<tr><td></td><td>uint16</td><td>SiteID</td></tr>",
+                                          "<tr><td></td><td>string</td><td>field1</td></tr>",
+                                          "<tr><td></td><td>int64</td><td>field2</td></tr>"
+                                     });
+        assert htmlStringLines[15].equals("</table>");
 
-        String testString =
-                new StringBuilder().append("\nMetaEventInfo\n")
-                                   .append("{\n")
-                                   .append("\tint64 ReceiptTime;\n")
-                                   .append("\tip_addr SenderIP;\n")
-                                   .append("\tuint16 SenderPort;\n")
-                                   .append("\tuint16 SiteID;\n")
-                                   .append("\tint16 enc;\n")
-                                   .append("}\n")
-                                   .append("TestEvent\n")
-                                   .append("{\n")
-                                   .append("\tint64 ReceiptTime;\n")
-                                   .append("\tip_addr SenderIP;\n")
-                                   .append("\tuint16 SenderPort;\n")
-                                   .append("\tuint16 SiteID;\n")
-                                   .append("\tint16 enc;\n")
-                                   .append("\tstring field1;\n")
-                                   .append("\tint64 field2;\n")
-                                   .append("}\n")
-                                   .toString();
-        String toString = template.toString();
-        assertNotNull("toString was null", toString);
-        assertEquals("test string did not match", testString, toString);
+        String[] esfLines = template.toString().split("\n");
+        assert esfLines[0].equals("");
+        assert esfLines[1].equals("MetaEventInfo");
+        assert esfLines[2].equals("{");
+        assert equalsUpToPermutation(Arrays.copyOfRange(esfLines, 3, 8),
+                                     new String[]{
+                                         "\tint64 ReceiptTime;",
+                                         "\tip_addr SenderIP;",
+                                         "\tuint16 SenderPort;",
+                                         "\tuint16 SiteID;",
+                                         "\tint16 enc;"
+                                     });
+        assert esfLines[8].equals("}");
+        assert esfLines[9].equals("TestEvent");
+        assert esfLines[10].equals("{");
+        assert equalsUpToPermutation(Arrays.copyOfRange(esfLines, 11, 18),
+                                     new String[]{"\tint64 ReceiptTime;",
+                                       "\tip_addr SenderIP;",
+                                       "\tuint16 SenderPort;",
+                                       "\tuint16 SiteID;",
+                                       "\tint16 enc;",
+                                       "\tstring field1;",
+                                       "\tint64 field2;"
+                                     });
+        assert esfLines[18].equals("}");
     }
 
     @Test

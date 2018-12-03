@@ -5,6 +5,8 @@ package org.lwes.listener;
  */
 
 import java.util.Collection;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import junit.framework.Assert;
 
@@ -14,8 +16,10 @@ import org.lwes.Event;
 public class DatagramEventListenerTest {
 
     @Test
-    public void testNulls() {
+    public void testNulls() throws UnknownHostException {
         DatagramEventListener listener = new DatagramEventListener();
+        listener.setAddress(InetAddress.getByName("0.0.0.0"));
+        listener.setPort(0);
         listener.initialize();
 
         Assert.assertNotNull(listener.getAddress());
@@ -26,11 +30,14 @@ public class DatagramEventListenerTest {
     }
 
     @Test
-    public void testNormal() {
+    public void testNormal() throws UnknownHostException {
         DatagramEventListener listener = new DatagramEventListener();
+        listener.setAddress(InetAddress.getByName("0.0.0.0"));
+        listener.setPort(0);
 
         listener.initialize();
         Assert.assertNotNull(listener.getAddress());
+
         Assert.assertNull(listener.getInterface());
         Assert.assertNotNull(listener.getEnqueuer());
         Assert.assertNotNull(listener.getDequeuer());
@@ -41,7 +48,7 @@ public class DatagramEventListenerTest {
 
 
         // Test some default values
-        Assert.assertEquals(9191, listener.getPort());
+        assert listener.getPort() != 0;
         Assert.assertEquals(20, listener.getMaxThreads());
         Assert.assertEquals(31, listener.getTimeToLive());
 
