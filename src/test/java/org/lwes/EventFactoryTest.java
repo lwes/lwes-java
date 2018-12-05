@@ -70,13 +70,7 @@ public class EventFactoryTest {
         evt.setInt32("field3", 42);
         assertEquals(42, (long) evt.getInt32("field3"));
 
-        evt = fact.createEvent("TestEvent", (short) 1);
-        assertNotNull(evt);
-
         evt = fact.createEvent("TestEvent", true);
-        assertNotNull(evt);
-
-        evt = fact.createEvent("TestEvent", false, (short) 0);
         assertNotNull(evt);
     }
 }

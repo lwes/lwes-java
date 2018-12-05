@@ -119,19 +119,7 @@ public class EventFactory {
      * @throws EventSystemException if there is a problem creating the event
      */
     public Event createEvent(String eventName) throws EventSystemException {
-        return createEvent(eventName, Event.DEFAULT_ENCODING);
-    }
-
-    /**
-     * Create a validated event named <tt>eventName</tt> with specified encoding.
-     *
-     * @param eventName the name of the event
-     * @param encoding  the encoding to use
-     * @return the Event object
-     * @throws EventSystemException if there is a problem creating the event
-     */
-    public Event createEvent(String eventName, short encoding) throws EventSystemException {
-        return createEvent(eventName, true, encoding);
+        return createEvent(eventName, true);
     }
 
     /**
@@ -143,23 +131,10 @@ public class EventFactory {
      * @throws EventSystemException if there is a problem creating the event
      */
     public Event createEvent(String eventName, boolean validate) throws EventSystemException {
-        return createEvent(eventName, validate, Event.DEFAULT_ENCODING);
-    }
-
-    /**
-     * Create an event named <tt>eventName</tt> with optional validation and specified encoding
-     *
-     * @param eventName the name of the event
-     * @param validate  whether or not to validate the event against the EventTemplateDB
-     * @param encoding  the encoding to use
-     * @return the Event object
-     * @throws EventSystemException if there is a problem creating the event
-     */
-    public Event createEvent(String eventName, boolean validate, short encoding) throws EventSystemException {
         if (validate && !eventTemplateDBInit) {
             throw new EventSystemException("Event template db not initialized");
         }
-        return new MapEvent(eventName, validate, eventTemplateDB, encoding);
+        return new MapEvent(eventName, validate, eventTemplateDB);
     }
 
     /**

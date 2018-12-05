@@ -12,7 +12,6 @@ package org.lwes;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,10 +24,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.lwes.MemoryPool.Buffer;
 import org.lwes.serializer.Deserializer;
 import org.lwes.serializer.DeserializerState;
 import org.lwes.serializer.Serializer;
 import org.lwes.util.EncodedString;
+import org.lwes.util.Util;
 
 public final class ArrayEvent extends DefaultEvent {
 
@@ -36,7 +37,6 @@ public final class ArrayEvent extends DefaultEvent {
     private byte[] bytes;
     private final DeserializerState tempState = new DeserializerState();
     private int length = 3;
-    private short encoding = DEFAULT_ENCODING;
     private static Map<ArrayEventStats, MutableInt> STATS =
             new EnumMap<ArrayEventStats, MutableInt>(ArrayEventStats.class);
 
@@ -57,10 +57,10 @@ public final class ArrayEvent extends DefaultEvent {
     public ArrayEvent() {
         bytes = new byte[MAX_MESSAGE_SIZE];
         length = getValueListIndex();
-        setEncoding(DEFAULT_ENCODING);
+        setEncoding();
         updateCreationStats();
     }
-    
+
     /**
      * All constructors call this aux function once
      */
@@ -77,7 +77,7 @@ public final class ArrayEvent extends DefaultEvent {
         setEventName(name);
     }
 
-    
+
     /**
      * Creates a new event from the given byte array, copying it only if the copy flag is true.
      * @param bytes
@@ -101,7 +101,7 @@ public final class ArrayEvent extends DefaultEvent {
         updateCreationStats();
         resetCaches();
     }
-    
+
     /**
      * Creates a new event, making a copy of the given byte array into a newly allocated buffer
      * @param bytes
@@ -113,7 +113,7 @@ public final class ArrayEvent extends DefaultEvent {
     public ArrayEvent(final byte[] bytes, boolean copy) {
         this(bytes, bytes.length, copy);
     }
-    
+
     private ArrayEvent(byte[] bytes, int offset, int length, int excess) {
         this.bytes = Arrays.copyOfRange(bytes, offset, offset + length + excess);
         this.length = length;
@@ -121,13 +121,12 @@ public final class ArrayEvent extends DefaultEvent {
         resetCaches();
     }
 
-    private ArrayEvent(byte[] bytes, int length, short encoding) {
+    private ArrayEvent(byte[] bytes, int length) {
         this();
         assert length <= bytes.length;
         assert length <= this.bytes.length;
         System.arraycopy(bytes, 0, this.bytes, 0, length);
         this.length = length;
-        this.encoding = encoding;
     }
 
     @Override
@@ -141,7 +140,6 @@ public final class ArrayEvent extends DefaultEvent {
         Arrays.fill(bytes, (byte) 0);
         length = getValueListIndex();
         tempState.reset();
-        encoding = DEFAULT_ENCODING;
     }
 
     @Override
@@ -160,25 +158,29 @@ public final class ArrayEvent extends DefaultEvent {
 
     @Override
     public void setEventName(String name) {
-        checkShortStringLength(name, encoding, MAX_EVENT_NAME_SIZE);
+        checkShortStringLength(name, MAX_EVENT_NAME_SIZE);
         final String oldName = getEventName();
-        final String defaultEncodingString = ENCODING_STRINGS[DEFAULT_ENCODING].getEncodingString();
-        try {
-            final byte[] oldBytes = oldName.getBytes(defaultEncodingString);
-            final byte[] newBytes = name.getBytes(defaultEncodingString);
-            if (oldBytes != newBytes) {
-                final int numFields = getNumEventAttributes();
-                final int oldValueListIndex = getValueListIndex();
-                final int newValueListIndex = oldValueListIndex + newBytes.length - oldBytes.length;
-                Serializer.serializeUBYTE((short) newBytes.length, bytes, 0);
-                shiftTail(oldValueListIndex, newValueListIndex);
-                int offset = Serializer.serializeEVENTWORD(name, bytes, 0);
-                Serializer.serializeUINT16(numFields, bytes, offset);
-            }
+
+        Buffer oldBytesBuffer = EncodedString.encode(oldName);
+        final byte[] oldBytes = oldBytesBuffer.getEncoderOutputBuffer().array();
+        int oldBytesLen = oldBytesBuffer.getEncoderOutputBuffer().position();
+
+        Buffer newBytesBuffer = EncodedString.encode(name);
+        final byte[] newBytes = newBytesBuffer.getEncoderOutputBuffer().array();
+        int newBytesLen = newBytesBuffer.getEncoderOutputBuffer().position();
+
+        if (!Util.compareByteArrays(oldBytes, oldBytesLen, newBytes, newBytesLen)) {
+          final int numFields = getNumEventAttributes();
+          final int oldValueListIndex = getValueListIndex();
+          final int newValueListIndex = oldValueListIndex + newBytesLen - oldBytesLen;
+          Serializer.serializeUBYTE((short) newBytesLen, bytes, 0);
+          shiftTail(oldValueListIndex, newValueListIndex);
+          int offset = Serializer.serializeEVENTWORD(name, bytes, 0);
+          Serializer.serializeUINT16(numFields, bytes, offset);
         }
-        catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unknown Encoding: " + defaultEncodingString);
-        }
+
+        MemoryPool.putBack(newBytesBuffer);
+        MemoryPool.putBack(oldBytesBuffer);
     }
 
     /**
@@ -187,10 +189,10 @@ public final class ArrayEvent extends DefaultEvent {
      */
     @Override
     public void set(String key, FieldType type, Object value) {
-        checkShortStringLength(key, encoding, MAX_FIELD_NAME_SIZE);
+        checkShortStringLength(key, MAX_FIELD_NAME_SIZE);
         if (ENCODING.equals(key)) {
             if (type == FieldType.INT16) {
-                setEncoding((Short) value);
+                setEncoding();
             }
             else {
                 throw new EventSystemException("Attempted to set " + ENCODING + " with type "
@@ -201,7 +203,7 @@ public final class ArrayEvent extends DefaultEvent {
         else {
             if (type == FieldType.STRING || type == FieldType.STRING_ARRAY) {
                 if (find(ENCODING) < 0) {
-                    setEncoding(encoding);
+                    setEncoding();
                 }
             }
             final int fieldIndex = find(key);
@@ -211,7 +213,7 @@ public final class ArrayEvent extends DefaultEvent {
                 final FieldType oldType = FieldType.byToken(bytes[tokenIndex]);
                 if (oldType == type && type.isConstantSize()) {
                     // Modify the value in place, requiring no shifts.
-                    Serializer.serializeValue(type, value, encoding, bytes, tokenIndex + 1);
+                    Serializer.serializeValue(type, value, bytes, tokenIndex + 1);
                     return;
                 }
                 clear(key);
@@ -235,7 +237,7 @@ public final class ArrayEvent extends DefaultEvent {
         try {
             length += Serializer.serializeATTRIBUTEWORD(key, bytes, length);
             length += Serializer.serializeBYTE(type.token, bytes, length);
-            length += Serializer.serializeValue(type, value, encoding, bytes, length);
+            length += Serializer.serializeValue(type, value, bytes, length);
             setNumEventAttributes(getNumEventAttributes() + 1);
         }
         catch (ArrayIndexOutOfBoundsException e) {
@@ -248,28 +250,21 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     @Override
-    public void setEncoding(short encoding) {
-        if (encoding < 0 || encoding >= ENCODING_STRINGS.length) {
-            throw new IllegalArgumentException(
-                    "Unable to set " + ENCODING + " to " + encoding + "; acceptable range is 0<=enc<" +
-                    ENCODING_STRINGS.length);
-        }
-
-        this.encoding = encoding;
+    public void setEncoding() {
         final int fieldCountIndex = getFieldCountIndex();
         final int numFields = deserializeUINT16(fieldCountIndex);
 
         tempState.set(fieldCountIndex + 2);
         if (numFields == 0) {
             // We had no fields at all; just set ENCODING.
-            appendField(ENCODING, FieldType.INT16, encoding);
+            appendField(ENCODING, FieldType.INT16, UTF_8);
             return;
         }
         else {
             if (ENCODING.equals(Deserializer.deserializeATTRIBUTEWORD(tempState, bytes))) {
                 if (FieldType.INT16.token == Deserializer.deserializeBYTE(tempState, bytes)) {
                     // Encoding was already the first field and the right type.  Just change the value.
-                    Serializer.serializeINT16(encoding, bytes, tempState.currentIndex());
+                    Serializer.serializeINT16(UTF_8, bytes, tempState.currentIndex());
                     return;
                 } else {
                     // Encoding was the first field, but had the wrong type.  Clear it and recreate below.
@@ -284,7 +279,7 @@ public final class ArrayEvent extends DefaultEvent {
         shiftTail(index, index + SERIALIZED_ENCODING_LENGTH + 3);
         index += Serializer.serializeATTRIBUTEWORD(ENCODING, bytes, index);
         index += Serializer.serializeBYTE(FieldType.INT16.token, bytes, index);
-        index += Serializer.serializeINT16(encoding, bytes, index);
+        index += Serializer.serializeINT16(UTF_8, bytes, index);
         setNumEventAttributes(getNumEventAttributes() + 1);
     }
 
@@ -359,12 +354,7 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     private Object get(FieldType type, DeserializerState state) {
-        return Deserializer.deserializeValue(state, bytes, type, encoding);
-    }
-
-    @Override
-    public short getEncoding() {
-        return encoding;
+        return Deserializer.deserializeValue(state, bytes, type);
     }
 
     /**
@@ -372,8 +362,8 @@ public final class ArrayEvent extends DefaultEvent {
      * this.encoding value.
      */
     private short readEncoding() {
-        final Short encodingValue = getInt16(ENCODING);
-        return encodingValue == null ? DEFAULT_ENCODING : encodingValue;
+        getInt16(ENCODING);        // ignore the encoding
+        return UTF_8;
     }
 
     @Override
@@ -410,14 +400,14 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     private void resetCaches() {
-        this.encoding = readEncoding();
+        readEncoding();
     }
 
     @Override
     public int getBytesSize() {
         return length;
     }
-    
+
     public int getCapacity() {
         return bytes.length;
     }
@@ -425,18 +415,20 @@ public final class ArrayEvent extends DefaultEvent {
     @Override
     public Event copy() {
         STATS.get(ArrayEventStats.COPIES).increment();
-        return new ArrayEvent(bytes, length, encoding);
+        return new ArrayEvent(bytes, length);
     }
 
     private int find(String key) {
         int count = 0;
+        Buffer buffer = null;
         try {
-            final byte[] keyBytes = EncodedString.getBytes(key, ENCODING_STRINGS[DEFAULT_ENCODING]);
+            buffer = EncodedString.encode(key);
             for (tempState.set(getValueListIndex()); tempState.currentIndex() < length; ) {
                 ++count;
                 final int keyIndex = tempState.currentIndex();
                 final int keyLength = bytes[keyIndex] & 0xff;
-                if (arrayEquals(bytes, keyIndex + 1, keyLength, keyBytes, 0, keyBytes.length)) {
+                if (arrayEquals(bytes, keyIndex + 1, keyLength, buffer.getEncoderOutputBuffer().array(),
+                    0, buffer.getEncoderOutputBuffer().position())) {
                     return keyIndex;
                 }
                 else {
@@ -455,6 +447,8 @@ public final class ArrayEvent extends DefaultEvent {
             return -1;
         }
         finally {
+            // return the buffer back to the pool
+            MemoryPool.putBack(buffer);
             STATS.get(ArrayEventStats.FINDS).increment();
             STATS.get(ArrayEventStats.PARSES).add(count);
         }
@@ -481,7 +475,7 @@ public final class ArrayEvent extends DefaultEvent {
         }
         if (type.isArray()) {
             final FieldType componentType = type.getComponentType();
-            
+
             if (type.isNullableArray()) {
                 // array_len + bitset_len + bitset + array
                 DeserializerState ds = new DeserializerState();
@@ -498,7 +492,7 @@ public final class ArrayEvent extends DefaultEvent {
                 }
                 return ds.currentIndex() - valueIndex;
             }
-            
+
             if (componentType.isConstantSize()) {
                 return 2 + deserializeUINT16(valueIndex) * componentType.getConstantSize();
             } else {
@@ -543,7 +537,6 @@ public final class ArrayEvent extends DefaultEvent {
             System.arraycopy(ae.bytes, 0, bytes, 0, ae.length);
             length = ae.length;
             tempState.reset();
-            encoding = ae.encoding;
         }
         else {
             super.copyFrom(event);
@@ -586,13 +579,10 @@ public final class ArrayEvent extends DefaultEvent {
         }
         final byte[] tempBytes = bytes;
         final int tempLength = length;
-        final short tempEncoding = encoding;
         this.bytes = event.bytes;
         this.length = event.length;
-        this.encoding = event.encoding;
         event.bytes = tempBytes;
         event.length = tempLength;
-        event.encoding = tempEncoding;
         STATS.get(ArrayEventStats.SWAPS).increment();
     }
 
@@ -614,7 +604,7 @@ public final class ArrayEvent extends DefaultEvent {
         return new ArrayEvent(bytes, 0, length, excess);
     }
 
-    
+
     private static boolean arrayEquals(final byte[] b1, int o1, final int l1, final byte[] b2, final int o2, final int l2) {
         if (l1 != l2) {
             return false;
@@ -646,7 +636,7 @@ public final class ArrayEvent extends DefaultEvent {
             buf.append(String.format("Event name:        \"%s\"%n", getEventName()));
             buf.append(String.format("Serialized length: %d%n", length));
             buf.append(String.format("tempState index:   %d%n", tempState.currentIndex()));
-            buf.append(String.format("Encoding:          %s%n", Event.ENCODING_STRINGS[encoding].getEncodingString()));
+            buf.append(String.format("Encoding:          %s%n", UTF_8_NAME));
             buf.append(String.format("Number of fields:  %d%n", getNumEventAttributes()));
             final DeserializerState ds = new DeserializerState();
             ds.set(getValueListIndex());
@@ -667,7 +657,7 @@ public final class ArrayEvent extends DefaultEvent {
                     throw new Exception("Error when reading field name: " + e.getMessage());
                 }
                 try {
-                    value = Deserializer.deserializeValue(ds, bytes, type, encoding);
+                    value = Deserializer.deserializeValue(ds, bytes, type);
                 }
                 catch (Exception e) {
                     throw new Exception("Error when reading field name: " + e.getMessage());
@@ -711,7 +701,7 @@ public final class ArrayEvent extends DefaultEvent {
                 currentValueIndex = Integer.MIN_VALUE;
 
         public void advance() {
-            // Deserialize name,type eagerly; deserialize value lazily. 
+            // Deserialize name,type eagerly; deserialize value lazily.
             currentFieldIndex = nextFieldIndex;
             accessorTempState.set(currentFieldIndex);
             setName(Deserializer.deserializeATTRIBUTEWORD(accessorTempState, bytes));

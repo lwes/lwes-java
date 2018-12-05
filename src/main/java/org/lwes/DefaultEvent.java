@@ -19,12 +19,18 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.lwes.util.EncodedString;
 import org.lwes.util.IPAddress;
 
 public abstract class DefaultEvent implements Event {
     private static final BigInteger UINT64_MASK = new BigInteger("ffffffffffffffff", 16);
+
+    // used to cache length of the encoded event names and keys
+    static protected ConcurrentHashMap<String, Integer> encodedStringLengthCache =
+        new ConcurrentHashMap<String, Integer>();
+
 
     public void setInt16Array(String attributeName, short[] value) throws EventSystemException {
         set(attributeName, FieldType.INT16_ARRAY, value);
@@ -384,7 +390,7 @@ public abstract class DefaultEvent implements Event {
 
     public abstract void set(String key, FieldType type, Object value);
 
-    public abstract void setEncoding(short encoding);
+    public abstract void setEncoding();
 
     public abstract int getNumEventAttributes();
 
@@ -395,8 +401,6 @@ public abstract class DefaultEvent implements Event {
     public abstract FieldType getType(String attributeName);
 
     public abstract Object get(String attributeName);
-
-    public abstract short getEncoding();
 
     public abstract int serialize(byte[] bytes, int offset);
 
@@ -453,9 +457,15 @@ public abstract class DefaultEvent implements Event {
         return sb.toString();
     }
 
-    protected static void checkShortStringLength(String string, short encoding, int maxLength)
+    protected static void checkShortStringLength(String string, int maxLength)
             throws EventSystemException {
-        final int serializedLength = EncodedString.getBytes(string, Event.ENCODING_STRINGS[encoding]).length;
+        // try to find the length of the encoded string in the cache if it is
+        // already calculated before, otherwise calculate it and update the cache.
+        Integer serializedLength = encodedStringLengthCache.get(string);
+        if(serializedLength == null) {
+          serializedLength = EncodedString.getEncodedLength(string);
+          encodedStringLengthCache.putIfAbsent(string, serializedLength);
+        }
         if (serializedLength > maxLength) {
             throw new EventSystemException(
                     "String " + string + " was longer than maximum length: " + serializedLength + " > " + maxLength);

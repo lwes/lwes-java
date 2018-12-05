@@ -42,7 +42,7 @@ public class RandomEventTest {
 
             // Ensure that the random events are equal.
             for (int i = 1; i < E; ++i) {
-                assertEquals(randomEvents[0], randomEvents[i]);
+              assertEquals(randomEvents[0], randomEvents[i]);
             }
 
             // Ensure that serializing any event type and deserializing it as
@@ -101,7 +101,7 @@ public class RandomEventTest {
                     }
                 }
             }
-            // Ensure that the different implementations 
+            // Ensure that the different implementations
             for (int i = 1; i < contents.size(); ++i) {
                 assertEquals(contents.get(0).keySet(), contents.get(1).keySet());
             }

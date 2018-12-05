@@ -54,6 +54,70 @@ public class MapEventTest extends EventTest {
         evt.set("Integer[]", FieldType.NUINT16_ARRAY, new Integer[] { 5, null, 10 });
         Assert.assertEquals(5, evt.getIntegerObjArray("Integer[]")[0].shortValue());
         Assert.assertNull(evt.getIntegerObjArray("Integer[]")[1]);
+
+    }
+
+    @Test
+    public void testSerializeDeserialize() {
+      Event evt = new MapEvent("Event_Name");
+
+      evt.set("str", FieldType.STRING, "testing");
+      evt.set("str2", FieldType.STRING, new String("A" + "\u00ea" + "\u00f1" + "\u00fc" + "C"));
+      evt.set("boolean", FieldType.BOOLEAN, true);
+      evt.set("byte", FieldType.BYTE, Byte.parseByte("32"));
+      evt.set("double", FieldType.DOUBLE, 5.0);
+      evt.set("float", FieldType.FLOAT, 1.2f);
+      evt.set("int16", FieldType.INT16, (short) 10);
+      evt.set("uint16", FieldType.UINT16, 20);
+      evt.set("int32", FieldType.INT32, 30);
+      evt.set("long[]", FieldType.NINT64_ARRAY, new Long[] { 5000000000l, null, 8675309l });
+      evt.set("Double[]", FieldType.NDOUBLE_ARRAY, new Double[] { 1.23, null, 1.26 });
+      evt.set("Float[]", FieldType.NFLOAT_ARRAY, new Float[] { 1.11f, 1.12f, null });
+      evt.set("Long[]", FieldType.NUINT32_ARRAY, new Long[] { 5000L, null, 12345L });
+      evt.set("Integer[]", FieldType.NUINT16_ARRAY, new Integer[] { 5, null, 10 });
+      evt.set("string[]", FieldType.STRING_ARRAY, new String[] {"value1", "value2"});
+      evt.set("nstring[]", FieldType.NSTRING_ARRAY, new String[] {null, "value3"});
+
+      byte[] serialize = new byte[ 64 * 1024 ];
+      int len = evt.serialize(serialize, 0);
+      Event evt2 = new MapEvent();
+      evt2.deserialize(serialize, 0, len);
+
+      // make sure 2 events are identical
+      Assert.assertEquals("Event_Name", evt2.getEventName());
+      Assert.assertEquals("testing", evt2.getString("str"));
+      Assert.assertEquals(new String("A" + "\u00ea" + "\u00f1" + "\u00fc" + "C"), evt2.getString("str2"));
+      Assert.assertTrue(evt2.getBoolean("boolean"));
+      Assert.assertEquals(32, (byte) evt2.getByte("byte"));
+      Assert.assertEquals(5.0, evt2.getDouble("double"));
+      Assert.assertEquals(1.2f, evt2.getFloat("float"));
+      Assert.assertEquals(10, (short) evt2.getInt16("int16"));
+      Assert.assertEquals(20, (int) evt2.getUInt16("uint16"));
+      Assert.assertEquals(30, (int) evt.getInt32("int32"));
+      Assert.assertEquals(5000000000l, evt2.getLongObjArray("long[]")[0].longValue());
+      Assert.assertNull(evt2.getLongObjArray("long[]")[1]);
+      Assert.assertEquals(8675309l, evt2.getLongObjArray("long[]")[2].longValue());
+      Assert.assertEquals(1.23, evt2.getDoubleObjArray("Double[]")[0]);
+      Assert.assertNull(evt2.getDoubleObjArray("Double[]")[1]);
+      Assert.assertEquals(1.26, evt2.getDoubleObjArray("Double[]")[2]);
+      Assert.assertEquals(1.11f, evt2.getFloatObjArray("Float[]")[0]);
+      Assert.assertEquals(1.12f, evt2.getFloatObjArray("Float[]")[1]);
+      Assert.assertNull(evt2.getFloatObjArray("Float[]")[2]);
+      Assert.assertEquals(5000, evt2.getLongObjArray("Long[]")[0].longValue());
+      Assert.assertNull( evt2.getLongObjArray("Long[]")[1]);
+      Assert.assertEquals(12345, evt2.getLongObjArray("Long[]")[2].longValue());
+      Assert.assertEquals(5, evt2.getIntegerObjArray("Integer[]")[0].shortValue());
+      Assert.assertNull(evt2.getIntegerObjArray("Integer[]")[1]);
+      Assert.assertEquals(10, evt2.getIntegerObjArray("Integer[]")[2].shortValue());
+      Assert.assertEquals("value1", evt2.getStringArray("string[]")[0]);
+      Assert.assertEquals("value2", evt2.getStringArray("string[]")[1]);
+      Assert.assertNull(evt2.getStringArray("nstring[]")[0]);
+      Assert.assertEquals("value3", evt2.getStringArray("nstring[]")[1]);
+
+      byte[] serialize2 = new byte[ 64 * 1024 ];
+      int len2 = evt2.serialize(serialize2, 0);
+      Assert.assertEquals(len, len2);
+
     }
 
     @Test

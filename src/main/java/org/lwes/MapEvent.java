@@ -34,7 +34,6 @@ public class MapEvent extends DefaultEvent {
     private final ConcurrentHashMap<String, BaseType> attributes = new ConcurrentHashMap<String, BaseType>();
     private String name = null;
     private EventTemplateDB eventTemplateDB = null;
-    private short encoding = DEFAULT_ENCODING;
 
     /**
      * If this is set to true, types and attributes are validated against the EventTemplateDB
@@ -91,26 +90,11 @@ public class MapEvent extends DefaultEvent {
      */
     public MapEvent(String eventName, boolean validate, EventTemplateDB eventTemplateDB)
             throws EventSystemException {
-        this(eventName, validate, eventTemplateDB, DEFAULT_ENCODING);
-    }
-
-    /**
-     * Create an event called <tt>eventName</tt>
-     *
-     * @param eventName the name of the event
-     * @param validate  true if the EventTemplateDB should be checked for types before all mutations
-     * @param encoding  the character encoding used by the event
-     * @throws NoSuchEventException         if the Event does not exist in the EventTemplateDB
-     * @throws NoSuchAttributeException     if an attribute does not exist in the EventTemplateDB
-     * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
-     */
-    public MapEvent(String eventName, boolean validate, EventTemplateDB eventTemplateDB, short encoding)
-            throws EventSystemException {
-        checkShortStringLength(eventName, encoding, MAX_EVENT_NAME_SIZE);
+        checkShortStringLength(eventName, MAX_EVENT_NAME_SIZE);
         setEventTemplateDB(eventTemplateDB);
         validating = validate;
         setEventName(eventName);
-        setEncoding(encoding);
+        setEncoding();
         setDefaultValues(eventTemplateDB);
     }
 
@@ -158,7 +142,6 @@ public class MapEvent extends DefaultEvent {
         validating = false;
         eventTemplateDB = null;
         attributes.clear();
-        encoding = DEFAULT_ENCODING;
         if (state != null) {
             state.reset();
         }
@@ -264,8 +247,8 @@ public class MapEvent extends DefaultEvent {
      */
     @Override
     public synchronized void setEventName(String name) {
-        checkShortStringLength(name, encoding, MAX_EVENT_NAME_SIZE);
-        
+        checkShortStringLength(name, MAX_EVENT_NAME_SIZE);
+
         /* determine if we already have the name and are just resetting it */
         if (this.name != null) {
             bytesStoreSize -= (this.name.length() + 1 + 2);
@@ -277,26 +260,14 @@ public class MapEvent extends DefaultEvent {
     }
 
     /**
-     * Get the character encoding for this event
-     *
-     * @return the encoding
-     */
-    @Override
-    public short getEncoding() {
-        return this.encoding;
-    }
-
-    /**
      * Set the character encoding for event strings
      *
-     * @param encoding the character encoding
      * @throws NoSuchAttributeTypeException if the type for the encoding attribute does not exist
      * @throws NoSuchAttributeException     if the encoding attribute does not exist
      */
     @Override
-    public void setEncoding(short encoding) throws EventSystemException {
-        this.encoding = encoding;
-        setInt16(ENCODING, this.encoding);
+    public void setEncoding() throws EventSystemException {
+        setInt16(ENCODING, UTF_8);
     }
 
     /**
@@ -320,7 +291,7 @@ public class MapEvent extends DefaultEvent {
     public void clear(String attributeName) {
         final BaseType bt = attributes.remove(attributeName);
         if (bt != null) {
-            bytesStoreSize -= (attributeName.length() + 1) + bt.bytesStoreSize(encoding);
+            bytesStoreSize -= (attributeName.length() + 1) + bt.bytesStoreSize();
         }
     }
 
@@ -356,7 +327,7 @@ public class MapEvent extends DefaultEvent {
      * @throws NoSuchAttributeTypeException if there is an attribute with an undefined type
      */
     private void set(String attribute, BaseType bt) {
-        checkShortStringLength(attribute, encoding, MAX_FIELD_NAME_SIZE);
+        checkShortStringLength(attribute, MAX_FIELD_NAME_SIZE);
 
         if (isValidating() && getEventTemplateDB() != null) {
             if (getEventTemplateDB().checkForAttribute(name, attribute)) {
@@ -374,16 +345,16 @@ public class MapEvent extends DefaultEvent {
         // Remove the existing value, and record the reduction in the serialized size.
         final BaseType oldObject = attributes.remove(attribute);
         if (oldObject != null) {
-            bytesStoreSize -= (attribute.length() + 1) + oldObject.bytesStoreSize(encoding);
+            bytesStoreSize -= (attribute.length() + 1) + oldObject.bytesStoreSize();
         }
 
         if (bt.getTypeObject() != null) {
-            int newSize = bytesStoreSize + ((attribute.length() + 1) + bt.bytesStoreSize(encoding));
+            int newSize = bytesStoreSize + ((attribute.length() + 1) + bt.bytesStoreSize());
             if (newSize > MAX_MESSAGE_SIZE) {
                 throw new EventSystemException("Event size limit is " + MAX_MESSAGE_SIZE + " bytes.");
             }
 
-            bytesStoreSize += (attribute.length() + 1) + bt.bytesStoreSize(encoding);
+            bytesStoreSize += (attribute.length() + 1) + bt.bytesStoreSize();
             attributes.put(attribute, bt);
         }
     }
@@ -407,7 +378,6 @@ public class MapEvent extends DefaultEvent {
            */
         int pos = 0;
         int attributeCount = attributes.size();
-        short encoding = DEFAULT_ENCODING;
 
         pos += Serializer.serializeEVENTWORD(name, bytes, pos);
         pos += Serializer.serializeUINT16((short) (attributeCount), bytes, pos);
@@ -421,7 +391,7 @@ public class MapEvent extends DefaultEvent {
             FieldType encodingType = encodingBase.getType();
             if (encodingObj != null) {
                 if (encodingType == FieldType.INT16) {
-                    encoding = (Short) encodingObj;
+                    short encoding = UTF_8;   // ignore encodingObj, always set to UTF-8
                     if (log.isTraceEnabled()) {
                         log.trace("Character encoding: " + encoding);
                     }
@@ -458,7 +428,7 @@ public class MapEvent extends DefaultEvent {
 
             pos += Serializer.serializeATTRIBUTEWORD(key, bytes, pos);
             pos += Serializer.serializeBYTE(type.token, bytes, pos);
-            pos += Serializer.serializeValue(type, data, encoding, bytes, pos);
+            pos += Serializer.serializeValue(type, data, bytes, pos);
 
             if (log.isTraceEnabled()) {
                 log.trace("Serialized attribute " + key);
@@ -526,7 +496,8 @@ public class MapEvent extends DefaultEvent {
             if (attribute != null) {
                 if (i == 0 && attribute.equals(ENCODING)) {
                     if (type == FieldType.INT16) {
-                        setEncoding(Deserializer.deserializeINT16(state, bytes));
+                        Deserializer.deserializeINT16(state, bytes);
+                        setEncoding();   // ignore the encoding specified, always set to utf-8
                         continue;
                     }
                     else {
@@ -534,7 +505,7 @@ public class MapEvent extends DefaultEvent {
                     }
                 }
 
-                set(attribute, type, Deserializer.deserializeValue(state, bytes, type, encoding));
+                set(attribute, type, Deserializer.deserializeValue(state, bytes, type));
             }
             if (bytesStoreSize != state.currentIndex() - offset) {
                 throw new EventSystemException("Deserializing " + type + " field " + attribute +

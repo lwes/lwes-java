@@ -15,45 +15,111 @@ package org.lwes.util;
  * @author fmaritato
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Random;
 
 import org.junit.Test;
+import org.lwes.MemoryPool;
+import org.lwes.MemoryPool.Buffer;
+
+import static org.lwes.Event.MAX_MESSAGE_SIZE;
 
 public class EncodedStringTest {
 
     @Test
-    public void testByteConstructor() {
-        byte[] bytes = new byte[] {116,101,115,116,105,110,103};
-        EncodedString str = new EncodedString(bytes, CharacterEncoding.UTF_8);
-        assertEquals("Byte Constructor failed.", "testing", str.toString());
+    public void testEncode() {
+        Buffer buffer = EncodedString.encode("testing");
+        assertTrue(buffer.getEncoderOutputBuffer().position() == "testing".length() );
+        assertTrue( Util.compareByteArrays(buffer.getEncoderOutputBuffer().array(), 7, "testing".getBytes(), 7) );
+        MemoryPool.putBack(buffer);
+
+        buffer = EncodedString.encode(null);
+        assertEquals(buffer.getEncoderOutputBuffer().position(), 0);
+        MemoryPool.putBack(buffer);
+
+        buffer = EncodedString.encode("");
+        assertEquals(buffer.getEncoderOutputBuffer().position(), 0);
+        MemoryPool.putBack(buffer);
+
+        // 64k of chars that are encoded to 1 byte, there should be no exception
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<MAX_MESSAGE_SIZE; ++i) {
+          sb.append( "a" );
+        }
+        try {
+          buffer = EncodedString.encode(sb.toString());
+        } catch (IllegalArgumentException e) {
+          fail();
+        }
+
+        // 64k of chars that may be encoded to more than one byte, there should be exception
+        sb = new StringBuilder();
+        for(int i=0; i<MAX_MESSAGE_SIZE; ++i) {
+          sb.append( (char)(new Random()).nextInt(255) );
+        }
+        try {
+          buffer = EncodedString.encode(sb.toString());
+          fail();
+        } catch (IllegalArgumentException e) {
+        }
+
+        // larger than 64k, should throw exception
+        sb = new StringBuilder();
+        for(int i=0; i<MAX_MESSAGE_SIZE+100; ++i) {
+          sb.append( (char)(new Random()).nextInt(255) );
+        }
+        try {
+          buffer = EncodedString.encode(sb.toString());
+          fail();
+        } catch (IllegalArgumentException e) {}
+
     }
 
     @Test
-    public void testStringConstructor() {
-        EncodedString str = new EncodedString("testing", CharacterEncoding.UTF_8);
-        assertEquals("Byte Constructor failed.", "testing", str.toString());
+    public void testEncodedLength() throws UnsupportedEncodingException {
+      assertEquals(0, EncodedString.getEncodedLength(null));
+
+      String s = "abcdefghijklmnopqrstuvwxyz";
+      int len = s.length();
+      assertEquals( len, EncodedString.getEncodedLength(s));
+
+      s = new String("A" + "\u00ea" + "\u00f1" + "\u00fc" + "C");
+      len = s.getBytes("utf-8").length;
+      assertEquals( len, EncodedString.getEncodedLength(s));
     }
 
     @Test
-    public void testStaticBytesToString() {
-        byte[] bytes = new byte[] {116,101,115,116,105,110,103};
-        String str = EncodedString.bytesToString(bytes, CharacterEncoding.UTF_8);
-        assertNotNull(str);
-        assertEquals("Static bytesToString failed", "testing", str);
+    public void testDecode() throws UnsupportedEncodingException {
 
-        str = EncodedString.bytesToString(null, CharacterEncoding.UTF_8);
-        assertNull("String was non-null", str);
+      // decode null
+      assertNull( EncodedString.decode(null, 0, 0));
+
+      // empty bytes to empty string
+      byte[] b = new byte[0];
+      assertEquals( "", EncodedString.decode(b,  0,  b.length) );
+
+      // random string, decode, then encode and compare
+      StringBuilder sb = new StringBuilder();
+      for(int i=0; i<1000; ++i) {
+        sb.append( (char)(new Random()).nextInt(255) );
+      }
+      byte[] input = sb.toString().getBytes("utf-8");
+      String decoded = EncodedString.decode(input, 0, input.length);
+      byte[] encoded = decoded.getBytes("utf-8");
+      assertTrue( Util.compareByteArrays(input,  input.length, encoded, encoded.length));
+
+      // to big of a buffer, should throw exception
+      sb = new StringBuilder();
+      for(int i=0; i<MAX_MESSAGE_SIZE+1000; ++i) {
+        sb.append( (char)(new Random()).nextInt(255) );
+      }
+      input = sb.toString().getBytes();
+      try {
+        decoded = EncodedString.decode(input, 0, input.length);
+        fail();
+      } catch(IllegalArgumentException e) {}
     }
 
-    @Test
-    public void testStaticGetBytes() {
-        byte[] bytes = EncodedString.getBytes("testing", CharacterEncoding.UTF_8);
-        assertNotNull(bytes);
-        // TODO: compare the byte array
-
-        bytes = EncodedString.getBytes(null, CharacterEncoding.UTF_8);
-        assertNull("Byte array was non-null", bytes);
-    }
 }
