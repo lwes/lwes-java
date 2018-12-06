@@ -77,7 +77,9 @@ public class EmitterGroupBuilder {
                                          EventFactory factory)
       throws IOException {
     String prefix = "lwes." + groupName + ".";
-    String type = props.getProperty(prefix + "type", "udp");
+    String type = props.getProperty(prefix + "type");
+    if (type == null)
+      type = "udp";
     EmitterGroupFactory f = emitterGroupFactoryRegistry.get(type);
     if (f == null)
       throw new RuntimeException("no emitter-group factory of type " + type + " known");
