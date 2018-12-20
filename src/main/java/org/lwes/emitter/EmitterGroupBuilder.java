@@ -78,11 +78,13 @@ public class EmitterGroupBuilder {
       throws IOException {
     String prefix = "lwes." + groupName + ".";
     String type = props.getProperty(prefix + "type");
-    if (type == null)
+    if (type == null) {
       type = "udp";
+    }
     EmitterGroupFactory f = emitterGroupFactoryRegistry.get(type);
-    if (f == null)
+    if (f == null) {
       throw new RuntimeException("no emitter-group factory of type " + type + " known");
+    }
     return f.create(props, groupName, prefix, factory);
   }
 
