@@ -3,7 +3,7 @@
   <groupId>org.lwes</groupId>
   <artifactId>lwes-java</artifactId>
   <packaging>jar</packaging>
-  <version>2.2.0</version>
+  <version>2.2.1</version>
   <name>lwes-java</name>
   <description>Lightweight event system, java implementation</description>
   <url>http://lwes.org</url>

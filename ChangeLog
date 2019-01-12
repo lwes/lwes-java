@@ -1,3 +1,8 @@
+* Fri Jan 11 2019 Dave Benson <david.benson> 2.2.1
+- support for registration of new EmitterGroup to support
+  plugins that render to alternate targets (which aren't necessarily
+  publicly supported).  See EmitterGroupBuilder.registerEmitterGroupFactory().
+
 * Fri Nov 20 2015 Kenneth Kharma <kenneth.kharma@openx.com> 2.2.0
 - only emit System::Startup and System::Shutdown when heartbeats are enabled
 - added heartbeat support to emitter groups
