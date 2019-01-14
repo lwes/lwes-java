@@ -21,17 +21,18 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 /**
- * MulticastEventEmitter emits events to multicast groups on the network.  This is the most common
- * class used by users of the Light Weight Event System.
- * <p/>
+ * <p>MulticastEventEmitter emits events to multicast groups on the network.  This is the most common
+ * class used by users of the Light Weight Event System.</p>
+ * <p>
  * Example code:
+ * </p>
  * <pre>
  * MulticastEventEmitter emitter = new MulticastEventEmitter();
  * emitter.setESFFilePath("/path/to/esf/file");
  * emitter.setMulticastAddress(InetAddress.getByName("224.0.0.69"));
  * emitter.setMulticastPort(9191);
  * emitter.initialize();
- * <p/>
+
  * Event e = emitter.createEvent("MyEvent", false);
  * e.setString("key","value");
  * emitter.emit(e);
@@ -60,7 +61,8 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
   }
 
   /**
-   * Sets the multicast address for this emitter.  Preserved for backwards compatibility.
+   * Sets the multicast address for this emitter.
+   * Preserved for backwards compatibility.
    *
    * @param address the multicast address
    */
@@ -115,6 +117,8 @@ public class MulticastEventEmitter extends DatagramSocketEventEmitter<MulticastS
 
   /**
    * Creates the multicast <code>MulticastSocket</code>.
+   *
+   * @throws IOException if an error occurs.
    */
   @Override
   protected void createSocket() throws IOException {

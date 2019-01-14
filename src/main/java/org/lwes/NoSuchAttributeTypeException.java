@@ -20,6 +20,8 @@ package org.lwes;
 public class NoSuchAttributeTypeException extends EventSystemException {
 	/**
 	 * Overrides <tt>EventSystemException</tt> Constructor
+         *
+         * @param s human-readable description of error
 	 */
 	public NoSuchAttributeTypeException(String s) {
 		super(s);

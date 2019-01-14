@@ -60,7 +60,7 @@ public class NestedEmitterGroup extends EmitterGroup {
   /**
    * Emits the event to the network.
    *
-   * @param event the event to emit
+   * @param e the event to emit
    * @return number of bytes emitted
    */
   @Override

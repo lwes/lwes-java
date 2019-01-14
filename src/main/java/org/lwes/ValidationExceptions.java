@@ -80,6 +80,10 @@ public class ValidationExceptions extends EventSystemException {
      *   ve = ValidationExceptions.append(ve, new EventSystemException("label 2");
      * }
      * </code></pre>
+     *
+     * @param existing optional event to appeach exceptions to (if null, it will be created)
+     * @param exceptions a list of subexceptions to add to returned collection.
+     * @return either the existing Exceptions collection object, or a newly allocated ValidationExceptions.
      */
     public static ValidationExceptions append(ValidationExceptions existing, EventSystemException... exceptions) {
         final ValidationExceptions result;

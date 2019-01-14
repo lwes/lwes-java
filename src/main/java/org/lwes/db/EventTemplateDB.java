@@ -280,6 +280,8 @@ public class EventTemplateDB {
      *                        given in the ESF Specification.
      * @param size            The size restriction for this attribute
      * @param required        Is this attribute required
+     * @param defaultValue    The default value for this attribute.
+     * @param comment         Human-readable information about this attribute.
      * @return true if the attribute can be added, false if it can not.
      */
     public synchronized boolean addEventAttribute(String anEventName,
@@ -467,7 +469,7 @@ public class EventTemplateDB {
                 eventName, attributeName, value, min, max));
     }
 
-    /**
+    /*
      * use {@link #addEventAttribute(String, String, FieldType, Integer, boolean, Object)}
      */
     @Deprecated
@@ -536,6 +538,10 @@ public class EventTemplateDB {
      * This checks an attribute against a limit on the number of elements in an
      * array, and does not check the number of serialized bytes required to
      * store the value.
+     * @param eventName      the name of an Event.
+     * @param attributeName  the name of an attribute of <tt>eventName</tt>
+     * @param attributeValue the value of the attribute
+     * @throws EventAttributeSizeException size invalid.
      */
     public void checkForSize(String eventName,
                              String attributeName,
@@ -672,7 +678,7 @@ public class EventTemplateDB {
         return false;
     }
 
-    /**
+    /*
      * use {@link #checkTypeForAttribute(String, String, FieldType)}
      */
     @Deprecated

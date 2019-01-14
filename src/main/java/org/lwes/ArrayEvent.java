@@ -80,9 +80,9 @@ public final class ArrayEvent extends DefaultEvent {
     
     /**
      * Creates a new event from the given byte array, copying it only if the copy flag is true.
-     * @param bytes
-     * @param len - Portion of the byte array to use. Must be no greater than total length.
-     * @param copy - If true, the bytes prefix is copied to a newly allocated array.
+     * @param bytes An initial value for the contents of the event.
+     * @param len Portion of the byte array to use. Must be no greater than total length.
+     * @param copy Whether to copy the byte array source; useful if the bytes may change in the future.  Of course, it's fast not to copy if they aren't going to change.
      */
     public ArrayEvent(final byte[] bytes, final int len, final boolean copy) {
         // We assume that bytes has the right encoding, no need to set it.
@@ -104,7 +104,7 @@ public final class ArrayEvent extends DefaultEvent {
     
     /**
      * Creates a new event, making a copy of the given byte array into a newly allocated buffer
-     * @param bytes
+     * @param bytes an array of bytes to copy into the new event.
      */
     public ArrayEvent(final byte[] bytes) {
         this(bytes, bytes.length, true);
@@ -570,15 +570,17 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     /**
-     * These two ArrayEvent objects swap all of their fields.
-     * <p/>
-     * Why would one want to do this? If one must set "this" to the value of
+     * <p>These two ArrayEvent objects swap all of their fields.</p>
+     * <p>Why would one want to do this? If one must set "this" to the value of
      * "event", but it's acceptable to modify "event" in the process, then
-     * swap() accomplishes the copy faster than copyFrom(event) can.
-     * <p/>
+     * swap() accomplishes the copy faster than copyFrom(event) can.</p>
+     * <p>
      * Typical events seem to take about 6ms for copyFrom() but only 100ns for
      * swap().  However, if you're not doing enough copies that the performance
      * difference matters, you should probably use copyFrom().
+     * </p>
+     *
+     * @param event an event whose contents will be swapped with 'this'.
      */
     public void swap(ArrayEvent event) {
         if (this == event) {
@@ -601,10 +603,16 @@ public final class ArrayEvent extends DefaultEvent {
     }
 
     /**
-     * Return a new ArrayEvent with an unusually small buffer. The maximum length
-     * for this trimmed ArrayEvent is its initial length. This should only be used
+     * <p>Return a new ArrayEvent with an unusually small buffer. The maximum length
+     * for this trimmed ArrayEvent is its initial length plus the number
+     * of bytes passed in. This should only be used
      * for testing operations, when we might want to store a large number of
      * events in memory at once.
+     * </p>
+     *
+     * @param excess the number of bytes the returned event can grow.
+     *
+     * @return the new ArrayEvent.
      */
     public ArrayEvent trim(int excess) {
         final int overrun = length + excess - MAX_MESSAGE_SIZE;
@@ -639,6 +647,8 @@ public final class ArrayEvent extends DefaultEvent {
      * This method shows detailed information about the internal state of the
      * event, and was designed as a "Detail Formatter" for tracing execution
      * under Eclipse.  It may be useful for other IDEs or other uses.
+     *
+     * @return a multiline string giving information about the event.
      */
     public String toStringDetailed() {
         final StringBuilder buf = new StringBuilder();

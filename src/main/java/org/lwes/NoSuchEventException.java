@@ -20,6 +20,8 @@ package org.lwes;
 public class NoSuchEventException extends EventSystemException {
 	/**
 	 * Overrides <tt>EventSystemException</tt> constructor
+         *
+         * @param s human-readable description of error.
 	 */
 	public NoSuchEventException(String s) {
 		super(s);
