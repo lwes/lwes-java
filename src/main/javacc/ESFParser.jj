@@ -98,7 +98,7 @@ TOKEN :
 
 }
 
-/**
+/*
  * A list of events
  */
 void eventlist() :
@@ -115,7 +115,7 @@ void eventlist() :
    )* <EOF> 
 }
 
-/**
+/*
  * a single event
  */
 void event() :
@@ -125,7 +125,7 @@ void event() :
   eventName() "{" [ attributeList() ] "}"
 }
 
-/**
+/*
  * The name of an event, should be max 256 chars ([a-zA-Z0-9_]*)
  */
 void eventName() :

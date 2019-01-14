@@ -60,6 +60,9 @@ public class MapEvent extends DefaultEvent {
 
     /**
      * Create an event called <tt>eventName</tt> with no validation
+     *
+     * @param eventName String this is the event's name.
+     * @throws EventSystemException event name was somehow invalid
      */
     public MapEvent(String eventName) throws EventSystemException {
         this(eventName, false, null);
@@ -99,6 +102,7 @@ public class MapEvent extends DefaultEvent {
      *
      * @param eventName the name of the event
      * @param validate  true if the EventTemplateDB should be checked for types before all mutations
+     * @param eventTemplateDB template-database which can be used for validation.
      * @param encoding  the character encoding used by the event
      * @throws NoSuchEventException         if the Event does not exist in the EventTemplateDB
      * @throws NoSuchAttributeException     if an attribute does not exist in the EventTemplateDB
@@ -119,9 +123,9 @@ public class MapEvent extends DefaultEvent {
      *
      * @param bytes           the raw bytes to convert
      * @param eventTemplateDB the EventTemplateDB to use to validate the event
-     * @throws NoSuchEventException
-     * @throws NoSuchAttributeException
-     * @throws NoSuchAttributeTypeException
+     * @throws NoSuchEventException         if the Event does not exist in the EventTemplateDB
+     * @throws NoSuchAttributeException     if an attribute does not exist in the EventTemplateDB
+     * @throws NoSuchAttributeTypeException if an attribute type does not exist in the EventTemplateDB
      */
     public MapEvent(byte[] bytes, EventTemplateDB eventTemplateDB)
             throws EventSystemException {
@@ -135,9 +139,9 @@ public class MapEvent extends DefaultEvent {
      * @param bytes           the raw bytes to convert
      * @param validate        whether or not to validate the event
      * @param eventTemplateDB the EventTemplateDB to use to validate the event
-     * @throws NoSuchEventException
-     * @throws NoSuchAttributeException
-     * @throws NoSuchAttributeTypeException
+     * @throws NoSuchEventException the event is not found in the template-database.
+     * @throws NoSuchAttributeException unknown attribute encountered in this message (?)
+     * @throws NoSuchAttributeTypeException attribute has wrong type (?)
      */
     public MapEvent(byte[] bytes, boolean validate, EventTemplateDB eventTemplateDB)
             throws EventSystemException {
@@ -492,7 +496,7 @@ public class MapEvent extends DefaultEvent {
      * Deserialize the Event from byte array
      *
      * @param bytes the byte array containing a serialized Event
-     * @throws EventSystemException
+     * @throws EventSystemException a parse error occurred interpreting the bytes.
      */
     @Override
     public void deserialize(byte[] bytes, int offset, int length)
@@ -600,7 +604,10 @@ public class MapEvent extends DefaultEvent {
     }
 
     /**
-     * This returns the number of bytes necessary for serialization, not the number of attributes.
+     * Get the number of bytes in the serialized event.
+     * (This is precomputed, hence this function is fast)
+     * 
+     * @return the number of bytes necessary for serialization, not the number of attributes.
      */
     @Override
     public int getBytesSize() {

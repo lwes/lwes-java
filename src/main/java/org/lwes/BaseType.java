@@ -18,13 +18,14 @@ import org.lwes.serializer.StringParser;
 import org.lwes.util.EncodedString;
 
 /**
- * This class provides a base type for the base types in the event system. acts
+ * <p>This class provides a base type for the base types in the event system. acts
  * partially as an interface and partially to provide encapsulation of the
  * TypeIDs used in serialization.
- * <p/>
+ * </p><p>
  * It also provides a sizeof() type method called getByteSize() used to
  * determine how many bytes must be used to serialize an object of the given
  * type.
+ * </p>
  *
  * @author Anthony Molinaro
  */
@@ -158,6 +159,8 @@ public class BaseType {
 
     /**
      * use {@link #setType(FieldType)}
+     *
+     * @param typeName a string that is a valid FieldType name.
      */
     @Deprecated
     public void setTypeName(String typeName) {
@@ -166,6 +169,8 @@ public class BaseType {
 
     /**
      * use {@link #getType()}
+     *
+     * @return the name of the FieldType
      */
     @Deprecated
     public String getTypeName() {
@@ -174,6 +179,8 @@ public class BaseType {
 
     /**
      * use {@link #setType(FieldType)}
+     *
+     * @param typeToken byte-code for this FieldType.
      */
     @Deprecated
     public void setTypeToken(byte typeToken) {

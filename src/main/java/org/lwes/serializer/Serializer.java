@@ -155,8 +155,8 @@ public class Serializer {
 
     /**
      * String arrays are serialized as follows:
-     * <array_name_len><array_name_bytes><type>
-     * <array_length><serialized_type_1>...<serialized_type_n>
+     * &lt;array_name_len&gt;&lt;array_name_bytes&gt;&lt;type&gt;
+     * &lt;array_length&gt;&lt;serialized_type_1&gt;...&lt;serialized_type_n&gt;
      *
      * @param value
      * @param bytes

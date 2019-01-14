@@ -16,14 +16,16 @@ import java.net.InetAddress;
 import java.util.Collection;
 
 /**
- * This is an event listener that handles UDP packets. Automatically detects multicast addresses and joins those groups.
- * <p/>
+ * <p>This is an event listener that handles UDP packets. Automatically detects multicast addresses and joins those groups.
+ * </p>
+ * <p>
  * Sample code that prints multicast events to stdout:
+ * </p>
  *
  * <pre>
  * EventHandler myHandler = new EventPrintingHandler();
  * InetAddress address = InetAddress.getByName("224.0.0.69");
- * <p/>
+ *
  * DatagramEventListener listener = new DatagramEventListener();
  * listener.setAddress(address);
  * listener.setPort(9191);

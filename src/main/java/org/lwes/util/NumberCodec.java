@@ -18,19 +18,22 @@ import org.apache.commons.logging.LogFactory;
 import java.math.BigInteger;
 
 /**
- * This is a class to efficiently encode built-in primitive types into
+ * <p>This is a class to efficiently encode built-in primitive types into
  * byte arrays and decode them back.  While this can be done with a
  * combination of ByteArrayOutputStreams, DataOutputStreams,
  * ByteArrayInputStreams, DataInputStreams, merely creating those
  * objects is quite costly and it is difficult to make them persistent.
  * As such, this contains code lifted from the guts of the Data*Stream
  * classes.
- * <p/>
+ * </p>
+ * <p>
  * Also, this class defines functions to convert primitive types and
  * byte arrays to and from hexadecimal strings.
- * <p/>
+ * </p>
+ * <p>
  * Hopefully, support for these operations will be added to
  * the standard Java API and this class can be retired.
+ * </p>
  *
  * @author Preston Pfarner
  * @author Michael P. Lum
