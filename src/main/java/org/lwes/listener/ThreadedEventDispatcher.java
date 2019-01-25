@@ -29,6 +29,7 @@ public class ThreadedEventDispatcher extends Thread {
 	private ThreadedDequeuer dequeuer;
 	private EventHandler eventHandler;
 	private Event event;
+    private volatile boolean stop = false;
 
 	protected ThreadedEventDispatcher(ThreadedDequeuer aDequeuer) {
 		this.dequeuer = aDequeuer;
@@ -61,7 +62,7 @@ public class ThreadedEventDispatcher extends Thread {
 
 	@Override
   public void run() {
-		while(true) {
+		while(!stop) {
 			synchronized(this) {
 				if(isActive()) {
 					try {
@@ -72,7 +73,7 @@ public class ThreadedEventDispatcher extends Thread {
 					clearTask();
 				} else {
 					try {
-						wait();
+					    wait(1000);
 					} catch(InterruptedException e) {}
 				}
 			}
@@ -87,5 +88,9 @@ public class ThreadedEventDispatcher extends Thread {
 
 		dequeuer.makeAvailable(this);
 	}
+
+    public void shutdown() {
+	stop = true;
+    }
 
 }

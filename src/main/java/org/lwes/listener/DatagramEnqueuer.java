@@ -17,6 +17,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketTimeoutException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +51,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
     protected byte[] buffer = null;
 
     /* thread control */
-    protected boolean running = false;
+    protected volatile boolean running = false;
 
     public DatagramEnqueuer() {
         super();
@@ -163,6 +164,7 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
             bufSize = Integer.parseInt(bufSizeStr);
         }
         socket.setReceiveBufferSize(bufSize);
+	socket.setSoTimeout(1000);
     }
 
     @Override
@@ -181,7 +183,11 @@ public class DatagramEnqueuer extends ThreadedEnqueuer {
         while (running) {
             try {
                 DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
-                socket.receive(datagram);
+		try {
+		    socket.receive(datagram);
+		} catch (SocketTimeoutException ste) {
+		    continue;
+		}
                 if (log.isTraceEnabled()) {
                     log.trace("Received datagram: " + datagram);
                 }
