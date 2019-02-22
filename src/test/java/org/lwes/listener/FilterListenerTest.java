@@ -15,9 +15,7 @@ package org.lwes.listener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -65,15 +63,17 @@ public class FilterListenerTest {
                         "-m", "224.0.0.0",
                         "-p", "0000"
                 });
-        Map<String, String> inattrs = new HashMap<String, String>();
-        inattrs.put("eid", "1");
+        Map<String, Set<String>> inattrs = new HashMap<String, Set<String>>();
+        Set<String> s = new TreeSet<String>();
+        s.add("1");
+        inattrs.put("eid", s);
         filterListener.setEventAttrs(inattrs);
 
         // Verify the argument was parsed properly
-        Map<String,String> attrs = filterListener.getEventAttrs();
+        Map<String,Set<String>> attrs = filterListener.getEventAttrs();
         Assert.assertNotNull(attrs);
         Assert.assertEquals(1, attrs.size());
-        Assert.assertEquals("1", attrs.get("eid"));
+        Assert.assertTrue(attrs.get("eid").contains("1"));
 
         filterListener.destroy();
         Assert.assertNull(filterListener.getEventAttrs());
@@ -146,10 +146,11 @@ public class FilterListenerTest {
                 });
 
         // Verify the argument was parsed properly
-        Map<String,String> attrs = filterListener.getEventAttrs();
+        Map<String,Set<String>> attrs = filterListener.getEventAttrs();
         Assert.assertNotNull(attrs);
         Assert.assertEquals(1, attrs.size());
-        Assert.assertEquals("1", attrs.get("eid"));
+        Assert.assertEquals(1, attrs.get("eid").size());
+        Assert.assertTrue(attrs.get("eid").contains("1"));
 
         // Verify matching functions properly
         MapEvent evt = new MapEvent("Test::One");
@@ -170,15 +171,18 @@ public class FilterListenerTest {
                 new String[]{
                         "-m", "224.0.0.0",
                         "-p", "0000",
-                        "-a", "eid=1,pid=5"
+                        "-a", "eid=1,pid=5,eid=z"
                 });
 
         // Verify the argument was parsed properly
-        Map<String,String> attrs = filterListener.getEventAttrs();
+        Map<String,Set<String>> attrs = filterListener.getEventAttrs();
         Assert.assertNotNull(attrs);
         Assert.assertEquals(2, attrs.size());
-        Assert.assertEquals("1", attrs.get("eid"));
-        Assert.assertEquals("5", attrs.get("pid"));
+        Assert.assertEquals(2, attrs.get("eid").size());
+        Assert.assertTrue(attrs.get("eid").contains("1"));
+        Assert.assertTrue(attrs.get("eid").contains("z"));
+        Assert.assertEquals(1, attrs.get("pid").size());
+        Assert.assertTrue(attrs.get("pid").contains("5"));
 
         // Verify multiple arguments get matched properly
         MapEvent evt = new MapEvent("Test::One");
