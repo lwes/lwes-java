@@ -1,3 +1,6 @@
+* Fri Mar 22 2019 Dave Benson <david.benson> 2.2.2
+- add ReplayJournal program mostly to use in testing emitters
+
 * Fri Jan 11 2019 Dave Benson <david.benson> 2.2.1
 - support for registration of new EmitterGroup to support
   plugins that render to alternate targets (which aren't necessarily
